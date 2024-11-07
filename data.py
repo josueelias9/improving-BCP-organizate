@@ -10,5 +10,5 @@ translate = {
     "Septiembre": "September",
     "Octubre": "October",
     "Noviembre": "November",
-    "Diciembre": "December"
+    "Diciembre": "December",
 }

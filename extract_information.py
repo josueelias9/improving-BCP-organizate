@@ -5,7 +5,6 @@ import pandas as pd
 import data
 
 
-
 # Verifica si se pasó un argumento
 def extract(month):
     nombre_del_archivo = f"pagina_{month}.html"
@@ -35,7 +34,14 @@ def extract(month):
 def transform(soup):
     dias = soup.find_all("div", class_="list-container__wrapper")
 
-    data = {"fecha": [], "description": [], "category": [], "payment_method": [], "amount": [], "type": []}
+    data = {
+        "fecha": [],
+        "description": [],
+        "category": [],
+        "payment_method": [],
+        "amount": [],
+        "type": [],
+    }
 
     for dia in dias:
 
@@ -66,8 +72,8 @@ def transform(soup):
             data["type"].append("income" if amount_positive else "expense")
 
     dataframe = pd.DataFrame(data)
-    dataframe['fecha'] = pd.to_datetime(dataframe['fecha'], format='%d %B %Y %M', errors='coerce')
-    dataframe["identifier"] = dataframe['fecha'].astype("int64")
+    dataframe["fecha"] = pd.to_datetime(dataframe["fecha"], format="%d %B %Y %M", errors="coerce")
+    dataframe["identifier"] = dataframe["fecha"].astype("int64")
 
     return {
         "log": f"data extracted successfully",
@@ -93,5 +99,5 @@ def create_update_register_table():
 
 
 def create_history_table():
-    data = {"historia":[],"modify_category":[]}
+    data = {"historia": [], "modify_category": []}
     historia = pd.DataFrame()
