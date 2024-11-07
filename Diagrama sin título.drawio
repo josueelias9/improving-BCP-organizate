@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="24.8.4">
+  <diagram name="Página-1" id="Nd9bQAwKT04cqJ5btVvp">
+    <mxGraphModel dx="2022" dy="643" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-1" value="register 1&lt;div&gt;register 2&lt;/div&gt;&lt;div&gt;registro 3&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-400" y="560" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-2" value="" style="sketch=0;outlineConnect=0;fillColor=#f8cecc;strokeColor=#b85450;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.question;" vertex="1" parent="1">
+          <mxGeometry x="-280" y="560" width="40" height="76.1" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-3" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.shutterstock.com/image-vector/little-kid-read-story-book-600nw-2258510429.jpg;" vertex="1" parent="1">
+          <mxGeometry x="-80" y="519.1" width="120" height="116.8" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-4" value="register 1&lt;div&gt;register 2&lt;/div&gt;&lt;div&gt;registro 3&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-160" y="560" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-5" value="category 1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="120" y="500" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-6" value="category 1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="120" y="560" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-7" value="category 1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="120" y="620" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-8" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://images.ctfassets.net/pdf29us7flmy/2wG8ah2H71AaboKXxJikkC/76e80c9d3833d1054bc327db256e69a0/GOLD-6487-CareerGuide-Batch04-Images-GraphCharts-02-Bar.png;" vertex="1" parent="1">
+          <mxGeometry x="320" y="560" width="120" height="75.9" as="geometry" />
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-9" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="600" as="sourcePoint" />
+            <mxPoint x="280" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-10" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="60" y="600" as="sourcePoint" />
+            <mxPoint x="100" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2pfSjDPKJMTf3oM1PFOS-11" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-200" y="600" as="sourcePoint" />
+            <mxPoint x="-160" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
