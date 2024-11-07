@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-from io import StringIO
+import my_data
 
 
 st.title('Improving "BCP organizate"')
@@ -13,45 +13,41 @@ uploaded_file = st.file_uploader("Load the html from BCP")
 
 
 option = st.selectbox(
-    "How would you like to be contacted?",
-    ("septiembre", "octubre", "noviembre"),
+    "Select the month to analyze:",
+    tuple(my_data.translate.keys()),
     index=None,
-    placeholder="Select contact method...",
+    placeholder="Select month...",
 )
 
 if option:
     st.write("Month to be analized:", option)
 
     # route of tables
-    table_BCP = f"./db/gastos_{option}.csv"
-    table_historia = f"./db/historia_{option}.csv"
+    history_table_str = "./db/history.csv"
+    transaction_table_str = "./db/transaction.csv"
 
     # if doesnt exist, create empty csv file
-    ruta_actual = Path.cwd()
-    ruta_sub_carpeta = ruta_actual / "db"
-    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if option == archivo.name]
+    ruta_sub_carpeta = Path.cwd() / "db"
+    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if archivo == ruta_sub_carpeta / "history.csv"]
 
     if not ruta_del_mes:
-        pd.DataFrame(data={"historia": [], "modify_category": []}).to_csv(table_historia, index=False)
+        pd.DataFrame(data={"history": [], "modify_category": [], "date_id": []}).to_csv(history_table_str, index=False)
 
     # create dataframe
-    df_table_BCP = pd.read_csv(table_BCP, dtype=str)
-    df_table_historia = pd.read_csv(table_historia, dtype={"modify_category": "bool"})
+    transaction_table_df = pd.read_csv(transaction_table_str, dtype=str)
+    history_table_df = pd.read_csv(history_table_str, dtype={"modify_category": "bool"})
 
-    df_table_BCP["historia"] = ["" for i in range(len(df_table_BCP) - len(df_table_historia))] + df_table_historia["historia"].to_list()
+    # left join
+    merged_df = transaction_table_df.merge(history_table_df, how="left", left_on="date_id", right_on="date_id")
 
-    df_table_BCP["modify_category"] = [False for i in range(len(df_table_BCP) - len(df_table_historia))] + df_table_historia[
-        "modify_category"
-    ].to_list()
-
-    st.title("Editor de CSV")
+    st.title("Table Editor")
 
     edited_data = st.data_editor(
-        df_table_BCP,
-        column_config={"historia": {"editable": True}},  # Solo se permite editar "historia"
+        merged_df,
+        column_config={"history": {"editable": True}},  # Solo se permite editar "history"
         use_container_width=True,
     )
 
     if st.button("Save data"):
-        edited_data[["historia", "modify_category"]].to_csv(table_historia, index=False)
+        edited_data[["history", "modify_category", "date_id"]].to_csv(history_table_str, index=False)
         st.write("Saved data")
