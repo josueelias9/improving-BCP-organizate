@@ -71,8 +71,8 @@ def transform(soup):
             data["type"].append("income" if amount_positive else "expense")
 
     dataframe = pd.DataFrame(data)
-    
-    #just for testing
+
+    # just for testing
     dataframe["date_id"] = pd.to_datetime(dataframe["date_id"], format="%d %B %Y %M", errors="coerce")
 
     return {

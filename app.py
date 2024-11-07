@@ -40,6 +40,15 @@ if option:
     # left join
     merged_df = transaction_table_df.merge(history_table_df, how="left", left_on="date_id", right_on="date_id")
 
+    # fill "history" and "modify_category" columns
+    merged_df = merged_df.fillna({"history": "", "modify_category": False})
+
+    # convert to datetime type
+    merged_df["date_id"] = pd.to_datetime(merged_df["date_id"])
+
+    # add column to get more info of the date
+    merged_df["date"] = merged_df["date_id"].dt.strftime("%M - %A %d, %B")
+
     st.title("Table Editor")
 
     edited_data = st.data_editor(
