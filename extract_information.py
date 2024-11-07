@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
-import sys
 from pathlib import Path
 import pandas as pd
-import data
+import my_data
 
 
 # Verifica si se pasó un argumento
@@ -35,7 +34,7 @@ def transform(soup):
     dias = soup.find_all("div", class_="list-container__wrapper")
 
     data = {
-        "fecha": [],
+        "date_id": [],
         "description": [],
         "category": [],
         "payment_method": [],
@@ -48,9 +47,9 @@ def transform(soup):
         # get date
         fecha = dia.find("div", class_="headline-content").get_text(strip=True)
         fecha = fecha.split(" ")
-        fecha = f"{fecha[1]} {[fecha[2]]} 2024"
+        fecha = f"{fecha[1]} {my_data.translate[fecha[2]]} 2024"
 
-        gastos = dia.find_all("div", class_="item")  # Cambia la clase según el tipo de gasto que deseas
+        gastos = dia.find_all("div", class_="item")
 
         for minute, gasto in enumerate(gastos[::-1]):
             # get description
@@ -63,8 +62,8 @@ def transform(soup):
             amount_negative = gasto.find("div", class_="item__amount--one negative")
             amount_positive = gasto.find("div", class_="item__amount--one positve")
 
-            # since I dont have the extact information about the time the expense take place, I im asuming that every minute a expense happened. It means that at max, there must be 59 register each day
-            data["fecha"].append(f"{fecha} {minute}")
+            # since I dont have the exact information about the time the expense take place, I im asuming that every minute a expense happened. It means that at max, there must be 59 register each day
+            data["date_id"].append(f"{fecha} {minute}")
             data["description"].append(description)
             data["category"].append(category)
             data["payment_method"].append(payment_method)
@@ -72,8 +71,9 @@ def transform(soup):
             data["type"].append("income" if amount_positive else "expense")
 
     dataframe = pd.DataFrame(data)
-    dataframe["fecha"] = pd.to_datetime(dataframe["fecha"], format="%d %B %Y %M", errors="coerce")
-    dataframe["identifier"] = dataframe["fecha"].astype("int64")
+    
+    #just for testing
+    dataframe["date_id"] = pd.to_datetime(dataframe["date_id"], format="%d %B %Y %M", errors="coerce")
 
     return {
         "log": f"data extracted successfully",
@@ -83,21 +83,19 @@ def transform(soup):
 
 
 def load(dataframe):
-    dataframe.to_csv(f"./db/gastos.csv", index=False)
+    file_name = "transaction.csv"
+    dataframe.to_csv(f"./db/{file_name}", index=False)
     return {
-        "log": f"data loaded successfully in gastos.csv.",
+        "log": f"data loaded successfully in {file_name}.",
         "type": "success",
     }
 
 
-def create_update_register_table():
-    month = "octubre"
+def ETL_transaction_table(month):
     extracted_data = extract(month)
     transformed_data = transform(extracted_data["data"])
-    loaded_data = load(transformed_data["data"])
-    print(loaded_data)
+    load(transformed_data["data"])
 
 
-def create_history_table():
-    data = {"historia": [], "modify_category": []}
-    historia = pd.DataFrame()
+month = "octubre"
+ETL_transaction_table(month)
