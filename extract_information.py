@@ -5,32 +5,12 @@ import my_data
 
 
 # Verifica si se pasó un argumento
-def extract(month):
-    nombre_del_archivo = f"pagina_{month}.html"
+def extract(html_content):
+    return {"data": html_content}
 
-    # check if any argument was passed by
-    if not month:
-        return {
-            "log": "No se ha proporcionado ningún argumento. Ingresa un mes adecuado.",
-            "type": "error",
-        }
 
-    # verificar si el argumento existe en la carpeta
-    ruta_actual = Path.cwd()
-    ruta_sub_carpeta = ruta_actual / "data"
-    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if nombre_del_archivo == archivo.name]
-
-    if not ruta_del_mes:
-        return {"log": f"No existe el archivo {nombre_del_archivo}", "type": "error"}
-
-    with open(f"./data/{nombre_del_archivo}", "r", encoding="utf-8") as file:
-        html_content = file.read()
-
+def transform(html_content):
     soup = BeautifulSoup(html_content, "html.parser")
-    return {"data": soup}
-
-
-def transform(soup):
     dias = soup.find_all("div", class_="list-container__wrapper")
 
     data = {
@@ -72,9 +52,12 @@ def transform(soup):
 
     dataframe = pd.DataFrame(data)
 
-    # just for testing
+    #
     dataframe["date_id"] = pd.to_datetime(dataframe["date_id"], format="%d %B %Y %M", errors="coerce")
 
+    # add column to get more info of the date
+    dataframe["date"] = dataframe["date_id"].dt.strftime("%M - %A %d, %B")
+    
     return {
         "log": f"data extracted successfully",
         "type": "success",
@@ -83,6 +66,7 @@ def transform(soup):
 
 
 def load(dataframe):
+    # need to check if there is data already. If so, need to do concat and delete repetitive elements
     file_name = "transaction.csv"
     dataframe.to_csv(f"./db/{file_name}", index=False)
     return {
@@ -91,11 +75,10 @@ def load(dataframe):
     }
 
 
-def ETL_transaction_table(month):
-    extracted_data = extract(month)
+def ETL_transaction_table(html_content):
+    extracted_data = extract(html_content)
     transformed_data = transform(extracted_data["data"])
     load(transformed_data["data"])
 
 
-month = "octubre"
-ETL_transaction_table(month)
+# ETL_transaction_table("")

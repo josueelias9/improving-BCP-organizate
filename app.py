@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import my_data
+from io import StringIO
+import extract_information
 
 history_table_str = "./db/history.csv"
 transaction_table_str = "./db/transaction.csv"
@@ -21,9 +23,6 @@ def create_merged_df():
 
     # convert to datetime type
     merged_df["date_id"] = pd.to_datetime(merged_df["date_id"])
-
-    # add column to get more info of the date
-    merged_df["date"] = merged_df["date_id"].dt.strftime("%M - %A %d, %B")
 
     return merged_df
 
@@ -46,6 +45,11 @@ st.title('Improving "BCP organizate"')
 st.image("image.png", caption="Sunrise by the mountains")
 
 uploaded_file = st.file_uploader("Load the html from BCP")
+if uploaded_file is not None:
+    # To read file as string:
+    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+    string_data = stringio.read()
+    extract_information.ETL_transaction_table(string_data)
 
 
 option = st.selectbox(
