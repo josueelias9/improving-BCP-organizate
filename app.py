@@ -2,36 +2,14 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import my_data
+from io import StringIO
+import extract_information
+
+history_table_str = "./db/history.csv"
+transaction_table_str = "./db/transaction.csv"
 
 
-st.title('Improving "BCP organizate"')
-import streamlit as st
-
-st.image("image.png", caption="Sunrise by the mountains")
-
-uploaded_file = st.file_uploader("Load the html from BCP")
-
-
-option = st.selectbox(
-    "Select the month to analyze:",
-    tuple(my_data.translate.keys()),
-    index=None,
-    placeholder="Select month...",
-)
-
-if option:
-    st.write("Month to be analized:", option)
-
-    # route of tables
-    history_table_str = "./db/history.csv"
-    transaction_table_str = "./db/transaction.csv"
-
-    # if doesnt exist, create empty csv file
-    ruta_sub_carpeta = Path.cwd() / "db"
-    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if archivo == ruta_sub_carpeta / "history.csv"]
-
-    if not ruta_del_mes:
-        pd.DataFrame(data={"history": [], "modify_category": [], "date_id": []}).to_csv(history_table_str, index=False)
+def create_merged_df():
 
     # create dataframe
     transaction_table_df = pd.read_csv(transaction_table_str, dtype=str)
@@ -46,17 +24,50 @@ if option:
     # convert to datetime type
     merged_df["date_id"] = pd.to_datetime(merged_df["date_id"])
 
-    # add column to get more info of the date
-    merged_df["date"] = merged_df["date_id"].dt.strftime("%M - %A %d, %B")
+    return merged_df
 
-    st.title("Table Editor")
 
-    edited_data = st.data_editor(
-        merged_df,
-        column_config={"history": {"editable": True}},  # Solo se permite editar "history"
-        use_container_width=True,
-    )
+def create_if_doesnt_exist():
+    # if doesnt exist, create empty csv file
+    ruta_sub_carpeta = Path.cwd() / "db"
+    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if archivo == ruta_sub_carpeta / "history.csv"]
+    if not ruta_del_mes:
+        pd.DataFrame(data={"history": [], "modify_category": [], "date_id": []}).to_csv(history_table_str, index=False)
 
-    if st.button("Save data"):
-        edited_data[["history", "modify_category", "date_id"]].to_csv(history_table_str, index=False)
-        st.write("Saved data")
+
+def save_df(df):
+    df.to_csv(history_table_str, index=False)
+
+
+# ============== STREAMLIT ==============
+st.set_page_config(layout="wide")
+
+
+st.title('Improving "BCP organizate"')
+
+st.image("image.png", caption="BCP")
+
+uploaded_file = st.file_uploader("Load the html from BCP")
+if uploaded_file is not None:
+    # To read file as string:
+    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+    string_data = stringio.read()
+    extract_information.ETL_transaction_table(string_data)
+
+
+create_if_doesnt_exist()
+
+merged_df = create_merged_df()
+
+st.title("Edit you story")
+st.write("Edit the story of each transaction. Order by `date_id`.")
+
+edited_data = st.data_editor(
+    merged_df,
+    column_config={"history": {"editable": True}},  # Solo se permite editar "history"
+    use_container_width=True,
+)
+
+if st.button("Save data"):
+    save_df(edited_data[["history", "modify_category", "date_id"]])
+    st.write("Saved data to database")
