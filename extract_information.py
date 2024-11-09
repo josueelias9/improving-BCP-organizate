@@ -113,3 +113,26 @@ def ETL_transaction_table(html_content):
 
     else:
         print(extracted_data["log"])
+
+
+def ETL_category_table():
+    with open("./data/categories.html", "r") as f:
+        soup = BeautifulSoup(f.read(), "html.parser")
+
+    categories = soup.find_all("ul", class_="options")
+
+    data = {
+        "category": [],
+        "description": [],
+    }
+
+    for category in categories:
+        data["category"].append(category.find("div", class_="description--one").get_text(strip=True))
+        data["description"].append(category.find("div", class_="description--two").get_text(strip=True))
+
+    dataframe = pd.DataFrame(data)
+
+    dataframe.to_csv("./db/category.csv", index=False)
+
+
+ETL_category_table()
