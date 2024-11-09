@@ -45,7 +45,7 @@ st.set_page_config(layout="wide")
 
 st.title('Improving "BCP organizate"')
 
-st.image("image.png", caption="BCP")
+st.image("BCP.png", caption="BCP")
 
 uploaded_file = st.file_uploader("Load the html from BCP")
 if uploaded_file is not None:
@@ -70,4 +70,4 @@ edited_data = st.data_editor(
 
 if st.button("Save data"):
     save_df(edited_data[["history", "modify_category", "date_id"]])
-    st.write("Saved data to database")
+    st.write("data to database")
