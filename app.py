@@ -40,6 +40,9 @@ def save_df(df):
 
 
 # ============== STREAMLIT ==============
+st.set_page_config(layout="wide")
+
+
 st.title('Improving "BCP organizate"')
 
 st.image("image.png", caption="Sunrise by the mountains")
@@ -67,7 +70,8 @@ if option:
 
     merged_df = create_merged_df()
 
-    st.title("Table Editor")
+    st.title("Edit you story")
+    st.write("Edit the story of each transaction. Order by date_id.")
 
     edited_data = st.data_editor(
         merged_df,
