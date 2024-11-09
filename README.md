@@ -9,6 +9,11 @@
 <img src="./documentation/problem.png" alt="alt text" style="max-height:400px;">
 
 # how it works
+- install venv
+- execute streamlit
+```
+streamlit run app.py 
+```
 - entrar a `organizate BCP`
 
 <img src="./documentation/how-2.png" alt="alt text" style="max-height:400px;">
@@ -25,10 +30,7 @@
 
 <img src="./documentation/how-4.png" alt="alt text" style="max-height:400px;">
 
-execute
-```
-streamlit run app.py 
-```
 
-# opinion
-If BCP gives aditional information, for example, location and time, it would be better to create the history and clasify the expenses.
+# acknowledge
+- If BCP gives aditional information, for example, location and time, it would be better to create the history and clasify the expenses.
+- periocally save the file ``history.csv`. This file contains all you local inforamcion. Is very important and need to be protected. 
