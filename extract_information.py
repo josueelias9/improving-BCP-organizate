@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from pathlib import Path
 import pandas as pd
@@ -115,6 +116,32 @@ def ETL_transaction_table(html_content):
         print(extracted_data["log"])
 
 
+def corregir_texto(texto):
+    # Diccionario de códigos de escape y sus reemplazos Unicode
+    reemplazos = {
+        r"\\'e1": "á",
+        r"\\'e9": "é",
+        r"\\'ed": "í",
+        r"\\'f3": "ó",
+        r"\\'fa": "ú",
+        r"\'c1": "Á",
+        r"\'c9": "É",
+        r"\'cd": "Í",
+        r"\'d3": "Ó",
+        r"\'da": "Ú",
+        r"\'f1": "ñ",
+        r"\'d1": "Ñ",
+        r"\'fc": "ü",
+        r"\'dc": "Ü",
+    }
+
+    # Reemplazar cada secuencia de escape en el texto
+    for codigo, caracter in reemplazos.items():
+        texto = re.sub(codigo, caracter, texto)
+
+    return texto
+
+
 def ETL_category_table():
     # fails if the file doesn't exist. Correct it
     with open("./data/categories.html", "r") as f:
@@ -123,17 +150,17 @@ def ETL_category_table():
     categories = soup.find_all("ul", class_="options")
 
     data = {
-        "category": [],
-        "description": [],
+        "category": ["Sin categoría"],
+        "description": ["not defined in the web"],
     }
 
     for category in categories:
-        data["category"].append(category.find("div", class_="description--one").get_text(strip=True))
-        data["description"].append(category.find("div", class_="description--two").get_text(strip=True))
+        data["category"].append(corregir_texto(category.find("div", class_="description--one").get_text(strip=True)))
+        data["description"].append(corregir_texto(category.find("div", class_="description--two").get_text(strip=True)))
 
     dataframe = pd.DataFrame(data)
 
     dataframe.to_csv("./db/category.csv", index=False)
 
 
-# ETL_category_table()
+ETL_category_table()
