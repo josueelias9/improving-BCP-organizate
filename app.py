@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-import my_data
 from io import StringIO
 import extract_information
 
@@ -28,15 +27,40 @@ def create_merged_df():
 
 
 def create_if_doesnt_exist():
-    # if doesnt exist, create empty csv file
-    ruta_sub_carpeta = Path.cwd() / "db"
-    ruta_del_mes = [archivo for archivo in ruta_sub_carpeta.rglob("*") if archivo == ruta_sub_carpeta / "history.csv"]
-    if not ruta_del_mes:
-        pd.DataFrame(data={"history": [], "modify_category": [], "date_id": []}).to_csv(history_table_str, index=False)
+
+    # check db directory
+    empty_data = {"history": [], "modify_category": [], "date_id": []}
+
+    # if directory doesnt exist, create the directory and file
+    if not (Path.cwd() / "db").exists():
+        (Path.cwd() / "db").mkdir()
+
+    # check history table
+    if not (Path.cwd() / "db" / "history.csv").exists():
+        pd.DataFrame(data=empty_data).to_csv(history_table_str, index=False)
+
+    # check transaction table
+    if not (Path.cwd() / "db" / "transaction.csv").exists():
+        return {
+            "log": f"""
+directory/db        EXISTS
+transaction.csv     NOT EXISTS
+history.csv         EXISTS """,
+            "type": "error",
+        }
+
+    return {
+        "log": f"""
+directory/db        EXISTS
+transaction.csv     EXISTS
+history.csv         EXISTS """,
+        "type": "success",
+    }
 
 
 def save_df(df):
     df.to_csv(history_table_str, index=False)
+    df.to_csv("/mnt/c/Users/josue/Desktop/personal_information.csv", index=False)
 
 
 # ============== STREAMLIT ==============
@@ -55,19 +79,24 @@ if uploaded_file is not None:
     extract_information.ETL_transaction_table(string_data)
 
 
-create_if_doesnt_exist()
+if create_if_doesnt_exist()["type"] == "success":
 
-merged_df = create_merged_df()
+    merged_df = create_merged_df()
 
-st.title("Edit you story")
-st.write("Edit the story of each transaction. Order by `date_id`.")
+    st.title("Edit you story")
+    st.write("Edit the story of each transaction. Order by `date_id`.")
 
-edited_data = st.data_editor(
-    merged_df,
-    column_config={"history": {"editable": True}},  # Solo se permite editar "history"
-    use_container_width=True,
-)
+    edited_data = st.data_editor(
+        merged_df,
+        column_config={"history": {"editable": True}},  # Solo se permite editar "history"
+        use_container_width=True,
+    )
+    # count how many empty strings are ing the "history" column
+    st.write(f'missing stories: {(edited_data["history"] == "").sum()}')
 
-if st.button("Save data"):
-    save_df(edited_data[["history", "modify_category", "date_id"]])
-    st.write("data to database")
+    if st.button("Save data"):
+        save_df(edited_data[["history", "modify_category", "date_id"]])
+        st.write("data to database")
+
+else:
+    st.header("Upload the html from BCP")

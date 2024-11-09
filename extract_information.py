@@ -116,6 +116,7 @@ def ETL_transaction_table(html_content):
 
 
 def ETL_category_table():
+    # fails if the file doesn't exist. Correct it
     with open("./data/categories.html", "r") as f:
         soup = BeautifulSoup(f.read(), "html.parser")
 
@@ -135,4 +136,4 @@ def ETL_category_table():
     dataframe.to_csv("./db/category.csv", index=False)
 
 
-ETL_category_table()
+# ETL_category_table()
