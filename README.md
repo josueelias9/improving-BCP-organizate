@@ -9,7 +9,7 @@
 <img src="./documentation/problem.png" alt="alt text" style="max-height:400px;">
 
 # how it works
-- install venv
+- `F1` and select `Python: Create Environment...`
 - execute streamlit
 ```
 streamlit run app.py 
