@@ -27,7 +27,7 @@ if mediator.create_if_doesnt_exist()["type"] == "success":
     edited_data = st.data_editor(
         merged_df,
         column_config={
-            "history": {"editable": True},
+            "story": {"editable": True},
             "new_category": st.column_config.SelectboxColumn(
                 help="The category of the app",
                 width="medium",
@@ -37,8 +37,8 @@ if mediator.create_if_doesnt_exist()["type"] == "success":
         },
         use_container_width=True,
     )
-    # count how many empty strings are ing the "history" column
-    st.write(f'missing stories: {mediator.get_count(edited_data["history"])}')
+    # count how many empty strings are ing the "story" column
+    st.write(f'missing stories: {mediator.get_count(edited_data["story"])}')
 
     if st.button("Save data"):
         mediator.save_df(edited_data)
