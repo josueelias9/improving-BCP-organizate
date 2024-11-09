@@ -45,7 +45,7 @@ st.set_page_config(layout="wide")
 
 st.title('Improving "BCP organizate"')
 
-st.image("image.png", caption="Sunrise by the mountains")
+st.image("image.png", caption="BCP")
 
 uploaded_file = st.file_uploader("Load the html from BCP")
 if uploaded_file is not None:
@@ -55,30 +55,19 @@ if uploaded_file is not None:
     extract_information.ETL_transaction_table(string_data)
 
 
-option = st.selectbox(
-    "Select the month to analyze:",
-    tuple(my_data.translate.keys()),
-    index=None,
-    placeholder="Select month...",
+create_if_doesnt_exist()
+
+merged_df = create_merged_df()
+
+st.title("Edit you story")
+st.write("Edit the story of each transaction. Order by `date_id`.")
+
+edited_data = st.data_editor(
+    merged_df,
+    column_config={"history": {"editable": True}},  # Solo se permite editar "history"
+    use_container_width=True,
 )
 
-
-if option:
-    st.write("Month to be analized:", option)
-
-    create_if_doesnt_exist()
-
-    merged_df = create_merged_df()
-
-    st.title("Edit you story")
-    st.write("Edit the story of each transaction. Order by date_id.")
-
-    edited_data = st.data_editor(
-        merged_df,
-        column_config={"history": {"editable": True}},  # Solo se permite editar "history"
-        use_container_width=True,
-    )
-
-    if st.button("Save data"):
-        save_df(edited_data[["history", "modify_category", "date_id"]])
-        st.write("Saved data to database")
+if st.button("Save data"):
+    save_df(edited_data[["history", "modify_category", "date_id"]])
+    st.write("Saved data to database")
