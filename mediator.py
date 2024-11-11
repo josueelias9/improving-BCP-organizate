@@ -18,6 +18,7 @@ def create_merged_df():
     merged_df = transaction_table_df.merge(story_table_df, how="left", left_on="date_id", right_on="date_id")
 
     # fill "story" and "requires_update" columns / why? / this should be made by the ETL????
+    # this is required because in this process new data is being added to the story table
     merged_df = merged_df.fillna(
         {i: (False if i == "requires_update" else (merged_df["category"] if i == "new_category" else "")) for i in story_columns}
     )
@@ -37,7 +38,7 @@ def create_if_doesnt_exist():
     if not (Path.cwd() / "db").exists():
         (Path.cwd() / "db").mkdir()
 
-    # check story table
+    # if story table doesnt exist, create it
     if not (Path.cwd() / "db" / "story.csv").exists():
         pd.DataFrame(data=empty_data).to_csv(story_table_str, index=False)
 
@@ -75,5 +76,5 @@ def get_categories():
     return pd.read_csv("./db/category.csv")["category"].to_list()
 
 
-def call_ETL(string_data):
-    extract_information.ETL_transaction_table(string_data)
+def ETL_transaction(string_data):
+    extract_information.ETL_transaction(string_data)

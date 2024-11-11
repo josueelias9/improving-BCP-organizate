@@ -14,7 +14,7 @@ if uploaded_file is not None:
     # To read file as string:
     stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
     string_data = stringio.read()
-    mediator.call_ETL(string_data)
+    mediator.ETL_transaction(string_data)
 
 
 if mediator.create_if_doesnt_exist()["type"] == "success":

@@ -6,11 +6,11 @@ import my_data
 
 
 # Verifica si se pasó un argumento
-def extract(html_content):
+def extract_transaction(html_content):
     return {"data": html_content, "type": "success"}
 
 
-def transform(html_content):
+def transform_transaction(html_content):
     try:
         soup = BeautifulSoup(html_content, "html.parser")
         dias = soup.find_all("div", class_="list-container__wrapper")
@@ -72,7 +72,7 @@ def transform(html_content):
         }
 
 
-def load(dataframe):
+def load_transaction(dataframe):
     file_path = "./db/transaction.csv"
 
     # check if the file exists
@@ -94,14 +94,14 @@ def load(dataframe):
     }
 
 
-def ETL_transaction_table(html_content):
-    extracted_data = extract(html_content)
+def ETL_transaction(html_content):
+    extracted_data = extract_transaction(html_content)
 
     if extracted_data["type"] == "success":
-        transformed_data = transform(extracted_data["data"])
+        transformed_data = transform_transaction(extracted_data["data"])
 
         if transformed_data["type"] == "success":
-            loaded_data = load(transformed_data["data"])
+            loaded_data = load_transaction(transformed_data["data"])
 
             if loaded_data["type"] == "success":
                 print(loaded_data["log"])
@@ -142,7 +142,7 @@ def corregir_texto(texto):
     return texto
 
 
-def ETL_category_table():
+def ETL_category():
     # fails if the file doesn't exist. Correct it
     with open("./data/categories.html", "r") as f:
         soup = BeautifulSoup(f.read(), "html.parser")
@@ -163,4 +163,4 @@ def ETL_category_table():
     dataframe.to_csv("./db/category.csv", index=False)
 
 
-ETL_category_table()
+ETL_category()
