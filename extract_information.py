@@ -49,15 +49,24 @@ def transform_transaction(html_content):
                 data["description"].append(description)
                 data["category"].append(category)
                 data["payment_method"].append(payment_method)
-                data["amount"].append(amount_positive.get_text(strip=True) if amount_positive else amount_negative.get_text(strip=True))
+                data["amount"].append(
+                    float(
+                        (amount_positive.get_text(strip=True) if amount_positive else amount_negative.get_text(strip=True))
+                        .split(" ")[1]
+                        .replace(",", "")
+                    )
+                )
                 data["type"].append("income" if amount_positive else "expense")
 
         dataframe = pd.DataFrame(data)
 
-        #
+        # need to convert to datetime...
         dataframe["date_id"] = pd.to_datetime(dataframe["date_id"], format="%d %B %Y %M", errors="coerce")
 
-        # add column to get more info of the date
+        # ... to apply these transformations
+        dataframe["day"] = dataframe["date_id"].dt.strftime("%d").astype("int64")
+        dataframe["month"] = dataframe["date_id"].dt.strftime("%m").astype("int64")
+        dataframe["year"] = dataframe["date_id"].dt.strftime("%Y").astype("int64")
         dataframe["date"] = dataframe["date_id"].dt.strftime("%M - %A %d, %B")
 
         return {
