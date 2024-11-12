@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import extract_information
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 story_table_str = "./db/story.csv"
 transaction_table_str = "./db/transaction.csv"
@@ -11,8 +12,8 @@ story_columns = ["story", "new_category", "requires_update", "date_id"]
 def create_merged_df():
 
     # create dataframe
-    transaction_table_df = pd.read_csv(transaction_table_str, dtype=str)
-    story_table_df = pd.read_csv(story_table_str, dtype={"requires_update": "bool"})
+    transaction_table_df = pd.read_csv(transaction_table_str, dtype={"amount": float})
+    story_table_df = pd.read_csv(story_table_str, dtype={"requires_update": bool})
 
     # left join
     merged_df = transaction_table_df.merge(story_table_df, how="left", left_on="date_id", right_on="date_id")
@@ -61,20 +62,65 @@ story.csv         EXISTS """,
     }
 
 
-def get_count(edited_data):
-    return (edited_data == "").sum()
-
-
-def save_df(df):
-
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    df[story_columns].to_csv(story_table_str, index=False)
-    df[story_columns].to_csv(f"/mnt/c/Users/josue/Desktop/reports/personal information {now}.csv", index=False)
-
-
 def get_categories():
     return pd.read_csv("./db/category.csv")["category"].to_list()
 
 
 def ETL_transaction(string_data):
     extract_information.ETL_transaction(string_data)
+
+
+def make_graphs(edited_df):
+    fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+
+    # only expenses, only october, no TRAN.CTAS.PROP.BM
+    filtered_df = edited_df[(edited_df["type"] == "expense") & (edited_df["month"] == 9) & (edited_df["description"] != "TRAN.CTAS.PROP.BM")]
+    alfa = filtered_df[["new_category", "amount"]].groupby(["new_category"]).sum().reset_index()
+    axs[0, 0].set_title("september")
+    axs[0, 0].bar(alfa["new_category"], alfa["amount"])
+    axs[0, 0].set_xticklabels(alfa["new_category"], rotation=90)  # Rotar etiquetas del eje x en el primer subplot
+    axs[0, 0].grid(True)
+
+    # only expenses, only november, no TRAN.CTAS.PROP.BM
+    filtered_df = edited_df[(edited_df["type"] == "expense") & (edited_df["month"] == 10) & (edited_df["description"] != "TRAN.CTAS.PROP.BM")]
+    alfa = filtered_df[["new_category", "amount"]].groupby(["new_category"]).sum().reset_index()
+    axs[0, 1].set_title("october")
+    axs[0, 1].bar(alfa["new_category"], alfa["amount"])
+    axs[0, 1].set_xticklabels(alfa["new_category"], rotation=90)  # Rotar etiquetas del eje x en el primer subplot
+    axs[0, 1].grid(True)
+
+    # only expenses, only november, no TRAN.CTAS.PROP.BM
+    filtered_df = edited_df[(edited_df["type"] == "expense") & (edited_df["month"] == 11) & (edited_df["description"] != "TRAN.CTAS.PROP.BM")]
+    alfa = filtered_df[["new_category", "amount"]].groupby(["new_category"]).sum().reset_index()
+    axs[1, 0].set_title("november")
+    axs[1, 0].bar(alfa["new_category"], alfa["amount"])
+    axs[1, 0].set_xticklabels(alfa["new_category"], rotation=90)  # Rotar etiquetas del eje x en el primer subplot
+    axs[1, 0].grid(True)
+
+    # expenses by month
+    filtered_df = edited_df[(edited_df["type"] == "expense") & (edited_df["description"] != "TRAN.CTAS.PROP.BM")]
+    alfa = filtered_df[["amount", "month"]].groupby(["month"]).sum().reset_index()
+    axs[1, 1].set_title("total expenses by month")
+    axs[1, 1].bar(alfa["month"], alfa["amount"])
+    axs[1, 1].grid(True)
+
+    plt.subplots_adjust(hspace=1)
+    return fig
+
+
+# ======================= over the edited_df =======================
+
+
+def get_count(edited_df):
+    return (edited_df["story"] == "").sum()
+
+
+def save_df(edited_df):
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    edited_df[story_columns].to_csv(story_table_str, index=False)
+    edited_df[story_columns].to_csv(f"/mnt/c/Users/josue/Desktop/reports/personal information {now}.csv", index=False)
+
+
+def update_requires_update_column(edited_df):
+    edited_df["requires_update"] = edited_df.apply(lambda x: not (x.category == x.new_category), axis=1)
