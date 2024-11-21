@@ -26,6 +26,17 @@ if mediator.create_if_doesnt_exist()["type"] == "success":
 
     edited_df = st.data_editor(
         mediator.create_merged_df(),
+        column_order=(
+            "date",
+            "description",
+            "type",
+            "amount",
+            "date_id",
+            "story",
+            "requires_update",
+            "new_category",
+        ),
+        hide_index=True,
         column_config={
             "story": st.column_config.TextColumn(
                 help="Streamlit **widget** commands 🎈",
@@ -54,10 +65,45 @@ if mediator.create_if_doesnt_exist()["type"] == "success":
         mediator.save_df(edited_df)
         st.write("data to database")
 
+    st.title("Overview")
+
     # graphs!
     fig = mediator.make_graphs(edited_df)
     st.pyplot(fig, use_container_width=False)
 
+    st.title("Filter by month, type and category")
+    # dataframe
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        option1 = st.selectbox(
+            "Select month",
+            tuple(mediator.get_months()) + ("all",),
+        )
+
+    with col2:
+        option2 = st.selectbox(
+            "Select type",
+            ("expense", "income") + ("all",),
+        )
+
+    with col3:
+        option3 = st.selectbox("select category", tuple(mediator.get_categories()) + ("all",))
+
+    condition = True
+
+    if option1 != "all":
+        condition &= edited_df["month"] == option1
+    if option2 != "all":
+        condition &= edited_df["type"] == option2
+    if option3 != "all":
+        condition &= edited_df["new_category"] == option3
+
+    condition &= edited_df["description"] != "TRAN.CTAS.PROP.BM"
+
+    st.dataframe(
+        edited_df[condition],
+        use_container_width=True,
+    )
 
 else:
     st.header("Upload the html from BCP")
