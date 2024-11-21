@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from pathlib import Path
 import pandas as pd
@@ -5,11 +6,11 @@ import my_data
 
 
 # Verifica si se pasó un argumento
-def extract(html_content):
+def extract_transaction(html_content):
     return {"data": html_content, "type": "success"}
 
 
-def transform(html_content):
+def transform_transaction(html_content):
     try:
         soup = BeautifulSoup(html_content, "html.parser")
         dias = soup.find_all("div", class_="list-container__wrapper")
@@ -48,15 +49,24 @@ def transform(html_content):
                 data["description"].append(description)
                 data["category"].append(category)
                 data["payment_method"].append(payment_method)
-                data["amount"].append(amount_positive.get_text(strip=True) if amount_positive else amount_negative.get_text(strip=True))
+                data["amount"].append(
+                    float(
+                        (amount_positive.get_text(strip=True) if amount_positive else amount_negative.get_text(strip=True))
+                        .split(" ")[1]
+                        .replace(",", "")
+                    )
+                )
                 data["type"].append("income" if amount_positive else "expense")
 
         dataframe = pd.DataFrame(data)
 
-        #
+        # need to convert to datetime...
         dataframe["date_id"] = pd.to_datetime(dataframe["date_id"], format="%d %B %Y %M", errors="coerce")
 
-        # add column to get more info of the date
+        # ... to apply these transformations
+        dataframe["day"] = dataframe["date_id"].dt.strftime("%d").astype("int64")
+        dataframe["month"] = dataframe["date_id"].dt.strftime("%m").astype("int64")
+        dataframe["year"] = dataframe["date_id"].dt.strftime("%Y").astype("int64")
         dataframe["date"] = dataframe["date_id"].dt.strftime("%M - %A %d, %B")
 
         return {
@@ -71,7 +81,7 @@ def transform(html_content):
         }
 
 
-def load(dataframe):
+def load_transaction(dataframe):
     file_path = "./db/transaction.csv"
 
     # check if the file exists
@@ -93,14 +103,14 @@ def load(dataframe):
     }
 
 
-def ETL_transaction_table(html_content):
-    extracted_data = extract(html_content)
+def ETL_transaction(html_content):
+    extracted_data = extract_transaction(html_content)
 
     if extracted_data["type"] == "success":
-        transformed_data = transform(extracted_data["data"])
+        transformed_data = transform_transaction(extracted_data["data"])
 
         if transformed_data["type"] == "success":
-            loaded_data = load(transformed_data["data"])
+            loaded_data = load_transaction(transformed_data["data"])
 
             if loaded_data["type"] == "success":
                 print(loaded_data["log"])
@@ -115,7 +125,33 @@ def ETL_transaction_table(html_content):
         print(extracted_data["log"])
 
 
-def ETL_category_table():
+def corregir_texto(texto):
+    # Diccionario de códigos de escape y sus reemplazos Unicode
+    reemplazos = {
+        r"\\'e1": "á",
+        r"\\'e9": "é",
+        r"\\'ed": "í",
+        r"\\'f3": "ó",
+        r"\\'fa": "ú",
+        r"\'c1": "Á",
+        r"\'c9": "É",
+        r"\'cd": "Í",
+        r"\'d3": "Ó",
+        r"\'da": "Ú",
+        r"\'f1": "ñ",
+        r"\'d1": "Ñ",
+        r"\'fc": "ü",
+        r"\'dc": "Ü",
+    }
+
+    # Reemplazar cada secuencia de escape en el texto
+    for codigo, caracter in reemplazos.items():
+        texto = re.sub(codigo, caracter, texto)
+
+    return texto
+
+
+def ETL_category():
     # fails if the file doesn't exist. Correct it
     with open("./data/categories.html", "r") as f:
         soup = BeautifulSoup(f.read(), "html.parser")
@@ -123,17 +159,17 @@ def ETL_category_table():
     categories = soup.find_all("ul", class_="options")
 
     data = {
-        "category": [],
-        "description": [],
+        "category": ["Sin categoría"],
+        "description": ["not defined in the web"],
     }
 
     for category in categories:
-        data["category"].append(category.find("div", class_="description--one").get_text(strip=True))
-        data["description"].append(category.find("div", class_="description--two").get_text(strip=True))
+        data["category"].append(corregir_texto(category.find("div", class_="description--one").get_text(strip=True)))
+        data["description"].append(corregir_texto(category.find("div", class_="description--two").get_text(strip=True)))
 
     dataframe = pd.DataFrame(data)
 
     dataframe.to_csv("./db/category.csv", index=False)
 
 
-# ETL_category_table()
+ETL_category()
