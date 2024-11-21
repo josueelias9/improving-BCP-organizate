@@ -32,5 +32,5 @@ streamlit run app.py
 
 
 # acknowledge
-- If BCP gives aditional information, for example, location and time, it would be better to create the history and clasify the expenses.
-- periocally save the file ``history.csv`. This file contains all you local inforamcion. Is very important and need to be protected. 
+- If BCP gives aditional information, for example, location and time, it would be better to create the story and clasify the expenses.
+- periocally save the file ``story.csv`. This file contains all you local inforamcion. Is very important and need to be protected. 
