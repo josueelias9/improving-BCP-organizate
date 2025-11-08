@@ -1,0 +1,49 @@
+{
+    "name": "BCP Organizate Development",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.flake8",
+                "ms-python.pylint",
+                "ms-toolsai.jupyter",
+                "charliermarsh.ruff",
+                "ms-vscode.vscode-json",
+                "stateful.runme",
+                "bierner.markdown-mermaid"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.formatting.provider": "black",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.testing.pytestEnabled": true,
+                "workbench.colorTheme": "Monokai",
+                "files.associations": {
+                    "*.py": "python"
+                }
+            }
+        }
+    },
+    "forwardPorts": [8501],
+    "portsAttributes": {
+        "8501": {
+            "label": "Streamlit App",
+            "onAutoForward": "notify"
+        }
+    },
+    "postCreateCommand": "pip install -r requirements.txt",
+    "remoteUser": "root",
+    "mounts": [
+        "source=${localWorkspaceFolder}/data,target=/app/data,type=bind"
+    ]
+}
