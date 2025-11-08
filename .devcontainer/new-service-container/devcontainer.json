@@ -1,7 +1,18 @@
 {
-  "name": "Python Container",
+  "name": "New Service Container",
   "dockerComposeFile": ["../../docker-compose.yml"],
-  "service": "python-api",
+  "service": "new-service",
   "shutdownAction": "none",
-  "workspaceFolder": "/workspace/python-src"
+  "workspaceFolder": "/workspace/new-service",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "tomoki1207.pdf",
+        "ms-python.python"
+      ],
+      "settings": {
+        "workbench.colorTheme": "Monokai"
+      }
+    }
+  }
 }
