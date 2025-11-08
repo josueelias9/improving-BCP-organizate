@@ -43,7 +43,7 @@ class ProcessPDFByNameUseCase:
         
         # Guardar CSV con transacciones (siempre crear el archivo, aunque esté vacío)
         with open(csv_output, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['fecha_proceso', 'fecha_consumo', 'descripcion', 'tipo_operacion', 'soles', 'dolares']
+            fieldnames = ['id', 'fecha_proceso', 'fecha_consumo', 'descripcion', 'tipo_operacion', 'soles', 'dolares']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
             # Escribir header
@@ -51,8 +51,10 @@ class ProcessPDFByNameUseCase:
             
             # Escribir transacciones (si las hay)
             if result.transactions:
-                for transaction in result.transactions:
+                for i, transaction in enumerate(result.transactions, 1):
+                    transaction_id = f"{base_name}_{i}"
                     writer.writerow({
+                        'id': transaction_id,
                         'fecha_proceso': transaction.fecha_proceso,
                         'fecha_consumo': transaction.fecha_consumo,
                         'descripcion': transaction.descripcion,
@@ -80,6 +82,7 @@ class ProcessPDFByNameUseCase:
             },
             "transactions": [
                 {
+                    "id": f"{base_name}_{i}",
                     "fecha_proceso": t.fecha_proceso,
                     "fecha_consumo": t.fecha_consumo,
                     "descripcion": t.descripcion,
@@ -87,6 +90,6 @@ class ProcessPDFByNameUseCase:
                     "soles": t.soles,
                     "dolares": t.dolares
                 }
-                for t in result.transactions
+                for i, t in enumerate(result.transactions, 1)
             ]
         }
