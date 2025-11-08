@@ -8,11 +8,16 @@
     "vscode": {
       "extensions": [
         "tomoki1207.pdf",
-        "ms-python.python"
+        "ms-python.python",
+        "humao.rest-client",
+        "mechatroner.rainbow-csv"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"
       }
     }
+  },
+  "features": {
+    "ghcr.io/devcontainers-extra/features/curl-apt-get:1": {}
   }
 }
