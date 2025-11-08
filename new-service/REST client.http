@@ -1,0 +1,113 @@
+### BCP PDF Extractor - REST Client Tests
+### Variables
+@baseUrl = http://127.0.0.1:8001
+
+### 1. Health Check - Get API Info
+GET {{baseUrl}}/
+Accept: application/json
+
+###
+
+### 2. Process PDF by Name - EECC102025_06878124.PDF (Downloads CSV directly)
+POST {{baseUrl}}/process-pdf
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_06878124.PDF",
+    "type": "credit"
+}
+
+###
+
+### 3. Process PDF by Name - EECC102025_06878124.PDF (Returns JSON info)
+POST {{baseUrl}}/process-pdf/info
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_06878124.PDF"
+}
+
+###
+
+### 4. Process PDF by Name - EECC102025_09745280.PDF (Downloads CSV directly)
+POST {{baseUrl}}/process-pdf
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_09745280.PDF",
+    "type": "debit"
+}
+
+###
+
+### 5. Process PDF by Name - EECC102025_09745280.PDF (Returns JSON info)  
+POST {{baseUrl}}/process-pdf/info
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_09745280.PDF"
+}
+
+###
+
+### 6. List Output Files
+GET {{baseUrl}}/output
+Accept: application/json
+
+###
+
+### 7. Download CSV Output - EECC102025_06878124
+GET {{baseUrl}}/output/EECC102025_06878124_transactions.csv
+
+###
+
+### 8. Download CSV Output - EECC102025_09745280
+GET {{baseUrl}}/output/EECC102025_09745280_transactions.csv
+
+###
+
+### 9. Test Credit Card PDF (Should return 501 Not Implemented)
+POST {{baseUrl}}/process-pdf
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_06878124.PDF",
+    "type": "credit"
+}
+
+###
+
+### 10. Test Invalid Type (Should return 400 Bad Request)
+POST {{baseUrl}}/process-pdf
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_06878124.PDF",
+    "type": "invalid_type"
+}
+
+###
+
+### 9. Extract PDF (Upload) - For comparison
+# POST {{baseUrl}}/extract-pdf
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+# 
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW
+# Content-Disposition: form-data; name="file"; filename="EECC102025_06878124.PDF"
+# Content-Type: application/pdf
+# 
+# < ./files/EECC102025_06878124.PDF
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+### 10. Extract PDF to Excel (Upload) - For comparison  
+# POST {{baseUrl}}/extract-pdf/excel
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+# 
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW
+# Content-Disposition: form-data; name="file"; filename="EECC102025_06878124.PDF"
+# Content-Type: application/pdf
+# 
+# < ./files/EECC102025_06878124.PDF
+# ------WebKitFormBoundary7MA4YWxkTrZu0gW--

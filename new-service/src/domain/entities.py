@@ -30,6 +30,7 @@ class ExtractionResult:
     total_transactions: int
     success: bool
     error_message: Optional[str] = None
+    extracted_text: Optional[str] = None
 
     @property
     def has_transactions(self) -> bool:
