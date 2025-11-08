@@ -320,7 +320,7 @@ class PDFExtractor:
         return date_str
 
 def main():
-    pdf_path = "EECC102025_09745280.PDF"
+    pdf_path = "files/EECC102025_09745280.PDF"
     logger.info(f"Iniciando extracción de: {pdf_path}")
     
     # Obtener contraseña de variable de entorno

@@ -37,6 +37,9 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
             # Extraer texto completo
             full_text = self._extract_text_with_pymupdf(pdf_file, filename, password)
             
+            # Extraer código de cuenta
+            account_code = self._extract_account_code(full_text)
+            
             # Parsear transacciones del texto
             transactions = self._parse_transactions_from_text(full_text)
             
@@ -45,7 +48,8 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
                 transactions=transactions,
                 total_transactions=len(transactions),
                 success=True,
-                extracted_text=full_text
+                extracted_text=full_text,
+                account_code=account_code
             )
             
         except Exception as e:
@@ -56,7 +60,8 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
                 total_transactions=0,
                 success=False,
                 error_message=str(e),
-                extracted_text=None
+                extracted_text=None,
+                account_code=None
             )
     
     def _extract_text_with_pymupdf(self, pdf_file: BinaryIO, filename: str, password: str = None) -> str:
@@ -214,3 +219,77 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
             logger.debug(f"Error parseando fecha {date_str}: {str(e)}")
         
         return date_str
+    
+    def _extract_account_code(self, text: str) -> str:
+        """Extrae el código de cuenta del texto del PDF"""
+        try:
+            lines = text.split('\n')
+            
+            # Buscar líneas que contengan "CODIGO DE CUENTA" o variaciones
+            patterns = [
+                r'CODIGO\s*DE\s*CUENTA\s*:?\s*(\d+)',
+                r'CÓDIGO\s*DE\s*CUENTA\s*:?\s*(\d+)',
+                r'COD\.\s*CUENTA\s*:?\s*(\d+)',
+                r'CUENTA\s*N[°º]?\s*:?\s*(\d+)',
+                r'N[°º]\s*CUENTA\s*:?\s*(\d+)'
+            ]
+            
+            for line in lines:
+                line = line.strip().upper()
+                if not line:
+                    continue
+                
+                # Probar cada patrón
+                for pattern in patterns:
+                    match = re.search(pattern, line)
+                    if match:
+                        account_code = match.group(1)
+                        logger.info(f"Código de cuenta encontrado: {account_code}")
+                        return account_code
+            
+            # Si no se encuentra con los patrones, buscar números de tarjeta (para tarjetas de crédito)
+            card_patterns = [
+                r'(\d{4})-?(\d{2}[X0-9]{2})-?([X0-9]{4})-?(\d{4})',  # 4280-82XX-XXXX-2148
+                r'(\d{6}[X0-9]{6}\d{4})',  # 428082XXXXXX2148
+                r'NUMERO\s*DE\s*TARJETA\s*:?\s*(\d{4}[X0-9\-]{8,})',
+                r'TARJETA\s*N[°º]?\s*:?\s*(\d{4}[X0-9\-]{8,})'
+            ]
+            
+            for line in lines:
+                line_upper = line.strip().upper()
+                if not line_upper:
+                    continue
+                
+                # Buscar patrones de número de tarjeta
+                for pattern in card_patterns:
+                    match = re.search(pattern, line_upper)
+                    if match:
+                        if len(match.groups()) > 1:
+                            # Formato con grupos separados (ej: 4280-82XX-XXXX-2148)
+                            card_number = ''.join(match.groups()).replace('X', '0')
+                        else:
+                            # Formato en un solo grupo
+                            card_number = match.group(1).replace('X', '0').replace('-', '')
+                        
+                        # Solo tomar números de tarjeta válidos (16 dígitos aproximadamente)
+                        if len(card_number) >= 12:
+                            logger.info(f"Número de tarjeta encontrado: {card_number}")
+                            return card_number
+            
+            # Si no se encuentra con los patrones, buscar números largos cerca de "CUENTA" o "TARJETA"
+            for line in lines:
+                line = line.strip().upper()
+                if 'CUENTA' in line or 'TARJETA' in line:
+                    # Buscar secuencias de dígitos de al menos 8 caracteres
+                    numbers = re.findall(r'\d{8,}', line)
+                    if numbers:
+                        account_code = numbers[0]
+                        logger.info(f"Código de cuenta encontrado (método alternativo): {account_code}")
+                        return account_code
+            
+            logger.warning("No se pudo encontrar el código de cuenta o número de tarjeta en el PDF")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error extrayendo código de cuenta: {str(e)}")
+            return None

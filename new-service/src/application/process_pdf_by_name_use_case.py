@@ -11,12 +11,13 @@ class ProcessPDFByNameUseCase:
     def __init__(self, pdf_extractor: PDFExtractorRepository):
         self._pdf_extractor = pdf_extractor
     
-    def execute(self, pdf_filename: str, output_dir: str = "output") -> Dict[str, Any]:
+    def execute(self, pdf_filename: str, pdf_type: str = "debit", output_dir: str = "output") -> Dict[str, Any]:
         """
         Procesa un PDF específico y guarda los resultados en la carpeta output
         
         Args:
             pdf_filename: Nombre del archivo PDF a procesar
+            pdf_type: Tipo de PDF ("debit" o "credit")
             output_dir: Directorio donde guardar los archivos de salida
             
         Returns:
@@ -39,7 +40,17 @@ class ProcessPDFByNameUseCase:
         
         # Generar nombres de archivo de salida
         base_name = os.path.splitext(os.path.basename(pdf_filename))[0]
-        csv_output = os.path.join(output_dir, f"{base_name}_transactions.csv")
+        
+        # Si es tipo debit y hay código de cuenta, crear nombre simplificado
+        if pdf_type.lower() == "debit" and result.account_code:
+            # Extraer solo la parte EECC del nombre original (antes del primer _)
+            prefix_part = base_name.split('_')[0]  # EECC102025
+            csv_filename = f"{prefix_part}_{result.account_code}"
+        else:
+            # Formato original para otros casos
+            csv_filename = f"{base_name}_transactions"
+        
+        csv_output = os.path.join(output_dir, f"{csv_filename}.csv")
         
         # Guardar CSV con transacciones (siempre crear el archivo, aunque esté vacío)
         with open(csv_output, 'w', newline='', encoding='utf-8') as csvfile:
@@ -52,7 +63,8 @@ class ProcessPDFByNameUseCase:
             # Escribir transacciones (si las hay)
             if result.transactions:
                 for i, transaction in enumerate(result.transactions, 1):
-                    transaction_id = f"{base_name}_{i}"
+                    # Usar el nombre del CSV como base para el ID
+                    transaction_id = f"{csv_filename}_{i}"
                     writer.writerow({
                         'id': transaction_id,
                         'fecha_proceso': transaction.fecha_proceso,
@@ -73,6 +85,7 @@ class ProcessPDFByNameUseCase:
             "success": True,
             "filename": pdf_filename,
             "csv_file": csv_output,  # Siempre devolver el path del CSV
+            "account_code": result.account_code,  # Agregar código de cuenta
             "statistics": {
                 "total_transactions": result.total_transactions,
                 "total_soles": total_soles,
@@ -82,7 +95,7 @@ class ProcessPDFByNameUseCase:
             },
             "transactions": [
                 {
-                    "id": f"{base_name}_{i}",
+                    "id": f"{csv_filename}_{i}",
                     "fecha_proceso": t.fecha_proceso,
                     "fecha_consumo": t.fecha_consumo,
                     "descripcion": t.descripcion,

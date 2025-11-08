@@ -40,7 +40,7 @@ class PDFProcessorController:
                 )
             
             # Procesar PDF
-            result = self._process_pdf_use_case.execute(pdf_filename)
+            result = self._process_pdf_use_case.execute(pdf_filename, pdf_type)
             
             if not result["success"]:
                 raise HTTPException(
