@@ -5,7 +5,7 @@ import logging
 from sqlmodel import Session, select
 
 from src.infrastructure.database.connection import engine
-from src.infrastructure.database.models import User, Category, Document, Transaction
+from models import User, Category, Document, Transaction
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

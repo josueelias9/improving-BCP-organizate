@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 from src.infrastructure.database.deps import get_db_session
 from src.infrastructure.database.db import init_db, create_db_and_tables
-from src.infrastructure.database.models import User, Category, Document, Transaction
+from models import User, Category, Document, Transaction
 import logging
 
 logger = logging.getLogger(__name__)

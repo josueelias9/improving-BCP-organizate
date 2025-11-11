@@ -11,7 +11,7 @@ from src.infrastructure.database.crud import (
     get_user_by_email,
     create_user
 )
-from src.infrastructure.database.models import (
+from models import (
     DocumentCreate, DocumentType,
     TransactionCreate, Currency,
     UserCreate, CustomerType

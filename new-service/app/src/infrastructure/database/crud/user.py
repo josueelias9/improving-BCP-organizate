@@ -4,7 +4,7 @@ CRUD operations for User model
 import uuid
 from typing import Optional
 from sqlmodel import Session, select
-from src.infrastructure.database.models import User, UserCreate, UserUpdate
+from models import User, UserCreate, UserUpdate
 
 
 def create_user(session: Session, user_create: UserCreate) -> User:

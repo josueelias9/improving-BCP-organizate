@@ -2,8 +2,8 @@
 Database initialization and population
 """
 from sqlmodel import Session, SQLModel, select
-from src.infrastructure.database.connection import engine
-from src.infrastructure.database.models import (
+from .connection import engine
+from models import (
     User, Category, Document, Transaction, CustomerType
 )
 import logging

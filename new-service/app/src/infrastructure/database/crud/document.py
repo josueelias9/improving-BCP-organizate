@@ -4,7 +4,7 @@ CRUD operations for Document model
 import uuid
 from typing import Optional, List
 from sqlmodel import Session, select
-from src.infrastructure.database.models import Document, DocumentCreate, DocumentUpdate
+from models import Document, DocumentCreate, DocumentUpdate
 
 
 def create_document(session: Session, document_create: DocumentCreate) -> Document:

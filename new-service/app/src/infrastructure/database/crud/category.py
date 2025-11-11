@@ -4,7 +4,7 @@ CRUD operations for Category model
 import uuid
 from typing import Optional, List
 from sqlmodel import Session, select
-from src.infrastructure.database.models import Category, CategoryCreate, CategoryUpdate
+from models import Category, CategoryCreate, CategoryUpdate
 
 
 def create_category(session: Session, category_create: CategoryCreate) -> Category:

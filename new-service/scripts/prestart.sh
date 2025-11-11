@@ -7,21 +7,11 @@ echo "🚀 Starting BCP PDF Extractor initialization..."
 
 # Let the DB start
 echo "⏳ Waiting for database to be ready..."
-python app/backend_pre_start.py
+cd /workspace/new-service && python app/backend_pre_start.py
 
-# Create database tables
-echo "📋 Creating database tables..."
-python -c "
-import sys
-sys.path.insert(0, 'app')
-from src.infrastructure.database.db import create_db_and_tables
-create_db_and_tables()
-print('✅ Database tables created successfully')
-"
-
-# Create initial data in DB
-echo "📊 Creating initial data in database..."
-python app/init_data.py
+# Create database tables and initial data
+echo "📋 Creating database tables and initial data..."
+cd /workspace/new-service && python app/init_data.py
 
 echo "✅ BCP PDF Extractor initialization completed successfully!"
 echo ""

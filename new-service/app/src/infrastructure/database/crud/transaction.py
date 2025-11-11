@@ -4,7 +4,7 @@ CRUD operations for Transaction model
 import uuid
 from typing import Optional, List
 from sqlmodel import Session, select
-from src.infrastructure.database.models import Transaction, TransactionCreate, TransactionUpdate
+from models import Transaction, TransactionCreate, TransactionUpdate
 
 
 def create_transaction(session: Session, transaction_create: TransactionCreate) -> Transaction:

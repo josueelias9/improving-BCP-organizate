@@ -1,3 +1,3 @@
 ```sh
-sh ./scripts/init_db.sh
+sh ./scripts/prestart.sh
 ```
