@@ -11,7 +11,8 @@
         "ms-python.python",
         "humao.rest-client",
         "mechatroner.rainbow-csv",
-        "bierner.markdown-mermaid"
+        "bierner.markdown-mermaid",
+        "stateful.runme"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"
