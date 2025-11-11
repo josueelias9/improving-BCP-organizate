@@ -8,32 +8,25 @@ services:
       - "8000:8000"
     volumes:
       - .:/workspace
+    env_file:
+      - .env
     command: sleep infinity
-    environment:
-      - ENV
-      - PDF_PASSWORD
-      - JOSUE
     depends_on:
       - postgres
 
   postgres:
     image: postgres:15
-    environment:
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
+    env_file:
+      - .env
     ports:
       - "5432:5432"
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL
-      - PGADMIN_DEFAULT_PASSWORD
+    env_file:
+      - .env
     ports:
-      - "5050:80"
+      - "80:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
