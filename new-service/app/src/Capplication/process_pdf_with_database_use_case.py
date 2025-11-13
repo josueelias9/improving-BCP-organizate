@@ -1,19 +1,16 @@
 """
 Enhanced PDF processing use case with database persistence
 """
-import uuid
 from datetime import datetime
 from typing import Dict, Any
 from sqlmodel import Session
 from src.Ainfrastructure.database.crud import (
     create_document,
-    create_transactions_bulk,
     get_user_by_email,
     create_user
 )
 from models import (
     DocumentCreate, DocumentType,
-    TransactionCreate, Currency,
     UserCreate, CustomerType
 )
 

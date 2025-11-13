@@ -1,8 +1,6 @@
 import fitz  # PyMuPDF
-import pandas as pd
 import re
-from datetime import datetime
-from typing import BinaryIO, List, Dict, Any
+from typing import BinaryIO, List
 import logging
 import os
 from dotenv import load_dotenv
@@ -19,13 +17,7 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
     """Extractor avanzado usando PyMuPDF para PDFs problemáticos"""
     
     def __init__(self):
-        self.columns_mapping = {
-            "fecha_proceso": ["FECHA PROC.", "Fecha Proc.", "F. Proceso", "Fecha de proceso"],
-            "fecha_valor": ["FECHA VALOR", "Fecha Valor", "F. Valor", "Fecha valor"],
-            "descripcion": ["DESCRIPCION", "Descripción", "DESCRIPCIÓN", "Descripcion", "Concepto"],
-            "cargos": ["CARGOS / DEBE", "Cargos / Debe", "CARGOS", "Debe", "Cargo"],
-            "abonos": ["ABONOS / HABER", "Abonos / Haber", "ABONOS", "Haber", "Abono"]
-        }
+        pass
     
     def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
         """Extrae transacciones del PDF usando PyMuPDF"""

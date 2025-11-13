@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from api.routes import health, pdf_processing
 import logging
-import os
 from dotenv import load_dotenv
 
 # Cargar variables de entorno

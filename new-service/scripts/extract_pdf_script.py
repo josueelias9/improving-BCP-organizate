@@ -2,15 +2,9 @@
 """
 Script para extraer contenido del PDF BCP y generar CSV de transacciones
 """
-import pdfplumber
-import PyPDF2
 import fitz  # PyMuPDF
-import pandas as pd
 import re
-from datetime import datetime
-import json
 import logging
-import io
 import os
 import csv
 from dotenv import load_dotenv
@@ -24,14 +18,7 @@ logger = logging.getLogger(__name__)
 
 class PDFExtractor:
     def __init__(self):
-        self.columns_mapping = {
-            "fecha_proceso": ["Fecha de proceso", "Fecha proceso", "F. Proceso"],
-            "fecha_consumo": ["Fecha de consumo", "Fecha consumo", "F. Consumo"],
-            "descripcion": ["Descripción", "Descripcion", "Concepto"],
-            "tipo_operacion": ["Tipo de Operación", "Tipo Operacion", "Tipo"],
-            "soles": ["Soles", "S/", "PEN"],
-            "dolares": ["Dólares", "Dolares", "US$", "USD"]
-        }
+        pass
     
     def extract_text_with_pymupdf(self, pdf_path: str, password: str = None) -> str:
         """Extrae texto usando PyMuPDF (fitz) como alternativa más robusta"""
@@ -68,140 +55,8 @@ class PDFExtractor:
         except Exception as e:
             logger.error(f"Error con PyMuPDF: {str(e)}")
             raise
-        """Extrae texto usando PyPDF2 como alternativa"""
-        logger.info(f"Intentando extraer texto con PyPDF2: {pdf_path}")
-        if password:
-            logger.info("Usando contraseña para abrir PDF protegido")
-        
-        try:
-            text = ""
-            with open(pdf_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                
-                # Si el PDF está encriptado, intentar desencriptar
-                if pdf_reader.is_encrypted:
-                    if password:
-                        pdf_reader.decrypt(password)
-                        logger.info("PDF desencriptado exitosamente")
-                    else:
-                        raise Exception("PDF está encriptado pero no se proporcionó contraseña")
-                
-                logger.info(f"PDF tiene {len(pdf_reader.pages)} páginas")
-                
-                for i, page in enumerate(pdf_reader.pages):
-                    logger.info(f"Procesando página {i+1}")
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += f"\n--- PÁGINA {i+1} ---\n"
-                        text += page_text + "\n"
-                
-            return text
-        except Exception as e:
-            logger.error(f"Error con PyPDF2: {str(e)}")
-            raise
+      
     
-    def extract_text_from_pdf(self, pdf_path: str, password: str = None) -> str:
-        """Extrae todo el texto del PDF"""
-        logger.info(f"Extrayendo texto de: {pdf_path}")
-        if password:
-            logger.info("Usando contraseña para abrir PDF protegido")
-        try:
-            text = ""
-            with pdfplumber.open(pdf_path, password=password) as pdf:
-                logger.info(f"PDF tiene {len(pdf.pages)} páginas")
-                for i, page in enumerate(pdf.pages):
-                    logger.info(f"Procesando página {i+1}")
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += f"\n--- PÁGINA {i+1} ---\n"
-                        text += page_text + "\n"
-            return text
-        except Exception as e:
-            logger.error(f"Error extrayendo texto del PDF: {str(e)}")
-            raise
-    
-    def extract_tables_from_pdf(self, pdf_path: str, password: str = None) -> list:
-        """Extrae todas las tablas del PDF"""
-        logger.info(f"Extrayendo tablas de: {pdf_path}")
-        if password:
-            logger.info("Usando contraseña para abrir PDF protegido")
-        try:
-            all_tables = []
-            with pdfplumber.open(pdf_path, password=password) as pdf:
-                for page_num, page in enumerate(pdf.pages):
-                    logger.info(f"Buscando tablas en página {page_num + 1}")
-                    page_tables = page.extract_tables()
-                    if page_tables:
-                        logger.info(f"Encontradas {len(page_tables)} tablas en página {page_num + 1}")
-                        for table_num, table in enumerate(page_tables):
-                            if table and len(table) > 1:
-                                df = pd.DataFrame(table[1:], columns=table[0])
-                                table_info = {
-                                    'page': page_num + 1,
-                                    'table_number': table_num + 1,
-                                    'rows': len(df),
-                                    'columns': len(df.columns),
-                                    'column_names': list(df.columns),
-                                    'data': df.to_dict('records')
-                                }
-                                all_tables.append(table_info)
-                    else:
-                        logger.info(f"No se encontraron tablas en página {page_num + 1}")
-            return all_tables
-        except Exception as e:
-            logger.error(f"Error extrayendo tablas del PDF: {str(e)}")
-            raise
-    
-    def clean_date(self, date_str: str) -> str:
-        """Limpia y estandariza formato de fecha"""
-        if pd.isna(date_str) or not date_str:
-            return None
-        
-        date_str = str(date_str).strip()
-        
-        # Patrones de fecha comunes en estados BCP
-        date_patterns = [
-            r'(\d{1,2})/(\d{1,2})/(\d{4})',
-            r'(\d{1,2})-(\d{1,2})-(\d{4})',
-            r'(\d{4})/(\d{1,2})/(\d{1,2})',
-            r'(\d{4})-(\d{1,2})-(\d{1,2})'
-        ]
-        
-        for pattern in date_patterns:
-            match = re.search(pattern, date_str)
-            if match:
-                try:
-                    if len(match.group(1)) == 4:  # Año primero
-                        year, month, day = match.groups()
-                    else:  # Día primero (común en Perú)
-                        day, month, year = match.groups()
-                    
-                    date_obj = datetime.strptime(f"{year}-{month:0>2}-{day:0>2}", "%Y-%m-%d")
-                    return date_obj.strftime("%Y-%m-%d")
-                except ValueError:
-                    continue
-        
-        return date_str
-    
-    def clean_amount(self, amount_str: str) -> float:
-        """Limpia y convierte string de monto a float"""
-        if pd.isna(amount_str) or not amount_str:
-            return 0.0
-        
-        amount_str = str(amount_str).strip()
-        
-        # Remover símbolos de moneda y formato común
-        amount_str = re.sub(r'[S/\$USD,]', '', amount_str)
-        amount_str = re.sub(r'\s+', '', amount_str)
-        
-        # Manejar montos negativos en paréntesis
-        if '(' in amount_str and ')' in amount_str:
-            amount_str = '-' + re.sub(r'[()]', '', amount_str)
-        
-        try:
-            return float(amount_str) if amount_str else 0.0
-        except ValueError:
-            return 0.0
 
     def parse_transactions_from_text(self, text: str) -> list:
         """Extrae y parsea las transacciones del texto"""
@@ -404,7 +259,6 @@ def main():
             logger.error(f"PyMuPDF falló: {str(e)}")
             raise  # Si PyMuPDF falla, no intentar otros métodos ya que es el más robusto
         
-        logger.info("Extracción completada exitosamente")
         
     except Exception as e:
         logger.error(f"Error en la extracción: {str(e)}")

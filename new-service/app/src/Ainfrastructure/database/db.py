@@ -4,7 +4,7 @@ Database initialization and population
 from sqlmodel import Session, SQLModel, select
 from .connection import engine
 from models import (
-    User, Category, Document, Transaction, CustomerType
+    User, Category, CustomerType
 )
 import logging
 
