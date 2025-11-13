@@ -57,69 +57,60 @@ class ProcessPDFWithDatabaseUseCase:
                 )
                 user = create_user(session, user_create)
             
-            # Procesar PDF usando el extractor existente
-            extractor_result = self._pdf_extractor.extract_data(pdf_filename)
+            # Procesar PDF usando el nuevo método extract_transactions
+            # Abrir el archivo PDF y pasarlo al extractor
+            with open(pdf_filename, 'rb') as pdf_file:
+                extraction_result = self._pdf_extractor.extract_transactions(pdf_file, pdf_filename)
             
-            if not extractor_result.get("success", False):
+            if not extraction_result.success:
                 return {
                     "success": False,
-                    "message": "Error procesando PDF",
+                    "message": f"Error procesando PDF: {extraction_result.error_message or 'Error desconocido'}",
                     "document_id": None,
                     "transactions_count": 0
                 }
             
-            # Crear registro del documento en la base de datos
+            # Preparar datos JSON para la columna 'data'
+            # Cada fila extraída será un elemento de una lista, cada elemento será un objeto con atributos
+            transactions_list = []
+            for transaction in extraction_result.transactions:
+                transaction_dict = {
+                    "fecha_proceso": transaction.fecha_proceso,
+                    "fecha_consumo": transaction.fecha_consumo,
+                    "descripcion": transaction.descripcion,
+                    "tipo_operacion": transaction.tipo_operacion,
+                    "soles": transaction.soles,
+                    "dolares": transaction.dolares
+                }
+                transactions_list.append(transaction_dict)
+            
+            # Preparar los datos como diccionario (no lista)
+            json_data = {
+                "filename": pdf_filename,
+                "account_code": extraction_result.account_code,
+                "transactions": transactions_list,
+                "extracted_at": datetime.utcnow().isoformat(),
+                "total_transactions": extraction_result.total_transactions
+            }
+            
+            # Crear registro del documento en la base de datos con los datos JSON
             document_create = DocumentCreate(
-                filename=pdf_filename,
-                document_type=DocumentType.BCP_STATEMENT,
+                account_number=extraction_result.account_code or "UNKNOWN",
+                type=DocumentType.BCP_STATEMENT,
                 user_id=user.id,
-                processed_at=datetime.utcnow()
+                data=json_data  # Guardar los datos extraídos como JSON
             )
             document = create_document(session, document_create)
             
-            # Preparar transacciones para inserción en BD
-            transactions_to_create = []
-            for transaction_data in extractor_result.get("transactions", []):
-                transaction_create = TransactionCreate(
-                    name=transaction_data.get("id", f"trans_{uuid.uuid4()}"),
-                    date=transaction_data.get("date", datetime.utcnow()),
-                    amount=float(transaction_data.get("amount", 0.0)),
-                    currency=Currency.PEN,  # Asumimos PEN para BCP
-                    description=transaction_data.get("description", ""),
-                    account_code=transaction_data.get("account_code"),
-                    document_id=document.id,
-                    user_id=user.id,
-                    # Por ahora no asignamos categoría automáticamente
-                    category_id=None
-                )
-                transactions_to_create.append(transaction_create)
-            
-            # Insertar transacciones en lote
-            created_transactions = []
-            if transactions_to_create:
-                created_transactions = create_transactions_bulk(session, transactions_to_create)
-            
             return {
                 "success": True,
-                "message": f"PDF procesado exitosamente. {len(created_transactions)} transacciones guardadas.",
+                "message": f"PDF procesado exitosamente. {len(transactions_list)} transacciones guardadas como JSON en la tabla Documents.",
                 "document_id": str(document.id),
-                "transactions_count": len(created_transactions),
+                "transactions_count": len(transactions_list),
                 "user_id": str(user.id),
-                "csv_file": extractor_result.get("csv_file"),
-                "filename": extractor_result.get("filename"),
-                "statistics": extractor_result.get("statistics"),
-                "transactions": [
-                    {
-                        "id": str(trans.id),
-                        "name": trans.name,
-                        "date": trans.date.isoformat() if trans.date else None,
-                        "amount": trans.amount,
-                        "currency": trans.currency,
-                        "description": trans.description,
-                        "account_code": trans.account_code
-                    }
-                    for trans in created_transactions
-                ]
+                "account_code": extraction_result.account_code,
+                "filename": extraction_result.filename,
+                "data": json_data  # Devolver los datos JSON guardados
             }
             
         except Exception as e:

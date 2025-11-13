@@ -1,6 +1,8 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
 @baseUrl = http://127.0.0.1:8001
+@newPort = http://127.0.0.1:8003
+
 
 ### === HEALTH CHECK ===
 
@@ -10,122 +12,17 @@ Accept: application/json
 
 ###
 
-### === DATABASE OPERATIONS ===
 
-### 2. Initialize Database (First time setup)
-POST {{baseUrl}}/api/database/initialize
-Content-Type: application/json
-
-###
-
-### 3. Check Database Status
-GET {{baseUrl}}/api/database/status
-Accept: application/json
-
-###
-
-### 4. Reset Database (DANGER - Deletes all data)
-POST {{baseUrl}}/api/database/reset
-Content-Type: application/json
-
-###
 
 ### === PDF PROCESSING WITH DATABASE ===
 
-### 5. Process PDF with Database Integration
-POST {{baseUrl}}/api/process-pdf/database
+### 2. Process PDF and Save to Database (NEW - Port 8003)
+# Extrae datos del PDF y los guarda como JSON en la tabla Documents
+POST {{baseUrl}}/api/process-pdf
 Content-Type: application/json
 
 {
-    "pdf_filename": "files/EECC102025_09745280.PDF",
+    "pdf_filename": "files/EECC102025_07757784.PDF",
     "type": "debit",
     "user_email": "admin@bcpextractor.com"
 }
-
-###
-
-### === PDF PROCESSING (LEGACY) ===
-
-### 6. Process PDF by Name - EECC102025_06878124.PDF (Downloads CSV directly)
-POST {{baseUrl}}/api/process-pdf
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_06878124.PDF",
-    "type": "debit"
-}
-
-###
-
-### 7. Process PDF by Name - EECC102025_06878124.PDF (Returns JSON info)
-POST {{baseUrl}}/api/process-pdf/info
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_06878124.PDF"
-}
-
-###
-
-### 8. Process PDF by Name - EECC102025_09745280.PDF (Downloads CSV directly)
-POST {{baseUrl}}/api/process-pdf
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_09745280.PDF",
-    "type": "debit"
-}
-
-###
-
-### 9. Process PDF by Name - EECC102025_09745280.PDF (Returns JSON info)  
-POST {{baseUrl}}/api/process-pdf/info
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_09745280.PDF"
-}
-
-###
-
-### === OUTPUT FILES ===
-
-### 10. List Output Files
-GET {{baseUrl}}/api/output
-Accept: application/json
-
-###
-
-### 11. Download CSV Output - EECC102025_06878124
-GET {{baseUrl}}/api/output/EECC102025_06878124_transactions.csv
-
-###
-
-### 12. Download CSV Output - EECC102025_09745280
-GET {{baseUrl}}/api/output/EECC102025_09745280_transactions.csv
-
-###
-
-### === ERROR TESTING ===
-
-### 13. Test Credit Card PDF (Should return 501 Not Implemented)
-POST {{baseUrl}}/api/process-pdf
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_06878124.PDF",
-    "type": "credit"
-}
-
-###
-
-### 14. Test Invalid Type (Should return 400 Bad Request)
-POST {{baseUrl}}/api/process-pdf
-Content-Type: application/json
-
-{
-    "pdf_filename": "files/EECC102025_06878124.PDF",
-    "type": "invalid_type"
-}
-
-###

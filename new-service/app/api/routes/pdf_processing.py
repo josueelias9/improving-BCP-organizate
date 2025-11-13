@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlmodel import Session
-from src.presentation.pdf_processor_controller import PDFProcessorController
-from src.application.process_pdf_by_name_use_case import ProcessPDFByNameUseCase
 from src.application.process_pdf_with_database_use_case import ProcessPDFWithDatabaseUseCase
 from src.infrastructure.advanced_pdf_extractor import AdvancedPDFExtractor
 from src.infrastructure.database.deps import SessionDep
@@ -12,9 +10,7 @@ router = APIRouter(prefix="/api", tags=["PDF Processing"])
 
 # Configurar dependencias
 advanced_pdf_extractor = AdvancedPDFExtractor()
-process_pdf_by_name_use_case = ProcessPDFByNameUseCase(advanced_pdf_extractor)
 process_pdf_with_db_use_case = ProcessPDFWithDatabaseUseCase(advanced_pdf_extractor)
-pdf_processor_controller = PDFProcessorController(process_pdf_by_name_use_case)
 
 # Modelos Pydantic para request body
 class PDFProcessRequest(BaseModel):
@@ -31,52 +27,19 @@ class PDFProcessRequest(BaseModel):
             }
         }
 
-class PDFInfoRequest(BaseModel):
-    pdf_filename: str
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "pdf_filename": "files/EECC102025_09745280.PDF"
-            }
-        }
 
 
 @router.post("/process-pdf")
-async def process_pdf_by_name_endpoint(request: PDFProcessRequest):
+async def process_pdf_endpoint(request: PDFProcessRequest, session: SessionDep):
     """
-    Procesa un PDF específico por nombre y devuelve el archivo CSV directamente
-    
-    - **request**: Objeto JSON con el nombre del archivo PDF y tipo de cuenta
-    - **pdf_filename**: Nombre del archivo PDF (ej: "files/documento.pdf")
-    - **type**: Tipo de cuenta ("debit" o "credit")
-    - Devuelve el archivo CSV para descarga directa
-    """
-    return await pdf_processor_controller.process_pdf_by_name(request.pdf_filename, request.type)
-
-
-@router.post("/process-pdf/info")
-async def process_pdf_info_endpoint(request: PDFInfoRequest):
-    """
-    Procesa un PDF específico por nombre y devuelve información JSON
-    
-    - **request**: Objeto JSON con el nombre del archivo PDF
-    - **pdf_filename**: Nombre del archivo PDF (ej: "files/documento.pdf")
-    - Devuelve información JSON con estadísticas y transacciones
-    """
-    return await pdf_processor_controller.process_pdf_info(request.pdf_filename)
-
-
-@router.post("/process-pdf/database")
-async def process_pdf_with_database_endpoint(request: PDFProcessRequest, session: SessionDep):
-    """
-    Procesa un PDF específico por nombre y guarda los resultados en la base de datos
+    Procesa un PDF específico por nombre y guarda los datos extraídos en la tabla Documents
     
     - **request**: Objeto JSON con el nombre del archivo PDF, tipo y usuario
     - **pdf_filename**: Nombre del archivo PDF (ej: "files/documento.pdf") 
     - **type**: Tipo de cuenta ("debit" o "credit")
     - **user_email**: Email del usuario (opcional, por defecto admin@sistema.com)
-    - Devuelve información JSON con los datos guardados en BD
+    - Los datos extraídos se guardan como JSON en la columna 'data' de la tabla Documents
+    - Cada fila extraída será un elemento de una lista, cada elemento será un objeto con atributos
     """
     try:
         # Verificar tipo de PDF
@@ -114,13 +77,14 @@ async def process_pdf_with_database_endpoint(request: PDFProcessRequest, session
             )
         
         return {
+            "success": True,
             "message": result["message"],
             "document_id": result["document_id"],
             "user_id": result["user_id"],
+            "account_number": result.get("account_number"),
+            "filename": result.get("filename"),
             "transactions_count": result["transactions_count"],
-            "transactions": result["transactions"],
-            "csv_file": result.get("csv_file"),
-            "statistics": result.get("statistics")
+            "data_saved_to_database": "Datos extraídos guardados como JSON en tabla Documents, columna 'data'"
         }
         
     except HTTPException:
@@ -128,5 +92,5 @@ async def process_pdf_with_database_endpoint(request: PDFProcessRequest, session
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Error procesando PDF con base de datos: {str(e)}"
+            detail=f"Error procesando PDF: {str(e)}"
         )

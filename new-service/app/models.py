@@ -155,7 +155,7 @@ class DocumentUpdate(SQLModel):
     account_number: Optional[str] = None
     type: Optional[DocumentType] = None
     currency: Optional[Currency] = None
-    data: Optional[str] = None
+    data: Optional[Dict[str, Any]] = None
 
 
 # Transaction Model
