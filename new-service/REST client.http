@@ -22,7 +22,7 @@ POST {{baseUrl}}/api/process-pdf
 Content-Type: application/json
 
 {
-    "pdf_filename": "files/EECC102025_07757784.PDF",
+    "pdf_filename": "files/EECC102025_07750301.PDF",
     "type": "debit",
     "user_email": "admin@bcpextractor.com"
 }

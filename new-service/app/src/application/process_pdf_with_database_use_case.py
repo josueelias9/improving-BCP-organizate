@@ -76,11 +76,10 @@ class ProcessPDFWithDatabaseUseCase:
             for transaction in extraction_result.transactions:
                 transaction_dict = {
                     "fecha_proceso": transaction.fecha_proceso,
-                    "fecha_consumo": transaction.fecha_consumo,
+                    "fecha_valor": transaction.fecha_valor,
                     "descripcion": transaction.descripcion,
-                    "tipo_operacion": transaction.tipo_operacion,
-                    "soles": transaction.soles,
-                    "dolares": transaction.dolares
+                    "cargos": transaction.cargos,
+                    "abonos": transaction.abonos
                 }
                 transactions_list.append(transaction_dict)
             
@@ -90,7 +89,9 @@ class ProcessPDFWithDatabaseUseCase:
                 "account_code": extraction_result.account_code,
                 "transactions": transactions_list,
                 "extracted_at": datetime.utcnow().isoformat(),
-                "total_transactions": extraction_result.total_transactions
+                "total_transactions": extraction_result.total_transactions,
+                "extracted_text_preview": extraction_result.extracted_text[:500] if extraction_result.extracted_text else "No text extracted",
+                "debug_info": f"Success: {extraction_result.success}, Total found: {len(extraction_result.transactions)}"
             }
             
             # Crear registro del documento en la base de datos con los datos JSON
