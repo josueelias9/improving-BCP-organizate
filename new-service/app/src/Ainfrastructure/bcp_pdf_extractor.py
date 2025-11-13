@@ -4,8 +4,8 @@ import re
 from datetime import datetime
 from typing import BinaryIO, List, Dict, Any
 import logging
-from ..domain.entities import Transaction, ExtractionResult
-from ..domain.repositories import PDFExtractorRepository
+from ..Ddomain.entities import Transaction, ExtractionResult
+from ..Ddomain.repositories import PDFExtractorRepository
 
 logger = logging.getLogger(__name__)
 

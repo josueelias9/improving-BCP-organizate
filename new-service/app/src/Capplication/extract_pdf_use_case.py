@@ -1,6 +1,6 @@
 from typing import BinaryIO
-from ..domain.entities import ExtractionResult
-from ..domain.repositories import PDFExtractorRepository
+from ..Ddomain.entities import ExtractionResult
+from ..Ddomain.repositories import PDFExtractorRepository
 
 
 class ExtractPDFUseCase:

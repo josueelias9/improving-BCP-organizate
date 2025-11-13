@@ -4,7 +4,7 @@ Database dependencies for FastAPI
 from typing import Annotated, Generator
 from fastapi import Depends
 from sqlmodel import Session
-from src.infrastructure.database.connection import get_session
+from src.Ainfrastructure.database.connection import get_session
 
 
 def get_db_session() -> Generator[Session, None, None]:

@@ -3,7 +3,7 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 
 from sqlmodel import Session, select
 
-from src.infrastructure.database.connection import engine
+from src.Ainfrastructure.database.connection import engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

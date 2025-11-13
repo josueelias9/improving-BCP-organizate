@@ -1,6 +1,6 @@
 from typing import BinaryIO
-from ..domain.entities import ExtractionResult
-from ..domain.repositories import PDFExtractorRepository, ExcelGeneratorRepository
+from ..Ddomain.entities import ExtractionResult
+from ..Ddomain.repositories import PDFExtractorRepository, ExcelGeneratorRepository
 
 
 class ExportToExcelUseCase:

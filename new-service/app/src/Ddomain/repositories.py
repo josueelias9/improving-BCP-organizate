@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import BinaryIO, List
-from ..domain.entities import Transaction, ExtractionResult
+from ..Ddomain.entities import Transaction, ExtractionResult
 
 
 class PDFExtractorRepository(ABC):

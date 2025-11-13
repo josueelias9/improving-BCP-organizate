@@ -1,8 +1,8 @@
 import os
 import csv
 from typing import Dict, Any
-from ..domain.entities import ExtractionResult
-from ..domain.repositories import PDFExtractorRepository
+from ..Ddomain.entities import ExtractionResult
+from ..Ddomain.repositories import PDFExtractorRepository
 
 
 class ProcessPDFByNameUseCase:

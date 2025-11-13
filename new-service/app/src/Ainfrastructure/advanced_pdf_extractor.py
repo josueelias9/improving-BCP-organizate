@@ -6,8 +6,8 @@ from typing import BinaryIO, List, Dict, Any
 import logging
 import os
 from dotenv import load_dotenv
-from ..domain.entities import Transaction, ExtractionResult
-from ..domain.repositories import PDFExtractorRepository
+from ..Ddomain.entities import Transaction, ExtractionResult
+from ..Ddomain.repositories import PDFExtractorRepository
 
 logger = logging.getLogger(__name__)
 

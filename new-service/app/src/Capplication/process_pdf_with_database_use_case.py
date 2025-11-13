@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any
 from sqlmodel import Session
-from src.infrastructure.database.crud import (
+from src.Ainfrastructure.database.crud import (
     create_document,
     create_transactions_bulk,
     get_user_by_email,

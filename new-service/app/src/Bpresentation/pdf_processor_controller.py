@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 import logging
 import os
-from ..application.process_pdf_by_name_use_case import ProcessPDFByNameUseCase
+from ..Capplication.process_pdf_by_name_use_case import ProcessPDFByNameUseCase
 
 logger = logging.getLogger(__name__)
 

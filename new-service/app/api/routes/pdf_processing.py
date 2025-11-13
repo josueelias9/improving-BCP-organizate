@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlmodel import Session
-from src.application.process_pdf_with_database_use_case import ProcessPDFWithDatabaseUseCase
-from src.infrastructure.advanced_pdf_extractor import AdvancedPDFExtractor
-from src.infrastructure.database.deps import SessionDep
+from src.Capplication.process_pdf_with_database_use_case import ProcessPDFWithDatabaseUseCase
+from src.Ainfrastructure.advanced_pdf_extractor import AdvancedPDFExtractor
+from src.Ainfrastructure.database.deps import SessionDep
 
 # Crear router para rutas de procesamiento de PDF
 router = APIRouter(prefix="/api", tags=["PDF Processing"])

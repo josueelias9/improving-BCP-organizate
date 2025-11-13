@@ -2,8 +2,8 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 import io
 import logging
-from ..application.extract_pdf_use_case import ExtractPDFUseCase
-from ..application.export_to_excel_use_case import ExportToExcelUseCase
+from ..Capplication.extract_pdf_use_case import ExtractPDFUseCase
+from ..Capplication.export_to_excel_use_case import ExportToExcelUseCase
 
 logger = logging.getLogger(__name__)
 

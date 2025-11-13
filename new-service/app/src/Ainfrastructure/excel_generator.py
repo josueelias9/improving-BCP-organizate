@@ -1,8 +1,8 @@
 import pandas as pd
 import io
 from typing import List, BinaryIO
-from ..domain.entities import Transaction
-from ..domain.repositories import ExcelGeneratorRepository
+from ..Ddomain.entities import Transaction
+from ..Ddomain.repositories import ExcelGeneratorRepository
 
 
 class ExcelGenerator(ExcelGeneratorRepository):
