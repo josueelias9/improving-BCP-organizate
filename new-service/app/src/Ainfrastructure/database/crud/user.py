@@ -4,12 +4,31 @@ CRUD operations for User model
 import uuid
 from typing import Optional
 from sqlmodel import Session, select
+from passlib.context import CryptContext
 from models import User, UserCreate, UserUpdate
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def get_password_hash(password: str) -> str:
+    """Hash a password"""
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against a hash"""
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def create_user(session: Session, user_create: UserCreate) -> User:
     """Create a new user"""
-    db_user = User.model_validate(user_create)
+    db_user = User.model_validate(
+        user_create,
+        update={
+            "hashed_password": get_password_hash(user_create.password)
+        }
+    )
     session.add(db_user)
     session.commit()
     session.refresh(db_user)

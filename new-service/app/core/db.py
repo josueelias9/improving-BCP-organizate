@@ -1,14 +1,11 @@
-"""
-Database initialization and population
-"""
-from sqlmodel import Session, SQLModel, select
-from .connection import engine
-from models import (
-    User, Category, CustomerType
-)
+from sqlmodel import Session, create_engine, SQLModel, select
+from app.core.config import settings
+from app.models import User, Category, CustomerType
 import logging
 
 logger = logging.getLogger(__name__)
+
+engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 
 def create_db_and_tables():
