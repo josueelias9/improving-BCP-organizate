@@ -4,7 +4,7 @@ Enhanced PDF processing use case with database persistence
 from datetime import datetime
 from typing import Dict, Any
 from sqlmodel import Session
-from src.Ainfrastructure.database.crud import (
+from src.Aframeworks.database.crud import (
     create_document,
     get_user_by_email,
     create_user

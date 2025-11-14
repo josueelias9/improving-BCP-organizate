@@ -3,7 +3,7 @@ CRUD operations - Main entry point
 Re-exports all CRUD functions from infrastructure layer
 """
 
-from app.src.Ainfrastructure.database.crud.user import (
+from app.src.Aframeworks.database.crud.user import (
     create_user,
     get_user,
     get_user_by_email,
@@ -13,7 +13,7 @@ from app.src.Ainfrastructure.database.crud.user import (
     user_exists
 )
 
-from app.src.Ainfrastructure.database.crud.document import (
+from app.src.Aframeworks.database.crud.document import (
     create_document,
     get_document,
     get_documents_by_user,
@@ -24,7 +24,7 @@ from app.src.Ainfrastructure.database.crud.document import (
     delete_document
 )
 
-from app.src.Ainfrastructure.database.crud.transaction import (
+from app.src.Aframeworks.database.crud.transaction import (
     create_transaction,
     create_transactions_bulk,
     get_transaction,
@@ -36,7 +36,7 @@ from app.src.Ainfrastructure.database.crud.transaction import (
     get_transaction_by_name
 )
 
-from app.src.Ainfrastructure.database.crud.category import (
+from app.src.Aframeworks.database.crud.category import (
     create_category,
     get_category,
     get_category_by_name,

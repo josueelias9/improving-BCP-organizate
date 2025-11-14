@@ -4,8 +4,8 @@ from typing import BinaryIO, List
 import logging
 import os
 from dotenv import load_dotenv
-from ..Ddomain.entities import Transaction, ExtractionResult
-from ..Ddomain.repositories import PDFExtractorRepository
+from ..Denterprise.entities import Transaction, ExtractionResult
+from ..Denterprise.repositories import PDFExtractorRepository
 
 logger = logging.getLogger(__name__)
 

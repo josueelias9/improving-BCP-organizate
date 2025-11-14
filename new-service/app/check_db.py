@@ -4,7 +4,7 @@ Database health check script
 import logging
 from sqlmodel import Session, select
 
-from src.Ainfrastructure.database.connection import engine
+from src.Aframeworks.database.connection import engine
 from models import User, Category, Document, Transaction
 
 logging.basicConfig(level=logging.INFO)
