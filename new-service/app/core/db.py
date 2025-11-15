@@ -1,6 +1,6 @@
 from sqlmodel import Session, create_engine, SQLModel, select
-from app.core.config import settings
-from app.models import User, Category, CustomerType
+from core.config import settings
+from models import User, Category, CustomerType
 import logging
 
 logger = logging.getLogger(__name__)

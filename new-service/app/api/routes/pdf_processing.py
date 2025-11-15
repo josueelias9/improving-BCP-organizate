@@ -1,15 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from src.Binterface.dependencies import get_process_pdf_use_case
 from src.Capplication.process_pdf_with_database_use_case import ProcessPDFWithDatabaseUseCase
-from src.Aframeworks.advanced_pdf_extractor import AdvancedPDFExtractor
 from src.Aframeworks.database.deps import SessionDep
 
 # Crear router para rutas de procesamiento de PDF
 router = APIRouter(prefix="/api", tags=["PDF Processing"])
-
-# Configurar dependencias
-advanced_pdf_extractor = AdvancedPDFExtractor()
-process_pdf_with_db_use_case = ProcessPDFWithDatabaseUseCase(advanced_pdf_extractor)
 
 # Modelos Pydantic para request body
 class PDFProcessRequest(BaseModel):
@@ -27,9 +23,12 @@ class PDFProcessRequest(BaseModel):
         }
 
 
-
 @router.post("/process-pdf")
-async def process_pdf_endpoint(request: PDFProcessRequest, session: SessionDep):
+async def process_pdf_endpoint(
+    request: PDFProcessRequest, 
+    session: SessionDep,
+    use_case: ProcessPDFWithDatabaseUseCase = Depends(get_process_pdf_use_case)
+):
     """
     Procesa un PDF específico por nombre y guarda los datos extraídos en la tabla Documents
     
@@ -61,8 +60,8 @@ async def process_pdf_endpoint(request: PDFProcessRequest, session: SessionDep):
                 detail=f"El archivo '{request.pdf_filename}' no fue encontrado"
             )
         
-        # Procesar PDF con base de datos
-        result = process_pdf_with_db_use_case.execute(
+        # Procesar PDF con base de datos usando dependency injection
+        result = use_case.execute(
             session=session,
             pdf_filename=request.pdf_filename,
             pdf_type=request.type,

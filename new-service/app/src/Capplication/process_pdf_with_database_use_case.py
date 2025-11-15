@@ -1,14 +1,10 @@
 """
-Enhanced PDF processing use case with database persistence
+Enhanced PDF processing use case with database persistence - Clean Architecture
 """
 from datetime import datetime
 from typing import Dict, Any
 from sqlmodel import Session
-from src.Aframeworks.database.crud import (
-    create_document,
-    get_user_by_email,
-    create_user
-)
+from .repositories import IUserRepository, IDocumentRepository
 from models import (
     DocumentCreate, DocumentType,
     UserCreate, CustomerType
@@ -18,10 +14,16 @@ from models import (
 class ProcessPDFWithDatabaseUseCase:
     """
     Use case para procesar PDFs con persistencia en base de datos
+    Depends on abstractions (repositories), not concrete implementations
     """
     
-    def __init__(self, pdf_extractor):
+    def __init__(self, 
+                 pdf_extractor, 
+                 user_repository: IUserRepository, 
+                 document_repository: IDocumentRepository):
         self._pdf_extractor = pdf_extractor
+        self._user_repository = user_repository
+        self._document_repository = document_repository
     
     def execute(
         self,
@@ -43,8 +45,8 @@ class ProcessPDFWithDatabaseUseCase:
             Diccionario con el resultado del procesamiento
         """
         try:
-            # Obtener o crear usuario
-            user = get_user_by_email(session, user_email)
+            # Obtener o crear usuario usando repository abstraction
+            user = self._user_repository.get_user_by_email(session, user_email)
             if not user:
                 # Crear usuario por defecto si no existe
                 user_create = UserCreate(
@@ -52,7 +54,7 @@ class ProcessPDFWithDatabaseUseCase:
                     name="Usuario Admin",
                     customer_type=CustomerType.INDIVIDUAL
                 )
-                user = create_user(session, user_create)
+                user = self._user_repository.create_user(session, user_create)
             
             # Procesar PDF usando el nuevo método extract_transactions
             # Abrir el archivo PDF y pasarlo al extractor
@@ -91,14 +93,14 @@ class ProcessPDFWithDatabaseUseCase:
                 "debug_info": f"Success: {extraction_result.success}, Total found: {len(extraction_result.transactions)}"
             }
             
-            # Crear registro del documento en la base de datos con los datos JSON
+            # Crear registro del documento en la base de datos con los datos JSON usando repository
             document_create = DocumentCreate(
                 account_number=extraction_result.account_code or "UNKNOWN",
                 type=DocumentType.BCP_STATEMENT,
                 user_id=user.id,
                 data=json_data  # Guardar los datos extraídos como JSON
             )
-            document = create_document(session, document_create)
+            document = self._document_repository.create_document(session, document_create)
             
             return {
                 "success": True,
