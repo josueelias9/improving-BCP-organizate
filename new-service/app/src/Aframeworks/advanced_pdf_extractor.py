@@ -97,129 +97,100 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
             raise
     
     def _parse_transactions_from_text(self, text: str) -> List[Transaction]:
-        """Extrae y parsea las transacciones del texto del PDF BCP"""
+        """
+        Extrae y parsea las transacciones del texto del PDF BCP usando posiciones fijas
+        
+        Formato BCP (posicional):
+
+                  111111111122222222223333333333444444444455555555556666666666777
+        0123456789012345678901234567890123456789012345678901234567890123456789012
+        ----- ----- ------------------    -       ------------       ------------
+          a     b            c            d             e                 f 
+
+        
+        a (0-5):   Fecha procesamiento (5 chars)
+        b (6-11):  Fecha valor (5 chars)  
+        c (12-30): Descripción (18 chars)
+        d (30-31): Transacción interna (1 char)
+        e (31-43): Egreso/Cargo (12 chars)
+        f (43-55): Ingreso/Abono (12 chars)
+        """
         logger.info("Parseando transacciones del texto extraído...")
         logger.info(f"Texto extraído (primeros 1000 caracteres): {text[:1000]}")
         
         transactions = []
         lines = text.split('\n')
         
-        # Patrón específico para transacciones BCP: DDMMM DDMMM DESCRIPCION [MONTO] [MONTO]
-        # Ejemplos: 15OCT 15OCT, 01OCT 01OCT
-        transaction_pattern = r'^(\d{2}[A-Z]{3})\s+(\d{2}[A-Z]{3})\s+(.+)$'
+        # Patrón para detectar líneas que empiezan con fecha (DDMMM)
+        date_pattern = r'^\d{2}[A-Z]{3}\s'
         
         for line_num, line in enumerate(lines):
-            line = line.strip()
-            if not line:
+            # NO hacer strip() para preservar las posiciones
+            if not line or len(line) < 12:
                 continue
             
-            # Buscar líneas que coincidan con el patrón de transacción
-            match = re.match(transaction_pattern, line)
-            if match:
-                logger.debug(f"Línea de transacción encontrada {line_num}: {line}")
+            # Verificar si la línea empieza con un patrón de fecha
+            if not re.match(date_pattern, line):
+                continue
+            
+            logger.debug(f"Línea de transacción encontrada {line_num}: [{line}]")
+            
+            try:
+                # Extraer por posiciones fijas
+                fecha_proceso = line[0:5].strip()      # Posición 0-5
+                fecha_valor = line[6:11].strip()       # Posición 6-11
+                descripcion = line[12:30].strip()      # Posición 12-30
+                transaccion_interna = line[34:35].strip()  # Posición 30-31 (*, opcional)
+                egreso_str = line[42:54].strip()       # Posición 31-43
+                ingreso_str = line[61:].strip() 
                 
-                try:
-                    fecha_proceso = match.group(1)  # ej: 15OCT
-                    fecha_valor = match.group(2)    # ej: 15OCT
-                    resto = match.group(3).strip()   # Descripción + montos
-                    
-                    # Parsear el resto de la línea
-                    transaction = self._parse_bcp_transaction_line(fecha_proceso, fecha_valor, resto)
-                    if transaction and transaction.is_valid():
-                        transactions.append(transaction)
-                        logger.debug(f"Transacción válida encontrada: {transaction}")
-                    
-                except Exception as e:
-                    logger.debug(f"Error parseando línea {line_num}: {line} - {str(e)}")
+                # Validar que las fechas tengan el formato correcto
+                if not (len(fecha_proceso) == 5 and len(fecha_valor) == 5):
+                    logger.debug(f"Fechas inválidas en línea {line_num}: {fecha_proceso} | {fecha_valor}")
                     continue
+                
+                # Convertir fechas
+                fecha_proceso_formatted = self._convert_bcp_date(fecha_proceso)
+                fecha_valor_formatted = self._convert_bcp_date(fecha_valor)
+                
+                # Parsear montos
+                egreso = 0.0
+                ingreso = 0.0
+                
+                if egreso_str:
+                    try:
+                        egreso = float(egreso_str.replace(',', ''))
+                    except ValueError:
+                        pass
+                
+                if ingreso_str:
+                    try:
+                        ingreso = float(ingreso_str.replace(',', ''))
+                    except ValueError:
+                        pass
+                
+                # Crear transacción
+                transaction = Transaction(
+                    fecha_proceso=fecha_proceso_formatted,
+                    fecha_valor=fecha_valor_formatted,
+                    descripcion=descripcion,
+                    cargos=egreso,
+                    abonos=ingreso,
+                    transaccion_interna=transaccion_interna if transaccion_interna else None
+                )
+                
+                if transaction.is_valid():
+                    transactions.append(transaction)
+                    logger.debug(f"Transacción válida: {transaction}")
+                else:
+                    logger.debug(f"Transacción inválida (sin montos): {transaction}")
+                
+            except Exception as e:
+                logger.debug(f"Error parseando línea {line_num}: {line} - {str(e)}")
+                continue
         
         logger.info(f"Total de transacciones encontradas: {len(transactions)}")
         return transactions
-
-    def _parse_bcp_transaction_line(self, fecha_proceso: str, fecha_valor: str, resto: str) -> Transaction:
-        """Parsea una línea de transacción BCP específicamente"""
-        logger.debug(f"Parseando: {fecha_proceso} {fecha_valor} {resto}")
-        
-        # Convertir fechas de DDMMM a formato estándar
-        fecha_proceso_formatted = self._convert_bcp_date(fecha_proceso)
-        fecha_valor_formatted = self._convert_bcp_date(fecha_valor)
-        
-        # Analizar el resto de la línea para extraer descripción y montos
-        # Los montos están alineados por columnas, típicamente al final
-        
-        # Buscar montos decimales con formato ##.## o ###.##
-        money_pattern = r'\b\d{1,6}\.\d{2}\b'
-        montos = re.findall(money_pattern, resto)
-        
-        # Si no hay montos decimales, buscar números enteros
-        if not montos:
-            int_money_pattern = r'\b\d{1,6}\b'
-            potential_montos = re.findall(int_money_pattern, resto)
-            # Filtrar números que probablemente son montos (mayor a 0.50)
-            montos = [m for m in potential_montos if float(m) >= 1]
-        
-        # Remover montos del texto para obtener descripción limpia
-        descripcion = resto
-        for monto in montos:
-            # Remover el monto y espacios alrededor
-            descripcion = re.sub(rf'\s*{re.escape(monto)}\s*', ' ', descripcion, count=1)
-        
-        # Limpiar descripción
-        descripcion = re.sub(r'\s+', ' ', descripcion).strip()
-        # Remover asteriscos que aparecen en algunas transacciones
-        descripcion = descripcion.replace('*', '').strip()
-        
-        # Determinar cargos y abonos basado en la posición de los montos
-        cargos = 0.0
-        abonos = 0.0
-        
-        if montos:
-            # Analizar la posición del monto en la línea original
-            # Si aparece cerca del final, es más probable que sea un cargo
-            # Si aparece muy al final (después de muchos espacios), podría ser abono
-            
-            last_monto = float(montos[-1])
-            
-            # Buscar la posición del monto en la línea original
-            monto_pos = resto.rfind(montos[-1])
-            total_length = len(resto)
-            
-            # Si el monto está muy al final (después del 80% de la línea)
-            # y hay muchos espacios antes, probablemente es abono
-            if monto_pos > total_length * 0.8:
-                spaces_before_amount = len(resto[monto_pos-20:monto_pos].strip()) == 0 if monto_pos >= 20 else False
-                if spaces_before_amount:
-                    abonos = last_monto
-                else:
-                    cargos = last_monto
-            else:
-                # Si está más hacia la izquierda, probablemente es cargo
-                cargos = last_monto
-            
-            # Casos especiales basados en la descripción
-            if any(keyword in descripcion.upper() for keyword in [
-                'ABON', 'ABONO', 'DEPOSITO', 'PAGO YAPE DE', 'TRAN.CTAS.PROP.BM'
-            ]):
-                # Es un abono
-                abonos = last_monto
-                cargos = 0.0
-            elif any(keyword in descripcion.upper() for keyword in [
-                'PAGO YAPE A', 'RETIRO', 'COMISION', 'ITF'
-            ]):
-                # Es un cargo
-                cargos = last_monto
-                abonos = 0.0
-        
-        transaction = Transaction(
-            fecha_proceso=fecha_proceso_formatted,
-            fecha_valor=fecha_valor_formatted,
-            descripcion=descripcion,
-            cargos=cargos,
-            abonos=abonos
-        )
-        
-        logger.debug(f"Transacción parseada: {transaction}")
-        return transaction
 
     def _convert_bcp_date(self, date_str: str) -> str:
         """Convierte fecha BCP de DDMMM a DD/MM/YYYY"""

@@ -10,6 +10,7 @@ class Transaction:
     descripcion: Optional[str] = None
     cargos: float = 0.0
     abonos: float = 0.0
+    transaccion_interna: Optional[str] = None
 
     def is_valid(self) -> bool:
         """Check if transaction has meaningful data"""

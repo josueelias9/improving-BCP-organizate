@@ -78,7 +78,8 @@ class ProcessPDFWithDatabaseUseCase:
                     "fecha_valor": transaction.fecha_valor,
                     "descripcion": transaction.descripcion,
                     "cargos": transaction.cargos,
-                    "abonos": transaction.abonos
+                    "abonos": transaction.abonos,
+                    "transaccion_interna": transaction.transaccion_interna
                 }
                 transactions_list.append(transaction_dict)
             
