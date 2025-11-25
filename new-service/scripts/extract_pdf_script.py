@@ -64,12 +64,7 @@ class PDFExtractor:
         
         transactions = []
         lines = text.split('\n')
-        
-        # Buscar líneas que contengan transacciones
-        # Patrón típico: fecha fecha descripción lugar tipo monto
-        transaction_pattern = re.compile(
-            r'(\d{2}\w{3})\s+(\d{2}\w{3})\s+([^A-Z]*[A-Z][^A-Z]*)\s+([A-Z][A-Z\s]*)\s+(CONSUMO|PAGO|COMISION|INTERES)\s+([0-9,.]+(?:-)?)\s*([0-9,.]*(?:-)?)?'
-        )
+
         
         for line_num, line in enumerate(lines):
             line = line.strip()

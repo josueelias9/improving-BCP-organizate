@@ -76,7 +76,6 @@ def get_document_by_filename(session: Session, filename: str) -> Optional[Docume
 def get_documents_by_type(session: Session, document_type: str, skip: int = 0, limit: int = 100) -> List[Document]:
     """Get documents by type - legacy compatibility"""
     statement = select(Document).where(Document.type == document_type).offset(skip).limit(limit)
-    from sqlmodel import Session as TempSession
     temp_session = session
     return temp_session.exec(statement).all()
 
