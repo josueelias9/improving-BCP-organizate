@@ -119,6 +119,9 @@ class DocumentBase(SQLModel):
     account_number: str = Field(max_length=255, index=True)
     type: DocumentType
     currency: Currency = Field(default=Currency.PEN)
+    previous_balance: Optional[float] = Field(default=None)
+    initial_day: Optional[str] = Field(default=None, max_length=20)
+    final_day: Optional[str] = Field(default=None, max_length=20)
     data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))  # JSON data from PDF
 
 
@@ -155,6 +158,9 @@ class DocumentUpdate(SQLModel):
     account_number: Optional[str] = None
     type: Optional[DocumentType] = None
     currency: Optional[Currency] = None
+    previous_balance: Optional[float] = None
+    initial_day: Optional[str] = None
+    final_day: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
 
 

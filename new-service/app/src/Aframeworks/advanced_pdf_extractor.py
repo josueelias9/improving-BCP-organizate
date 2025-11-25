@@ -1,6 +1,6 @@
 import fitz  # PyMuPDF
 import re
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Optional
 import logging
 import os
 from dotenv import load_dotenv
@@ -31,6 +31,12 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
             # Extraer código de cuenta
             account_code = self._extract_account_code(full_text)
             
+            # Extraer saldo anterior
+            saldo_anterior = self._extract_saldo_anterior(full_text)
+            
+            # Extraer período (initial_day, final_day)
+            initial_day, final_day = self._extract_period(full_text)
+            
             # Parsear transacciones del texto
             transactions = self._parse_transactions_from_text(full_text)
             
@@ -40,7 +46,10 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
                 total_transactions=len(transactions),
                 success=True,
                 extracted_text=full_text,
-                account_code=account_code
+                account_code=account_code,
+                saldo_anterior=saldo_anterior,
+                initial_day=initial_day,
+                final_day=final_day
             )
             
         except Exception as e:
@@ -87,7 +96,7 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
                 page = pdf_document[page_num]
                 page_text = page.get_text()
                 if page_text:
-                    text += f"\n--- PÁGINA {page_num + 1} ---\n"
+                    text += f"\n\n--- PÁGINA {page_num + 1} ---\n\n"
                     text += page_text + "\n"
             
             pdf_document.close()
@@ -96,8 +105,15 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
             logger.error(f"Error con PyMuPDF: {str(e)}")
             raise
     
-    def _parse_transactions_from_text(self, text: str) -> List[Transaction]:
+    def  _parse_transactions_from_text(self, text: str) -> List[Transaction]:
         """
+
+        # find
+        NNMM
+        N: number
+        M: character
+
+        # extract
         Extrae y parsea las transacciones del texto del PDF BCP usando posiciones fijas
         
         Formato BCP (posicional):
@@ -252,3 +268,65 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
         except Exception as e:
             logger.error(f"Error extrayendo código de cuenta: {str(e)}")
             return None
+    
+    def _extract_saldo_anterior(self, text: str) -> Optional[float]:
+        """
+        Extrae el saldo anterior del texto del PDF
+        
+        Formato: SALDO ANTERIOR seguido del monto en posición fija (columna 58-68)
+        Ejemplo: ------------SALDO ANTERIOR---------------------------------    NNNNNNN.NN
+        """
+        try:
+            lines = text.split('\n')
+            
+            for line in lines:
+                # Buscar línea que contenga "SALDO ANTERIOR"
+                if 'SALDO ANTERIOR' in line:
+                    # Extraer monto desde posición 58 en adelante
+                    saldo_str = line[58:].strip()
+                    
+                    if saldo_str:
+                        try:
+                            saldo = float(saldo_str.replace(',', ''))
+                            logger.info(f"Saldo anterior encontrado: {saldo}")
+                            return saldo
+                        except ValueError:
+                            logger.warning(f"No se pudo convertir saldo anterior a número: {saldo_str}")
+            
+            logger.warning("No se encontró línea con SALDO ANTERIOR")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error extrayendo saldo anterior: {str(e)}")
+            return None
+    
+    def _extract_period(self, text: str) -> tuple[Optional[str], Optional[str]]:
+        """
+        Extrae el período del estado de cuenta del PDF
+        
+        Formato: DEL  NN/NN/NN  AL  NN/NN/NN
+        Ejemplo: DEL  01/10/25  AL  31/10/25
+        
+        Returns:
+            tuple: (initial_day, final_day) o (None, None) si no se encuentra
+        """
+        try:
+            lines = text.split('\n')
+            
+            # Patrón: DEL  NN/NN/NN  AL  NN/NN/NN
+            period_pattern = r'DEL\s+(\d{2}/\d{2}/\d{2})\s+AL\s+(\d{2}/\d{2}/\d{2})'
+            
+            for line in lines:
+                match = re.search(period_pattern, line.upper())
+                if match:
+                    initial_day = match.group(1)
+                    final_day = match.group(2)
+                    logger.info(f"Período encontrado: DEL {initial_day} AL {final_day}")
+                    return (initial_day, final_day)
+            
+            logger.warning("No se encontró línea con patrón DEL NN/NN/NN AL NN/NN/NN")
+            return (None, None)
+            
+        except Exception as e:
+            logger.error(f"Error extrayendo período: {str(e)}")
+            return (None, None)

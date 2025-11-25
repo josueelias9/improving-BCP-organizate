@@ -99,6 +99,9 @@ class ProcessPDFWithDatabaseUseCase:
                 account_number=extraction_result.account_code or "UNKNOWN",
                 type=DocumentType.BCP_STATEMENT,
                 user_id=user.id,
+                previous_balance=extraction_result.saldo_anterior,
+                initial_day=extraction_result.initial_day,
+                final_day=extraction_result.final_day,
                 data=json_data  # Guardar los datos extraídos como JSON
             )
             document = self._document_repository.create_document(session, document_create)
