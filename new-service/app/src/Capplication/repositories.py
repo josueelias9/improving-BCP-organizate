@@ -10,8 +10,6 @@ from sqlmodel import Session
 from models import (
     User, UserCreate, UserUpdate,
     Document, DocumentCreate, DocumentUpdate,
-    Category, CategoryCreate, CategoryUpdate,
-    Transaction, TransactionCreate, TransactionUpdate
 )
 
 

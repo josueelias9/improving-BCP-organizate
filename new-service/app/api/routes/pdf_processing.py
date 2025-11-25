@@ -64,7 +64,6 @@ async def process_pdf_endpoint(
         result = use_case.execute(
             session=session,
             pdf_filename=request.pdf_filename,
-            pdf_type=request.type,
             user_email=request.user_email
         )
         

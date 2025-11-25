@@ -43,8 +43,6 @@ class User(UserBase, table=True):
         index=True,
         nullable=False
     )
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
     
     # Relationships
     documents: List["Document"] = Relationship(back_populates="user")
@@ -54,11 +52,6 @@ class User(UserBase, table=True):
 class UserCreate(UserBase):
     pass
 
-
-class UserRead(UserBase):
-    id: uuid.UUID
-    created_at: datetime
-    updated_at: datetime
 
 
 class UserUpdate(SQLModel):
@@ -85,8 +78,6 @@ class Category(CategoryBase, table=True):
     )
     # Self-referencing for subcategories
     parent_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
     
     # Relationships
     parent: Optional["Category"] = Relationship(
@@ -97,21 +88,7 @@ class Category(CategoryBase, table=True):
     transactions: List["Transaction"] = Relationship(back_populates="category")
 
 
-class CategoryCreate(CategoryBase):
-    parent_id: Optional[uuid.UUID] = None
 
-
-class CategoryRead(CategoryBase):
-    id: uuid.UUID
-    parent_id: Optional[uuid.UUID]
-    created_at: datetime
-    updated_at: datetime
-
-
-class CategoryUpdate(SQLModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    parent_id: Optional[uuid.UUID] = None
 
 
 # Document Model
@@ -135,8 +112,6 @@ class Document(DocumentBase, table=True):
         nullable=False
     )
     user_id: uuid.UUID = Field(foreign_key="users.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
     
     # Relationships
     user: User = Relationship(back_populates="documents")
@@ -146,12 +121,6 @@ class Document(DocumentBase, table=True):
 class DocumentCreate(DocumentBase):
     user_id: uuid.UUID
 
-
-class DocumentRead(DocumentBase):
-    id: uuid.UUID
-    user_id: uuid.UUID
-    created_at: datetime
-    updated_at: datetime
 
 
 class DocumentUpdate(SQLModel):
@@ -194,29 +163,3 @@ class Transaction(TransactionBase, table=True):
     user: User = Relationship(back_populates="transactions")
     document: Document = Relationship(back_populates="transactions")
     category: Optional[Category] = Relationship(back_populates="transactions")
-
-
-class TransactionCreate(TransactionBase):
-    user_id: uuid.UUID
-    document_id: uuid.UUID
-    category_id: Optional[uuid.UUID] = None
-
-
-class TransactionRead(TransactionBase):
-    id: uuid.UUID
-    user_id: uuid.UUID
-    document_id: uuid.UUID
-    category_id: Optional[uuid.UUID]
-    created_at: datetime
-    updated_at: datetime
-
-
-class TransactionUpdate(SQLModel):
-    name: Optional[str] = None
-    amount: Optional[float] = None
-    currency: Optional[Currency] = None
-    description: Optional[str] = None
-    fecha_proceso: Optional[str] = None
-    fecha_consumo: Optional[str] = None
-    tipo_operacion: Optional[str] = None
-    category_id: Optional[uuid.UUID] = None

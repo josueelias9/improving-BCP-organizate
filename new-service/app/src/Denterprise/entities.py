@@ -34,7 +34,3 @@ class ExtractionResult:
     saldo_anterior: Optional[float] = None
     initial_day: Optional[str] = None
     final_day: Optional[str] = None
-
-    @property
-    def has_transactions(self) -> bool:
-        return len(self.transactions) > 0

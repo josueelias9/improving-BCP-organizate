@@ -29,7 +29,6 @@ class ProcessPDFWithDatabaseUseCase:
         self,
         session: Session,
         pdf_filename: str,
-        pdf_type: str = "debit",
         user_email: str = "admin@sistema.com"
     ) -> Dict[str, Any]:
         """
