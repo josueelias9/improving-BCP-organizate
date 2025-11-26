@@ -99,7 +99,7 @@ class DocumentBase(SQLModel):
     previous_balance: Optional[float] = Field(default=None)
     initial_day: Optional[str] = Field(default=None, max_length=20)
     final_day: Optional[str] = Field(default=None, max_length=20)
-    data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))  # JSON data from PDF
+    data: Optional[List[Dict[str, Any]]] = Field(default=None, sa_column=Column(JSON))  # List of transaction dicts from PDF
 
 
 class Document(DocumentBase, table=True):
@@ -130,7 +130,7 @@ class DocumentUpdate(SQLModel):
     previous_balance: Optional[float] = None
     initial_day: Optional[str] = None
     final_day: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[List[Dict[str, Any]]] = None
 
 
 # Transaction Model
