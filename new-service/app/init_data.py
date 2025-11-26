@@ -2,16 +2,13 @@ import logging
 
 from sqlmodel import Session
 
-from core.db import engine, init_db, create_db_and_tables
+from core.db import engine, init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def init() -> None:
-    # First create tables
-    logger.info("Creating database tables...")
-    create_db_and_tables()
     
     # Then initialize with data
     logger.info("Initializing database with default data...")

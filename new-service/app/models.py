@@ -26,7 +26,8 @@ class Currency(str, Enum):
     USD = "USD"  # Dólares
 
 
-# Shared properties
+# ============================================================================= User
+
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True, max_length=255)
     name: str = Field(max_length=255)
@@ -61,7 +62,8 @@ class UserUpdate(SQLModel):
     customer_type: Optional[CustomerType] = None
 
 
-# Category Model
+# ============================================================================= Category
+
 class CategoryBase(SQLModel):
     name: str = Field(max_length=255, index=True)
     description: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -90,8 +92,8 @@ class Category(CategoryBase, table=True):
 
 
 
+# ============================================================================= Document
 
-# Document Model
 class DocumentBase(SQLModel):
     account_number: str = Field(max_length=255, index=True)
     type: DocumentType
@@ -133,16 +135,18 @@ class DocumentUpdate(SQLModel):
     data: Optional[List[Dict[str, Any]]] = None
 
 
-# Transaction Model
+# ============================================================================= Transaction
+
+
 class TransactionBase(SQLModel):
-    name: str = Field(max_length=255)  # ID único de transacción (ej: EECC102025_4280820000002148_1)
-    amount: float
+    description: str = Field (max_length=255)  # ID único de transacción (ej: EECC102025_4280820000002148_1)
+    cargos: float
+    abonos: float
     currency: Currency = Field(default=Currency.PEN)
-    description: str = Field(sa_column=Column(Text))
     fecha_proceso: Optional[str] = Field(default=None, max_length=20)
     fecha_consumo: Optional[str] = Field(default=None, max_length=20)
-    tipo_operacion: Optional[str] = Field(default=None, max_length=50)
-
+    transaccion_interna: Optional[str] = Field(default=None, max_length=50)
+    type: str
 
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"
