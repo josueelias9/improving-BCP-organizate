@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import health, pdf_processing
+from api.routes import health, pdf_processing, transactions
 import logging
 from dotenv import load_dotenv
 
@@ -20,3 +20,4 @@ app = FastAPI(
 # Incluir las rutas desde los diferentes módulos
 app.include_router(health.router)
 app.include_router(pdf_processing.router)
+app.include_router(transactions.router, prefix="/api/transactions", tags=["transactions"])

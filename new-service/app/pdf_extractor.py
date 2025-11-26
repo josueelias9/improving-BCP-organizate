@@ -1,38 +1,32 @@
+"""
+PDF Extractor - Uses BCP parser from Denterprise layer
+Extracts transactions from BCP PDF bank statements
+"""
 import fitz  # PyMuPDF
 from typing import BinaryIO
 import logging
 import os
 from dotenv import load_dotenv
-from ..Denterprise.entities import ExtractionResult
-from ..Denterprise.repositories import PDFExtractorRepository
-from ..Denterprise.bcp_parser import BCPStatementParser
+from src.Denterprise.entities import ExtractionResult
+from src.Denterprise.bcp_parser import BCPStatementParser
 
 logger = logging.getLogger(__name__)
-
-# Cargar variables de entorno
 load_dotenv()
 
 
-class AdvancedPDFExtractor(PDFExtractorRepository):
-    """Extractor avanzado usando PyMuPDF para PDFs problemáticos
-    
-    Esta clase solo maneja la infraestructura de extracción de texto del PDF.
-    La lógica de negocio de parsing está en BCPStatementParser (Domain layer).
-    """
+class BCPPDFExtractor:
+    """Extractor for BCP PDF bank statements"""
     
     def __init__(self):
         self.parser = BCPStatementParser()
     
     def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
-        """Extrae transacciones del PDF usando PyMuPDF y delega parsing al domain layer"""
+        """Extract transactions from PDF file"""
         try:
-            # Obtener contraseña de variable de entorno
             password = os.getenv('PDF_PASSWORD')
+            full_text = self._extract_text_from_pdf(pdf_file, filename, password)
             
-            # Extraer texto completo (SOLO infraestructura)
-            full_text = self._extract_text_with_pymupdf(pdf_file, filename, password)
-            
-            # Delegar toda la lógica de negocio al parser del dominio
+            # Use parser from Denterprise layer for business logic
             account_code = self.parser.extract_account_code(full_text)
             saldo_anterior = self.parser.extract_saldo_anterior(full_text)
             initial_day, final_day = self.parser.extract_period(full_text)
@@ -62,43 +56,35 @@ class AdvancedPDFExtractor(PDFExtractorRepository):
                 account_code=None
             )
     
-    def _extract_text_with_pymupdf(self, pdf_file: BinaryIO, filename: str, password: str = None) -> str:
-        """Extrae texto usando PyMuPDF"""
-        logger.info(f"Extrayendo texto con PyMuPDF: {filename}")
-        if password:
-            logger.info("Usando contraseña para abrir PDF protegido")
+    def _extract_text_from_pdf(self, pdf_file: BinaryIO, filename: str, password: str = None) -> str:
+        """Extract text from PDF using PyMuPDF"""
+        logger.info(f"Extracting text from PDF: {filename}")
         
         try:
             text = ""
-            # Resetear puntero del archivo
             pdf_file.seek(0)
             pdf_bytes = pdf_file.read()
-            
-            # Abrir PDF desde bytes
             pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
             
-            # Si el PDF está encriptado, intentar desencriptar
             if pdf_document.is_encrypted:
                 if password:
                     if pdf_document.authenticate(password):
-                        logger.info("PDF desencriptado exitosamente con PyMuPDF")
+                        logger.info("PDF decrypted successfully")
                     else:
-                        raise Exception("Contraseña incorrecta para PDF")
+                        raise Exception("Incorrect password for PDF")
                 else:
-                    raise Exception("PDF está encriptado pero no se proporcionó contraseña")
+                    raise Exception("PDF is encrypted but no password provided")
             
-            logger.info(f"PDF tiene {pdf_document.page_count} páginas")
+            logger.info(f"PDF has {pdf_document.page_count} pages")
             
             for page_num in range(pdf_document.page_count):
-                logger.info(f"Procesando página {page_num + 1}")
                 page = pdf_document[page_num]
                 page_text = page.get_text()
                 if page_text:
-                    text += f"\n\n--- PÁGINA {page_num + 1} ---\n\n"
-                    text += page_text + "\n"
+                    text += f"\n\n--- PAGE {page_num + 1} ---\n\n{page_text}\n"
             
             pdf_document.close()
             return text
         except Exception as e:
-            logger.error(f"Error con PyMuPDF: {str(e)}")
+            logger.error(f"Error with PyMuPDF: {str(e)}")
             raise

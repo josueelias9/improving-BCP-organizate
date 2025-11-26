@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from src.Binterface.dependencies import get_process_pdf_use_case
-from src.Capplication.process_pdf_with_database_use_case import ProcessPDFWithDatabaseUseCase
 from api.deps import SessionDep
+from pdf_extractor import BCPPDFExtractor
+from models import DocumentCreate, DocumentType, UserCreate, CustomerType
+import crud
+import os
 
 # Crear router para rutas de procesamiento de PDF
 router = APIRouter(prefix="/api", tags=["PDF Processing"])
@@ -11,14 +13,14 @@ router = APIRouter(prefix="/api", tags=["PDF Processing"])
 class PDFProcessRequest(BaseModel):
     pdf_filename: str
     type: str  # "debit" o "credit"
-    user_email: str = "admin@sistema.com"  # Usuario por defecto
+    user_email: str = "admin@bcpextractor.com"
     
     class Config:
         json_schema_extra = {
             "example": {
                 "pdf_filename": "files/EECC102025_09745280.PDF",
                 "type": "debit",
-                "user_email": "admin@sistema.com"
+                "user_email": "admin@bcpextractor.com"
             }
         }
 
@@ -26,62 +28,80 @@ class PDFProcessRequest(BaseModel):
 @router.post("/process-pdf")
 async def process_pdf_endpoint(
     request: PDFProcessRequest, 
-    session: SessionDep,
-    use_case: ProcessPDFWithDatabaseUseCase = Depends(get_process_pdf_use_case)
+    session: SessionDep
 ):
     """
-    Procesa un PDF específico por nombre y guarda los datos extraídos en la tabla Documents
+    Process a PDF file and save extracted data to the Documents table
     
-    - **request**: Objeto JSON con el nombre del archivo PDF, tipo y usuario
-    - **pdf_filename**: Nombre del archivo PDF (ej: "files/documento.pdf") 
-    - **type**: Tipo de cuenta ("debit" o "credit")
-    - **user_email**: Email del usuario (opcional, por defecto admin@sistema.com)
-    - Los datos extraídos se guardan como JSON en la columna 'data' de la tabla Documents
-    - Cada fila extraída será un elemento de una lista, cada elemento será un objeto con atributos
+    - **pdf_filename**: PDF file path (e.g., "files/document.pdf") 
+    - **type**: Account type ("debit" or "credit")
+    - **user_email**: User email (optional, defaults to admin@bcpextractor.com)
+    - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
     try:
-        # Verificar tipo de PDF
+        # Verify PDF type
         if request.type.lower() == "credit":
             raise HTTPException(
                 status_code=501,
-                detail="Procesamiento de PDFs de cuentas de crédito no implementado aún. Solo se soportan cuentas de débito ('debit')."
+                detail="Credit card PDF processing not implemented yet. Only debit accounts are supported."
             )
         elif request.type.lower() != "debit":
             raise HTTPException(
                 status_code=400,
-                detail="Tipo de PDF no válido. Use 'debit' o 'credit'."
+                detail="Invalid PDF type. Use 'debit' or 'credit'."
             )
         
-        # Verificar que el archivo existe
-        import os
+        # Verify file exists
         if not os.path.exists(request.pdf_filename):
             raise HTTPException(
                 status_code=404, 
-                detail=f"El archivo '{request.pdf_filename}' no fue encontrado"
+                detail=f"File '{request.pdf_filename}' not found"
             )
         
-        # Procesar PDF con base de datos usando dependency injection
-        result = use_case.execute(
-            session=session,
-            pdf_filename=request.pdf_filename,
-            user_email=request.user_email
-        )
+        # Get or create user
+        user = crud.get_user_by_email(session, request.user_email)
+        if not user:
+            user_create = UserCreate(
+                email=request.user_email,
+                name="Admin User",
+                customer_type=CustomerType.INDIVIDUAL
+            )
+            user = crud.create_user(session, user_create)
         
-        if not result["success"]:
+        # Extract transactions from PDF
+        extractor = BCPPDFExtractor()
+        with open(request.pdf_filename, 'rb') as pdf_file:
+            extraction_result = extractor.extract_transactions(pdf_file, request.pdf_filename)
+        
+        if not extraction_result.success:
             raise HTTPException(
                 status_code=500,
-                detail=result["message"]
+                detail=f"Error processing PDF: {extraction_result.error_message or 'Unknown error'}"
             )
+        
+        # Convert transactions to dict list
+        transactions_list = [t.__dict__ for t in extraction_result.transactions]
+        
+        # Create document record in database
+        document_create = DocumentCreate(
+            account_number=extraction_result.account_code or "UNKNOWN",
+            type=DocumentType.BCP_STATEMENT,
+            user_id=user.id,
+            previous_balance=extraction_result.saldo_anterior,
+            initial_day=extraction_result.initial_day,
+            final_day=extraction_result.final_day,
+            data=transactions_list
+        )
+        document = crud.create_document(session, document_create)
         
         return {
             "success": True,
-            "message": result["message"],
-            "document_id": result["document_id"],
-            "user_id": result["user_id"],
-            "account_number": result.get("account_number"),
-            "filename": result.get("filename"),
-            "transactions_count": result["transactions_count"],
-            "data_saved_to_database": "Datos extraídos guardados como JSON en tabla Documents, columna 'data'"
+            "message": f"PDF processed successfully. {len(transactions_list)} transactions saved as JSON in Documents table.",
+            "document_id": str(document.id),
+            "user_id": str(user.id),
+            "account_number": extraction_result.account_code,
+            "filename": extraction_result.filename,
+            "transactions_count": len(transactions_list)
         }
         
     except HTTPException:
@@ -89,5 +109,5 @@ async def process_pdf_endpoint(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Error procesando PDF: {str(e)}"
+            detail=f"Error processing PDF: {str(e)}"
         )
