@@ -145,8 +145,9 @@ class TransactionBase(SQLModel):
     currency: Currency = Field(default=Currency.PEN)
     fecha_proceso: Optional[str] = Field(default=None, max_length=20)
     fecha_consumo: Optional[str] = Field(default=None, max_length=20)
-    transaccion_interna: Optional[str] = Field(default=None, max_length=50)
-    type: str
+    transaccion_interna: bool = Field(default=False)  # True if "*", False otherwise
+    history: Optional[str] = Field(default=None)
+    type: Optional[str] = Field(default=None)
 
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"

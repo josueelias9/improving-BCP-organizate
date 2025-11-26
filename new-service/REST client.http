@@ -25,3 +25,17 @@ Content-Type: application/json
     "type": "debit",
     "user_email": "admin@bcpextractor.com"
 }
+
+###
+
+
+
+### === TRANSACTIONS ===
+
+### 3. Load Transactions from Document
+# Migra los datos de la columna 'data' del documento a la tabla transactions
+# Reemplaza {document_id} con el UUID del documento que quieres procesar
+POST {{baseUrl}}/api/transactions/load-from-document/7b980ea8-bec6-4340-8558-29686be7a30d
+Accept: application/json
+
+###

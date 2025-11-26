@@ -55,15 +55,7 @@ def update_user(session: Session, user_id: uuid.UUID, user_update: UserUpdate) -
     return db_user
 
 
-def delete_user(session: Session, user_id: uuid.UUID) -> bool:
-    """Delete user"""
-    db_user = session.get(User, user_id)
-    if not db_user:
-        return False
-    
-    session.delete(db_user)
-    session.commit()
-    return True
+
 
 
 def user_exists(session: Session, email: str) -> bool:
