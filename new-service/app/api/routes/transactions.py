@@ -31,6 +31,13 @@ def load_transactions_from_document(
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
     
+    # Check if document is already processed
+    if document.processed:
+        raise HTTPException(
+            status_code=400,
+            detail="Document has already been processed. Transactions already loaded."
+        )
+    
     # Check if document has data
     if not document.data or len(document.data) == 0:
         raise HTTPException(
@@ -79,10 +86,21 @@ def load_transactions_from_document(
             detail=f"Error committing transactions to database: {str(e)}"
         )
     
+    # Mark document as processed
+    try:
+        document.processed = True
+        session.add(document)
+        session.commit()
+        logger.info(f"Document {document_id} marked as processed")
+    except Exception as e:
+        logger.error(f"Error marking document as processed: {str(e)}")
+        # Don't raise exception since transactions were already committed successfully
+    
     return {
         "document_id": str(document_id),
         "total_records": len(document.data),
         "loaded": loaded_count,
         "skipped": skipped_count,
-        "errors": errors if errors else None
+        "errors": errors if errors else None,
+        "processed": document.processed
     }

@@ -102,6 +102,8 @@ class DocumentBase(SQLModel):
     initial_day: Optional[str] = Field(default=None, max_length=20)
     final_day: Optional[str] = Field(default=None, max_length=20)
     data: Optional[List[Dict[str, Any]]] = Field(default=None, sa_column=Column(JSON))  # List of transaction dicts from PDF
+    unique_identifier: Optional[str] = Field(default=None, max_length=500)
+    processed: bool = Field(default=False)
 
 
 class Document(DocumentBase, table=True):
@@ -133,6 +135,7 @@ class DocumentUpdate(SQLModel):
     initial_day: Optional[str] = None
     final_day: Optional[str] = None
     data: Optional[List[Dict[str, Any]]] = None
+    processed: Optional[bool] = None
 
 
 # ============================================================================= Transaction

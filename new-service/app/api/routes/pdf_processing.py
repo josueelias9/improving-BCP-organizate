@@ -82,6 +82,16 @@ async def process_pdf_endpoint(
         # Convert transactions to dict list
         transactions_list = [t.__dict__ for t in extraction_result.transactions]
         
+        unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}"
+        
+        # Check if document already exists with this unique_identifier
+        existing_document = crud.get_document_by_unique_identifier(session, unique_id)
+        if existing_document:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Document already exists with unique_identifier '{unique_id}'. Document ID: {existing_document.id}"
+            )
+        
         # Create document record in database
         document_create = DocumentCreate(
             account_number=extraction_result.account_code or "UNKNOWN",
@@ -90,7 +100,8 @@ async def process_pdf_endpoint(
             previous_balance=extraction_result.saldo_anterior,
             initial_day=extraction_result.initial_day,
             final_day=extraction_result.final_day,
-            data=transactions_list
+            data=transactions_list,
+            unique_identifier=unique_id
         )
         document = crud.create_document(session, document_create)
         

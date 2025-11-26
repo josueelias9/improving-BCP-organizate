@@ -94,6 +94,12 @@ def get_document_by_filename(session: Session, filename: str) -> Optional[Docume
     return session.exec(statement).first()
 
 
+def get_document_by_unique_identifier(session: Session, unique_identifier: str) -> Optional[Document]:
+    """Get document by unique_identifier"""
+    statement = select(Document).where(Document.unique_identifier == unique_identifier)
+    return session.exec(statement).first()
+
+
 
 def update_document(session: Session, document_id: uuid.UUID, document_update: DocumentUpdate) -> Optional[Document]:
     """Update document"""
