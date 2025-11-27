@@ -14,7 +14,7 @@ Accept: application/json
 
 ### === PDF PROCESSING WITH DATABASE ===
 
-### 2. Process PDF and Save to Database (NEW - Port 8003)
+### 2. Process PDF and Save to Database
 # Extrae datos del PDF y los guarda como JSON en la tabla Documents
 
 # @name populateDocument
@@ -35,10 +35,16 @@ Content-Type: application/json
 
 ### 3. Load Transactions from Document
 # Migra los datos de la columna 'data' del documento a la tabla transactions
-# Reemplaza {document_id} con el UUID del documento que quieres procesar
 
 # @name populateTransaction
 POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
+Accept: application/json
+
+###
+
+### 4. Get All Transactions
+# Obtiene todas las transacciones con paginación
+GET {{baseUrl}}/api/transactions/?skip=0&limit=100
 Accept: application/json
 
 ###

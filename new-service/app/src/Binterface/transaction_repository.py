@@ -5,7 +5,7 @@ Implements transaction persistence operations
 import uuid
 import logging
 from typing import List, Tuple
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from models import Transaction
 from src.Denterprise.repositories import ITransactionRepository
@@ -63,3 +63,8 @@ class TransactionRepository(ITransactionRepository):
             raise ValueError(f"Error committing transactions: {str(e)}")
         
         return loaded_count, skipped_count, errors
+    
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[Transaction]:
+        """Get all transactions with pagination"""
+        statement = select(Transaction).offset(skip).limit(limit)
+        return list(self.session.exec(statement).all())
