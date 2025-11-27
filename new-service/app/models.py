@@ -21,11 +21,6 @@ class DocumentType(str, Enum):
     CREDIT_STATEMENT = "credit_statement"
 
 
-class Currency(str, Enum):
-    PEN = "PEN"  # Soles
-    USD = "USD"  # Dólares
-
-
 # ============================================================================= User
 
 class UserBase(SQLModel):
@@ -96,7 +91,7 @@ class Category(CategoryBase, table=True):
 class DocumentBase(SQLModel):
     account_number: str = Field(max_length=255, index=True)
     type: DocumentType
-    currency: Currency = Field(default=Currency.PEN)
+    currency: str = Field(default="")
     previous_balance: Optional[float] = Field(default=None)
     initial_day: Optional[str] = Field(default=None, max_length=20)
     final_day: Optional[str] = Field(default=None, max_length=20)
@@ -129,7 +124,7 @@ class DocumentCreate(DocumentBase):
 class DocumentUpdate(SQLModel):
     account_number: Optional[str] = None
     type: Optional[DocumentType] = None
-    currency: Optional[Currency] = None
+    currency: Optional[str] = None
     previous_balance: Optional[float] = None
     initial_day: Optional[str] = None
     final_day: Optional[str] = None
@@ -144,12 +139,11 @@ class TransactionBase(SQLModel):
     description: str = Field (max_length=255)  # ID único de transacción (ej: EECC102025_4280820000002148_1)
     cargos: float
     abonos: float
-    currency: Currency = Field(default=Currency.PEN)
+    currency: str = Field(default="")
     fecha_proceso: Optional[str] = Field(default=None, max_length=20)
     fecha_consumo: Optional[str] = Field(default=None, max_length=20)
     internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
     history: Optional[str] = Field(default=None)
-    type: Optional[str] = Field(default=None)
 
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"

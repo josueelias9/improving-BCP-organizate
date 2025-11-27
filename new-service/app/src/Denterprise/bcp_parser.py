@@ -148,9 +148,10 @@ class BCPStatementParser:
         # description
         Extrae el código de cuenta y la moneda del texto del PDF
         
-        # Format:
+        # Format
         _NNN-NNNNNNNN-N-NN__CCCCC
-        donde:
+        
+        where:
         - _: space
         - N: digit
         - C: letters (SOLES or DOLARES)

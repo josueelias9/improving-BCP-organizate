@@ -2,7 +2,6 @@
 ### Variables
 @baseUrl = http://127.0.0.1:8001
 
-
 ### === HEALTH CHECK ===
 
 ### 1. Health Check - Get API Info
@@ -17,6 +16,8 @@ Accept: application/json
 
 ### 2. Process PDF and Save to Database (NEW - Port 8003)
 # Extrae datos del PDF y los guarda como JSON en la tabla Documents
+
+# @name populateDocument
 POST {{baseUrl}}/api/process-pdf
 Content-Type: application/json
 
@@ -35,7 +36,9 @@ Content-Type: application/json
 ### 3. Load Transactions from Document
 # Migra los datos de la columna 'data' del documento a la tabla transactions
 # Reemplaza {document_id} con el UUID del documento que quieres procesar
-POST {{baseUrl}}/api/transactions/load-from-document/7b980ea8-bec6-4340-8558-29686be7a30d
+
+# @name populateTransaction
+POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
 Accept: application/json
 
 ###
