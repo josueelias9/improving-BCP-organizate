@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.deps import SessionDep
 from pdf_extractor import BCPPDFExtractor
-from models import DocumentCreate, DocumentType, UserCreate, CustomerType
-import crud
+from models import DocumentCreate, DocumentType, UserCreate, CustomerType, Document
+from src.Binterface.user_repository import UserRepository
+from src.Binterface.document_repository import DocumentRepository
 import os
 
 # Crear router para rutas de procesamiento de PDF
@@ -58,15 +59,19 @@ async def process_pdf_endpoint(
                 detail=f"File '{request.pdf_filename}' not found"
             )
         
+        # Instantiate repositories
+        user_repo = UserRepository(session)
+        document_repo = DocumentRepository(session)
+        
         # Get or create user
-        user = crud.get_user_by_email(session, request.user_email)
+        user = user_repo.get_by_email(request.user_email)
         if not user:
             user_create = UserCreate(
                 email=request.user_email,
                 name="Admin User",
                 customer_type=CustomerType.INDIVIDUAL
             )
-            user = crud.create_user(session, user_create)
+            user = user_repo.create(user_create)
         
         # Extract transactions from PDF
         extractor = BCPPDFExtractor()
@@ -85,7 +90,7 @@ async def process_pdf_endpoint(
         unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}__{extraction_result.currency}"
         
         # Check if document already exists with this unique_identifier
-        existing_document = crud.get_document_by_unique_identifier(session, unique_id)
+        existing_document = document_repo.get_by_unique_identifier(unique_id)
         if existing_document:
             return {
                 "detail": f"Document already exists",
@@ -94,10 +99,10 @@ async def process_pdf_endpoint(
             }
         
         # Create document record in database
-        document_create = DocumentCreate(
+        document = Document(
             account_number=extraction_result.account_code or "UNKNOWN",
             type=DocumentType.BCP_STATEMENT,
-            currency=extraction_result.currency,
+            currency=extraction_result.currency or "PEN",
             previous_balance=extraction_result.saldo_anterior,
             initial_day=extraction_result.initial_day,
             final_day=extraction_result.final_day,
@@ -105,7 +110,7 @@ async def process_pdf_endpoint(
             unique_identifier=unique_id,
             user_id=user.id,
         )
-        document = crud.create_document(session, document_create)
+        document = document_repo.create(document)
         
         return {
             "success": True,
