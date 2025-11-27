@@ -27,7 +27,7 @@ class BCPPDFExtractor:
             full_text = self._extract_text_from_pdf(pdf_file, filename, password)
             
             # Use parser from Denterprise layer for business logic
-            account_code = self.parser.extract_account_code(full_text)
+            account_code, currency = self.parser.extract_account_code(full_text)            
             saldo_anterior = self.parser.extract_saldo_anterior(full_text)
             initial_day, final_day = self.parser.extract_period(full_text)
             transactions = self.parser.parse_transactions(full_text)
@@ -39,6 +39,7 @@ class BCPPDFExtractor:
                 success=True,
                 extracted_text=full_text,
                 account_code=account_code,
+                currency=currency,
                 saldo_anterior=saldo_anterior,
                 initial_day=initial_day,
                 final_day=final_day
@@ -53,7 +54,8 @@ class BCPPDFExtractor:
                 success=False,
                 error_message=str(e),
                 extracted_text=None,
-                account_code=None
+                account_code=None,
+                currency=None
             )
     
     def _extract_text_from_pdf(self, pdf_file: BinaryIO, filename: str, password: str = None) -> str:

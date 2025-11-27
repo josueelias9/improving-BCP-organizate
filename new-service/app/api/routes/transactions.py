@@ -60,9 +60,8 @@ def load_transactions_from_document(
                 currency=document.currency,
                 fecha_proceso=transaction_data.get("fecha_proceso"),
                 fecha_consumo=transaction_data.get("fecha_consumo"),
-                transaccion_interna=transaction_data.get("transaccion_interna") == "*" ,
+                internal_transaction=transaction_data.get("internal_transaction") == "*" ,
                 type=transaction_data.get("type", "unknown"),
-                user_id=document.user_id,
                 document_id=document.id
             )
             

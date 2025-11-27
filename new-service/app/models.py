@@ -47,7 +47,6 @@ class User(UserBase, table=True):
     
     # Relationships
     documents: List["Document"] = Relationship(back_populates="user")
-    transactions: List["Transaction"] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):
@@ -148,7 +147,7 @@ class TransactionBase(SQLModel):
     currency: Currency = Field(default=Currency.PEN)
     fecha_proceso: Optional[str] = Field(default=None, max_length=20)
     fecha_consumo: Optional[str] = Field(default=None, max_length=20)
-    transaccion_interna: bool = Field(default=False)  # True if "*", False otherwise
+    internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
     history: Optional[str] = Field(default=None)
     type: Optional[str] = Field(default=None)
 
@@ -161,13 +160,11 @@ class Transaction(TransactionBase, table=True):
         index=True,
         nullable=False
     )
-    user_id: uuid.UUID = Field(foreign_key="users.id")
     document_id: uuid.UUID = Field(foreign_key="documents.id")
     category_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
     # Relationships
-    user: User = Relationship(back_populates="transactions")
     document: Document = Relationship(back_populates="transactions")
     category: Optional[Category] = Relationship(back_populates="transactions")

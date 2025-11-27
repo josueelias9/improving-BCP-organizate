@@ -65,8 +65,8 @@ class BCPStatementParser:
                 # Extraer por posiciones fijas
                 fecha_proceso = line[0:5].strip()      # Posición 0-5
                 fecha_valor = line[6:11].strip()       # Posición 6-11
-                descripcion = line[12:30].strip()      # Posición 12-30
-                transaccion_interna = line[34:35].strip()  # Posición 30-31 (*, opcional)
+                description = line[12:30].strip()      # Posición 12-30
+                internal_transaction = line[34:35].strip()  # Posición 30-31 (*, opcional)
                 egreso_str = line[42:54].strip()       # Posición 31-43
                 ingreso_str = line[61:].strip() 
 
@@ -99,10 +99,10 @@ class BCPStatementParser:
                 transaction = Transaction(
                     fecha_proceso=fecha_proceso_formatted,
                     fecha_valor=fecha_valor_formatted,
-                    descripcion=descripcion,
+                    description=description,
                     cargos=egreso,
                     abonos=ingreso,
-                    transaccion_interna=transaccion_interna
+                    internal_transaction=internal_transaction
                 )
                 
                 if transaction.is_valid():
@@ -143,29 +143,43 @@ class BCPStatementParser:
             return date_str
 
     @staticmethod
-    def extract_account_code(text: str) -> Optional[str]:
+    def extract_account_code(text: str) -> Optional[tuple[str, str]]:
         """
-        Extrae el código de cuenta del texto del PDF
+        # description
+        Extrae el código de cuenta y la moneda del texto del PDF
         
-        Formato BCP: NNN-NNNNNNNN-N-NN
-        Ejemplo: 191-04106279-0-55
+        # Format:
+        _NNN-NNNNNNNN-N-NN__CCCCC
+        donde:
+        - _: space
+        - N: digit
+        - C: letters (SOLES or DOLARES)
+    
+        # example 
+        191-04106279-0-55  SOLES
+        
+        # Returns:
+        Tuple[str, str]: (account_code, currency) where currency is 'PEN' or 'USD'
+        None if not found
         """
         try:
             lines = text.split('\n')
             
-            # Patrón específico BCP: NNN-NNNNNNNN-N-NN
-            # Ejemplo: 191-04106279-0-55
-            account_pattern = r'\b(\d{3}-\d{8}-\d{1}-\d{2})\b'
+            # Patrón específico BCP: NNN-NNNNNNNN-N-NN  CURRENCY
+            # Ejemplo: 191-04106279-0-55  SOLES
+            account_pattern = r'\b(\d{3}-\d{8}-\d{1}-\d{2})\s+(SOLES|DOLARES)'
             
             for line in lines:
-                # Buscar el patrón de cuenta BCP
+                # Buscar el patrón de cuenta BCP con moneda
                 match = re.search(account_pattern, line)
                 if match:
                     account_code = match.group(1)
-                    logger.info(f"Código de cuenta BCP encontrado: {account_code}")
-                    return account_code
+                    currency_text = match.group(2)
+                    # Convertir SOLES/DOLARES a PEN/USD
+                    logger.info(f"Código de cuenta BCP encontrado: {account_code}, Moneda: {currency_text}")
+                    return (account_code, currency_text)
             
-            logger.warning("No se pudo encontrar el código de cuenta en formato NNN-NNNNNNNN-N-NN")
+            logger.warning("No se pudo encontrar el código de cuenta en formato NNN-NNNNNNNN-N-NN con moneda")
             return None
             
         except Exception as e:

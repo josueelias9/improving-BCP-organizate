@@ -96,6 +96,7 @@ async def process_pdf_endpoint(
         document_create = DocumentCreate(
             account_number=extraction_result.account_code or "UNKNOWN",
             type=DocumentType.BCP_STATEMENT,
+            currency=extraction_result.currency,
             user_id=user.id,
             previous_balance=extraction_result.saldo_anterior,
             initial_day=extraction_result.initial_day,

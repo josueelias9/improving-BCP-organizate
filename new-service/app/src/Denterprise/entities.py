@@ -7,15 +7,15 @@ class Transaction:
     """Transaction entity representing a bank transaction"""
     fecha_proceso: Optional[str] = None
     fecha_valor: Optional[str] = None
-    descripcion: Optional[str] = None
+    description: Optional[str] = None
     cargos: float = 0.0
     abonos: float = 0.0
-    transaccion_interna: Optional[str] = None
+    internal_transaction: Optional[str] = None
 
     def is_valid(self) -> bool:
         """Check if transaction has meaningful data"""
         return (
-            (self.descripcion and self.descripcion.strip()) or
+            (self.description and self.description.strip()) or
             self.cargos != 0.0 or
             self.abonos != 0.0
         )
@@ -31,6 +31,7 @@ class ExtractionResult:
     error_message: Optional[str] = None
     extracted_text: Optional[str] = None
     account_code: Optional[str] = None
+    currency: Optional[str] = None  # 'PEN' or 'USD'
     saldo_anterior: Optional[float] = None
     initial_day: Optional[str] = None
     final_day: Optional[str] = None
