@@ -144,6 +144,7 @@ class TransactionBase(SQLModel):
     fecha_consumo: Optional[str] = Field(default=None, max_length=20)
     internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
     history: Optional[str] = Field(default=None)
+    order: int
 
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"
