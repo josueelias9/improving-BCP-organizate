@@ -43,25 +43,7 @@ def get_all_transactions(
         transaction_gateway = TransactionGateway(session)
         transactions = transaction_gateway.get_all(skip=skip, limit=limit)
         
-        # Convert to dict
-        return [
-            {
-                "id": str(t.id),
-                "description": t.description,
-                "cargos": t.cargos,
-                "abonos": t.abonos,
-                "currency": t.currency,
-                "fecha_proceso": t.fecha_proceso,
-                "fecha_consumo": t.fecha_consumo,
-                "internal_transaction": t.internal_transaction,
-                # "type": t.type,
-                "document_id": str(t.document_id),
-                "order": t.order,
-                "created_at": t.created_at.isoformat() if t.created_at else None,
-                "updated_at": t.updated_at.isoformat() if t.updated_at else None
-            }
-            for t in transactions
-        ]
+        return [t.model_dump() for t in transactions]
         
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")

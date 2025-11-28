@@ -64,7 +64,7 @@ class TransactionGateway(ITransactionGateway):
         
         return loaded_count, skipped_count, errors
     
-    def get_all(self, skip: int = 0, limit: int = 100) -> List[Transaction]:
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[dict]:
         """Get all transactions with pagination"""
         statement = select(Transaction).offset(skip).limit(limit)
-        return list(self.session.exec(statement).all())
+        return self.session.exec(statement).all()
