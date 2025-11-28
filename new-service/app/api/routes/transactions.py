@@ -10,8 +10,8 @@ import logging
 
 from api.deps import get_db_session
 from src.Capplication.load_transactions_use_case import LoadTransactionsUseCase
-from src.Binterface.document_repository import DocumentRepository
-from src.Binterface.transaction_repository import TransactionRepository
+from src.Binterface.document_gateway import DocumentGateway
+from src.Binterface.transaction_gateway import TransactionGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -39,8 +39,8 @@ def get_all_transactions(
         if limit > 1000:
             limit = 1000
         
-        # Get transactions via repository
-        transaction_repo = TransactionRepository(session)
+        # Get transactions via gateway
+        transaction_repo = TransactionGateway(session)
         transactions = transaction_repo.get_all(skip=skip, limit=limit)
         
         # Convert to dict
@@ -92,11 +92,11 @@ def load_transactions_from_document(
         HTTPException: 404 if document not found, 400 for validation errors
     """
     try:
-        # Instantiate concrete repositories
-        document_repo = DocumentRepository(session)
-        transaction_repo = TransactionRepository(session)
+        # Instantiate concrete gateways
+        document_repo = DocumentGateway(session)
+        transaction_repo = TransactionGateway(session)
         
-        # Inject repositories into use case
+        # Inject gateways into use case
         use_case = LoadTransactionsUseCase(document_repo, transaction_repo)
         
         # Execute use case

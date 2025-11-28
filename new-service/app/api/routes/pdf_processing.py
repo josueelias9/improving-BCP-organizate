@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from api.deps import SessionDep
 from pdf_extractor import BCPPDFExtractor
 from models import DocumentCreate, DocumentType, UserCreate, CustomerType, Document
-from src.Binterface.user_repository import UserRepository
-from src.Binterface.document_repository import DocumentRepository
+from src.Binterface.user_gateway import UserGateway
+from src.Binterface.document_gateway import DocumentGateway
 import os
 
 # Crear router para rutas de procesamiento de PDF
@@ -59,9 +59,9 @@ async def process_pdf_endpoint(
                 detail=f"File '{request.pdf_filename}' not found"
             )
         
-        # Instantiate repositories
-        user_repo = UserRepository(session)
-        document_repo = DocumentRepository(session)
+        # Instantiate gateways
+        user_repo = UserGateway(session)
+        document_repo = DocumentGateway(session)
         
         # Get or create user
         user = user_repo.get_by_email(request.user_email)

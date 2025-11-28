@@ -1,5 +1,5 @@
 """
-Document Repository - Interface Adapter Layer
+Document Gateway - Interface Adapter Layer
 Implements document persistence operations
 """
 import uuid
@@ -7,14 +7,14 @@ import logging
 from sqlmodel import Session, select
 
 from models import Document
-from src.Denterprise.repositories import IDocumentRepository
+from src.Denterprise.gateways import IDocumentGateway
 from src.Denterprise.transaction_service import DocumentData
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentRepository(IDocumentRepository):
-    """SQLModel implementation of document repository"""
+class DocumentGateway(IDocumentGateway):
+    """SQLModel implementation of document gateway"""
     
     def __init__(self, session: Session):
         self.session = session

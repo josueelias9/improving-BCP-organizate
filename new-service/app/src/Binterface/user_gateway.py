@@ -1,5 +1,5 @@
 """
-User Repository - Interface Adapter Layer
+User Gateway - Interface Adapter Layer
 Implements user persistence operations
 """
 import uuid
@@ -12,8 +12,8 @@ from models import User, UserCreate
 logger = logging.getLogger(__name__)
 
 
-class UserRepository:
-    """SQLModel implementation of user repository"""
+class UserGateway:
+    """SQLModel implementation of user gateway"""
     
     def __init__(self, session: Session):
         self.session = session

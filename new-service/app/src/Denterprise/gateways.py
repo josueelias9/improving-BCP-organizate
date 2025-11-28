@@ -1,5 +1,5 @@
 """
-Repository Interfaces - Enterprise Layer
+Gateway Interfaces - Enterprise Layer
 Defines contracts for data access without implementation details
 """
 import uuid
@@ -9,8 +9,8 @@ from src.Denterprise.entities import Transaction, ExtractionResult
 from src.Denterprise.transaction_service import TransactionData, DocumentData
 
 
-class PDFExtractorRepository(ABC):
-    """Abstract repository for PDF extraction operations"""
+class PDFExtractorGateway(ABC):
+    """Abstract gateway for PDF extraction operations"""
     
     @abstractmethod
     def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
@@ -18,7 +18,7 @@ class PDFExtractorRepository(ABC):
         pass
 
 
-class IDocumentRepository(ABC):
+class IDocumentGateway(ABC):
     """Interface for document persistence operations"""
     
     @abstractmethod
@@ -37,7 +37,7 @@ class IDocumentRepository(ABC):
         pass
 
 
-class ITransactionRepository(ABC):
+class ITransactionGateway(ABC):
     """Interface for transaction persistence operations"""
     
     @abstractmethod

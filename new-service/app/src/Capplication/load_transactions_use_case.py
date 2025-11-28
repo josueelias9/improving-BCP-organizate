@@ -6,7 +6,7 @@ import logging
 import uuid
 
 from src.Denterprise.transaction_service import TransactionService, LoadTransactionsResult
-from src.Denterprise.repositories import IDocumentRepository, ITransactionRepository
+from src.Denterprise.gateways import IDocumentGateway, ITransactionGateway
 
 logger = logging.getLogger(__name__)
 
@@ -16,15 +16,15 @@ class LoadTransactionsUseCase:
     
     def __init__(
         self,
-        document_repo: IDocumentRepository,
-        transaction_repo: ITransactionRepository
+        document_repo: IDocumentGateway,
+        transaction_repo: ITransactionGateway
     ):
         """
-        Initialize use case with repository dependencies
+        Initialize use case with gateway dependencies
         
         Args:
-            document_repo: Document repository interface
-            transaction_repo: Transaction repository interface
+            document_repo: Document gateway interface
+            transaction_repo: Transaction gateway interface
         """
         self.document_repo = document_repo
         self.transaction_repo = transaction_repo
@@ -43,7 +43,7 @@ class LoadTransactionsUseCase:
         Raises:
             ValueError: If document not found or validation fails
         """
-        # 1. Retrieve document (via repository interface)
+        # 1. Retrieve document (via gateway interface)
         document_data = self.document_repo.get_by_id(document_id)
         
         # 2. Validate document (business logic)
@@ -52,13 +52,13 @@ class LoadTransactionsUseCase:
         # 3. Transform data to transactions (business logic)
         transaction_data_list = self.service.transform_document_data_to_transactions(document_data)
         
-        # 4. Persist transactions (via repository interface)
+        # 4. Persist transactions (via gateway interface)
         loaded_count, skipped_count, errors = self.transaction_repo.save_batch(
             transaction_data_list,
             uuid.UUID(document_data.id)
         )
         
-        # 5. Mark document as processed (via repository interface)
+        # 5. Mark document as processed (via gateway interface)
         self.document_repo.mark_as_processed(uuid.UUID(document_data.id))
         
         # 6. Return result

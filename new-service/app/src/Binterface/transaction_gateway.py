@@ -1,5 +1,5 @@
 """
-Transaction Repository - Interface Adapter Layer
+Transaction Gateway - Interface Adapter Layer
 Implements transaction persistence operations
 """
 import uuid
@@ -8,14 +8,14 @@ from typing import List, Tuple
 from sqlmodel import Session, select
 
 from models import Transaction
-from src.Denterprise.repositories import ITransactionRepository
+from src.Denterprise.gateways import ITransactionGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)
 
 
-class TransactionRepository(ITransactionRepository):
-    """SQLModel implementation of transaction repository"""
+class TransactionGateway(ITransactionGateway):
+    """SQLModel implementation of transaction gateway"""
     
     def __init__(self, session: Session):
         self.session = session
