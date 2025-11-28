@@ -4,7 +4,7 @@ Defines contracts for data access without implementation details
 """
 import uuid
 from abc import ABC, abstractmethod
-from typing import BinaryIO, List, Tuple, Optional
+from typing import BinaryIO, List, Tuple, Optional, Union
 from src.Denterprise.entities import Transaction, ExtractionResult
 from src.Denterprise.transaction_service import TransactionData, DocumentData
 
@@ -51,5 +51,25 @@ class ITransactionGateway(ABC):
         
         Returns:
             Tuple of (loaded_count, skipped_count, errors)
+        """
+        pass
+    
+    @abstractmethod
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+        """
+        Get transaction by ID
+        
+        Returns:
+            TransactionData if found, None otherwise
+        """
+        pass
+    
+    @abstractmethod
+    def update(self, transaction_id: uuid.UUID, transaction_data: TransactionData) -> bool:
+        """
+        Update transaction by ID
+        
+        Returns:
+            True if updated successfully, False if not found
         """
         pass

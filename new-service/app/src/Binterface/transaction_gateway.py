@@ -4,7 +4,8 @@ Implements transaction persistence operations
 """
 import uuid
 import logging
-from typing import List, Tuple
+from datetime import datetime
+from typing import List, Tuple, Optional
 from sqlmodel import Session, select
 
 from models import Transaction
@@ -68,3 +69,52 @@ class TransactionGateway(ITransactionGateway):
         """Get all transactions with pagination"""
         statement = select(Transaction).offset(skip).limit(limit)
         return self.session.exec(statement).all()
+    
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+        """Get transaction by ID"""
+        statement = select(Transaction).where(Transaction.id == transaction_id)
+        transaction = self.session.exec(statement).first()
+        
+        if not transaction:
+            return None
+            
+        return TransactionData(
+            description=transaction.description,
+            cargos=transaction.cargos,
+            abonos=transaction.abonos,
+            currency=transaction.currency,
+            fecha_proceso=transaction.fecha_proceso,
+            fecha_consumo=transaction.fecha_consumo,
+            internal_transaction=transaction.internal_transaction,
+            type=getattr(transaction, 'type', ''),  # Safe access since type might not exist in old records
+            order=transaction.order
+        )
+    
+    def update(self, transaction_id: uuid.UUID, transaction_data: TransactionData) -> bool:
+        """Update transaction by ID"""
+        statement = select(Transaction).where(Transaction.id == transaction_id)
+        transaction = self.session.exec(statement).first()
+        
+        if not transaction:
+            return False
+            
+        # Update fields
+        transaction.description = transaction_data.description
+        transaction.cargos = transaction_data.cargos
+        transaction.abonos = transaction_data.abonos
+        transaction.currency = transaction_data.currency
+        transaction.fecha_proceso = transaction_data.fecha_proceso
+        transaction.fecha_consumo = transaction_data.fecha_consumo
+        transaction.internal_transaction = transaction_data.internal_transaction
+        transaction.order = transaction_data.order
+        transaction.updated_at = datetime.utcnow()
+        
+        try:
+            self.session.add(transaction)
+            self.session.commit()
+            logger.info(f"Successfully updated transaction {transaction_id}")
+            return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
+            raise ValueError(f"Error updating transaction: {str(e)}")

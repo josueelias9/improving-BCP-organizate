@@ -9,7 +9,9 @@ import uuid
 import logging
 
 from api.deps import get_db_session
+from models import TransactionUpdate
 from src.Capplication.load_transactions_use_case import LoadTransactionsUseCase
+from src.Capplication.update_transaction_use_case import UpdateTransactionUseCase
 from src.Binterface.document_gateway import DocumentGateway
 from src.Binterface.transaction_gateway import TransactionGateway
 
@@ -106,6 +108,68 @@ def load_transactions_from_document(
     except Exception as e:
         # Unexpected errors
         logger.error(f"Unexpected error loading transactions: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+@router.put("/{transaction_id}", response_model=Dict[str, Any])
+def update_transaction(
+    transaction_id: uuid.UUID,
+    transaction_update: TransactionUpdate,
+    session: Session = Depends(get_db_session)
+) -> Dict[str, Any]:
+    """
+    Update a specific transaction by ID.
+    
+    This endpoint delegates to the application layer use case.
+    
+    Args:
+        transaction_id: The UUID of the transaction to update
+        transaction_update: The fields to update
+        session: Database session (injected)
+        
+    Returns:
+        Update result with transaction information
+        
+    Raises:
+        HTTPException: 404 if transaction not found, 400 for validation errors
+    """
+    try:
+        # Instantiate gateway
+        transaction_gateway = TransactionGateway(session)
+        
+        # Inject gateway into use case
+        use_case = UpdateTransactionUseCase(transaction_gateway)
+        
+        # Convert Pydantic model to dict, excluding None values
+        update_data = transaction_update.model_dump(exclude_unset=True, exclude_none=True)
+        
+        # Validate that at least one field is being updated
+        if not update_data:
+            raise HTTPException(
+                status_code=400,
+                detail="At least one field must be provided for update"
+            )
+        
+        # Execute use case
+        result = use_case.execute(transaction_id, update_data)
+        
+        return result
+        
+    except ValueError as e:
+        # Business validation errors
+        error_msg = str(e)
+        
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=404, detail=error_msg)
+        else:
+            raise HTTPException(status_code=400, detail=error_msg)
+            
+    except Exception as e:
+        # Unexpected errors
+        logger.error(f"Unexpected error updating transaction: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error: {str(e)}"
