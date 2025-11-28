@@ -40,8 +40,8 @@ def get_all_transactions(
             limit = 1000
         
         # Get transactions via gateway
-        transaction_repo = TransactionGateway(session)
-        transactions = transaction_repo.get_all(skip=skip, limit=limit)
+        transaction_gateway = TransactionGateway(session)
+        transactions = transaction_gateway.get_all(skip=skip, limit=limit)
         
         # Convert to dict
         return [
@@ -93,11 +93,11 @@ def load_transactions_from_document(
     """
     try:
         # Instantiate concrete gateways
-        document_repo = DocumentGateway(session)
-        transaction_repo = TransactionGateway(session)
+        document_gateway = DocumentGateway(session)
+        transaction_gateway = TransactionGateway(session)
         
         # Inject gateways into use case
-        use_case = LoadTransactionsUseCase(document_repo, transaction_repo)
+        use_case = LoadTransactionsUseCase(document_gateway, transaction_gateway)
         
         # Execute use case
         result = use_case.execute(document_id)

@@ -60,18 +60,18 @@ async def process_pdf_endpoint(
             )
         
         # Instantiate gateways
-        user_repo = UserGateway(session)
-        document_repo = DocumentGateway(session)
+        user_gateway = UserGateway(session)
+        document_gateway = DocumentGateway(session)
         
         # Get or create user
-        user = user_repo.get_by_email(request.user_email)
+        user = user_gateway.get_by_email(request.user_email)
         if not user:
             user_create = UserCreate(
                 email=request.user_email,
                 name="Admin User",
                 customer_type=CustomerType.INDIVIDUAL
             )
-            user = user_repo.create(user_create)
+            user = user_gateway.create(user_create)
         
         # Extract transactions from PDF
         extractor = BCPPDFExtractor()
@@ -90,7 +90,7 @@ async def process_pdf_endpoint(
         unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}__{extraction_result.currency}"
         
         # Check if document already exists with this unique_identifier
-        existing_document = document_repo.get_by_unique_identifier(unique_id)
+        existing_document = document_gateway.get_by_unique_identifier(unique_id)
         if existing_document:
             return {
                 "detail": f"Document already exists",
@@ -110,7 +110,7 @@ async def process_pdf_endpoint(
             unique_identifier=unique_id,
             user_id=user.id,
         )
-        document = document_repo.create(document)
+        document = document_gateway.create(document)
         
         return {
             "success": True,

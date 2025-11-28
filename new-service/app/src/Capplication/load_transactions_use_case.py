@@ -16,18 +16,18 @@ class LoadTransactionsUseCase:
     
     def __init__(
         self,
-        document_repo: IDocumentGateway,
-        transaction_repo: ITransactionGateway
+        document_gateway: IDocumentGateway,
+        transaction_gateway: ITransactionGateway
     ):
         """
         Initialize use case with gateway dependencies
         
         Args:
-            document_repo: Document gateway interface
-            transaction_repo: Transaction gateway interface
+            document_gateway: Document gateway interface
+            transaction_gateway: Transaction gateway interface
         """
-        self.document_repo = document_repo
-        self.transaction_repo = transaction_repo
+        self.document_gateway = document_gateway
+        self.transaction_gateway = transaction_gateway
         self.service = TransactionService()
     
     def execute(self, document_id: uuid.UUID) -> LoadTransactionsResult:
@@ -44,7 +44,7 @@ class LoadTransactionsUseCase:
             ValueError: If document not found or validation fails
         """
         # 1. Retrieve document (via gateway interface)
-        document_data = self.document_repo.get_by_id(document_id)
+        document_data = self.document_gateway.get_by_id(document_id)
         
         # 2. Validate document (business logic)
         self.service.validate_document_for_processing(document_data)
@@ -53,13 +53,13 @@ class LoadTransactionsUseCase:
         transaction_data_list = self.service.transform_document_data_to_transactions(document_data)
         
         # 4. Persist transactions (via gateway interface)
-        loaded_count, skipped_count, errors = self.transaction_repo.save_batch(
+        loaded_count, skipped_count, errors = self.transaction_gateway.save_batch(
             transaction_data_list,
             uuid.UUID(document_data.id)
         )
         
         # 5. Mark document as processed (via gateway interface)
-        self.document_repo.mark_as_processed(uuid.UUID(document_data.id))
+        self.document_gateway.mark_as_processed(uuid.UUID(document_data.id))
         
         # 6. Return result
         return LoadTransactionsResult(
