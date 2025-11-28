@@ -44,7 +44,19 @@ Accept: application/json
 
 ### 4. Get All Transactions
 # Obtiene todas las transacciones con paginación
-GET {{baseUrl}}/api/transactions/?skip=0&limit=100
+# @name getAllTransactions
+GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
 Accept: application/json
 
 ###
+
+### 5. Update Transaction by ID
+# Actualiza una transacción específica por su ID
+# Reemplaza {transaction_id} con un UUID válido de una transacción existente
+
+PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
+Content-Type: application/json
+
+{
+    "description": "aaaay new comment!!!!"
+}

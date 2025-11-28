@@ -9,7 +9,7 @@ from typing import List, Tuple, Optional
 from sqlmodel import Session, select
 
 from models import Transaction
-from src.Denterprise.gateways import ITransactionGateway
+from src.Capplication.gateways import ITransactionGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)
