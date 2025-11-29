@@ -73,9 +73,9 @@ async def process_pdf_endpoint(
             user = user_gateway.create(user_create)
         
         # Extract transactions from PDF
-        extractor = BCPPDFExtractorGateway()
+        extractor_gateway = BCPPDFExtractorGateway()
         with open(request.pdf_filename, 'rb') as pdf_file:
-            extraction_result = extractor.extract_transactions(pdf_file, request.pdf_filename)
+            extraction_result = extractor_gateway.extract_transactions(pdf_file, request.pdf_filename)
         
         # Process PDF and save document using controller and application layer
         controller = PDFProcessingController(session)

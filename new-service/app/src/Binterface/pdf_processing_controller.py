@@ -8,7 +8,6 @@ from sqlmodel import Session
 
 from src.Denterprise.entities import ExtractionResult
 from src.Capplication.process_pdf_use_case import ProcessPDFUseCase, ProcessPDFResult
-from src.Capplication.pdf_extraction_processor import PDFExtractionProcessor
 from src.Binterface.document_gateway import DocumentGateway
 
 logger = logging.getLogger(__name__)
@@ -41,15 +40,10 @@ class PDFProcessingController:
         Raises:
             ValueError: If extraction result is invalid
         """
-        # Validate and process extraction result using application layer
-        unique_id, transactions_list = PDFExtractionProcessor.process_extraction_result(extraction_result)
-        
-        # Delegate to application layer use case
+        # Delegate all processing to application layer use case
         use_case = ProcessPDFUseCase(self.document_gateway)
         result = use_case.execute(
             extraction_result=extraction_result,
-            unique_id=unique_id,
-            transactions_list=transactions_list,
             user_id=user_id,
             document_type=document_type
         )

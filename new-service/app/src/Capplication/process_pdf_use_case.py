@@ -4,7 +4,7 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 import uuid
-from typing import Dict, Any
+from typing import Dict, Any, List, Tuple
 from dataclasses import dataclass
 
 from src.Denterprise.entities import ExtractionResult
@@ -33,20 +33,16 @@ class ProcessPDFUseCase:
     def execute(
         self,
         extraction_result: ExtractionResult,
-        unique_id: str,
-        transactions_list: list,
         user_id: uuid.UUID,
-        document_type: str
+        document_type: str = "BCP_STATEMENT"
     ) -> ProcessPDFResult:
         """
         Process PDF extraction result and create document if it doesn't exist
         
         Args:
             extraction_result: The result from PDF extraction
-            unique_id: Unique identifier for the document
-            transactions_list: List of transactions as dicts
             user_id: User ID who owns the document
-            document_type: Type of document
+            document_type: Type of document (default: BCP_STATEMENT)
             
         Returns:
             ProcessPDFResult with operation details
@@ -55,6 +51,9 @@ class ProcessPDFUseCase:
             ValueError: If validation fails
         """
         try:
+            # Validate and process extraction result
+            unique_id, transactions_list = self._process_extraction_result(extraction_result)
+            
             # Check if document already exists with this unique_identifier
             existing_document = self.document_gateway.get_by_unique_identifier(unique_id)
             
@@ -100,3 +99,43 @@ class ProcessPDFUseCase:
         except Exception as e:
             logger.error(f"Error processing PDF: {str(e)}")
             raise ValueError(f"Error processing PDF: {str(e)}")
+    
+    @staticmethod
+    def _process_extraction_result(extraction_result: ExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:
+        """
+        Process extraction result and generate unique identifier and transactions list
+        
+        Args:
+            extraction_result: The result from PDF extraction
+            
+        Returns:
+            Tuple of (unique_id, transactions_list)
+            
+        Raises:
+            ValueError: If extraction result is invalid
+        """
+        if not extraction_result.success:
+            raise ValueError(f"Extraction failed: {extraction_result.error_message or 'Unknown error'}")
+        
+        # Validate required fields
+        if not extraction_result.initial_day:
+            raise ValueError("Missing initial_day in extraction result")
+        
+        if not extraction_result.final_day:
+            raise ValueError("Missing final_day in extraction result")
+        
+        if not extraction_result.account_code:
+            raise ValueError("Missing account_code in extraction result")
+        
+        if not extraction_result.currency:
+            raise ValueError("Missing currency in extraction result")
+        
+        # Convert transactions to dict list
+        transactions_list = [t.__dict__ for t in extraction_result.transactions]
+        
+        # Generate unique identifier
+        unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}__{extraction_result.currency}"
+        
+        logger.info(f"Processed extraction result: {len(transactions_list)} transactions, unique_id: {unique_id}")
+        
+        return unique_id, transactions_list
