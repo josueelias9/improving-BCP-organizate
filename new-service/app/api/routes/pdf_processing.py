@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.deps import SessionDep
-from pdf_extractor import BCPPDFExtractor
-from models import DocumentCreate, DocumentType, UserCreate, CustomerType, Document
+from src.Binterface.pdf_extractor_gateway import BCPPDFExtractorGateway
+from src.Binterface.pdf_processing_controller import PDFProcessingController
+from models import UserCreate, CustomerType
 from src.Binterface.user_gateway import UserGateway
-from src.Binterface.document_gateway import DocumentGateway
 import os
 
 # Crear router para rutas de procesamiento de PDF
@@ -61,7 +61,6 @@ async def process_pdf_endpoint(
         
         # Instantiate gateways
         user_gateway = UserGateway(session)
-        document_gateway = DocumentGateway(session)
         
         # Get or create user
         user = user_gateway.get_by_email(request.user_email)
@@ -74,52 +73,34 @@ async def process_pdf_endpoint(
             user = user_gateway.create(user_create)
         
         # Extract transactions from PDF
-        extractor = BCPPDFExtractor()
+        extractor = BCPPDFExtractorGateway()
         with open(request.pdf_filename, 'rb') as pdf_file:
             extraction_result = extractor.extract_transactions(pdf_file, request.pdf_filename)
         
-        if not extraction_result.success:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Error processing PDF: {extraction_result.error_message or 'Unknown error'}"
-            )
-        
-        # Convert transactions to dict list
-        transactions_list = [t.__dict__ for t in extraction_result.transactions]
-        
-        unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}__{extraction_result.currency}"
-        
-        # Check if document already exists with this unique_identifier
-        existing_document = document_gateway.get_by_unique_identifier(unique_id)
-        if existing_document:
-            return {
-                "detail": f"Document already exists",
-                "unique_identifier": unique_id,
-                "document_id": str(existing_document.id)
-            }
-        
-        # Create document record in database
-        document = Document(
-            account_number=extraction_result.account_code or "UNKNOWN",
-            type=DocumentType.BCP_STATEMENT,
-            currency=extraction_result.currency or "PEN",
-            previous_balance=extraction_result.saldo_anterior,
-            initial_day=extraction_result.initial_day,
-            final_day=extraction_result.final_day,
-            data=transactions_list,
-            unique_identifier=unique_id,
+        # Process PDF and save document using controller and application layer
+        controller = PDFProcessingController(session)
+        result = controller.process_and_save_document(
+            extraction_result=extraction_result,
             user_id=user.id,
+            document_type="BCP_STATEMENT"
         )
-        document = document_gateway.create(document)
+        
+        # Return response based on result
+        if result.already_exists:
+            return {
+                "detail": result.message,
+                "unique_identifier": result.unique_identifier,
+                "document_id": result.document_id
+            }
         
         return {
             "success": True,
-            "message": f"PDF processed successfully. {len(transactions_list)} transactions saved as JSON in Documents table.",
-            "document_id": str(document.id),
+            "message": result.message,
+            "document_id": result.document_id,
             "user_id": str(user.id),
             "account_number": extraction_result.account_code,
             "filename": extraction_result.filename,
-            "transactions_count": len(transactions_list)
+            "transactions_count": result.transactions_count
         }
         
     except HTTPException:

@@ -4,7 +4,7 @@ Defines contracts for data access without implementation details
 """
 import uuid
 from abc import ABC, abstractmethod
-from typing import BinaryIO, List, Tuple, Optional, Union
+from typing import BinaryIO, List, Tuple, Optional
 from src.Denterprise.entities import Transaction, ExtractionResult
 from src.Denterprise.transaction_service import TransactionData, DocumentData
 
@@ -34,6 +34,26 @@ class IDocumentGateway(ABC):
     @abstractmethod
     def mark_as_processed(self, document_id: uuid.UUID) -> None:
         """Mark document as processed"""
+        pass
+    
+    @abstractmethod
+    def get_by_unique_identifier(self, unique_identifier: str):
+        """
+        Get document by unique identifier
+        
+        Returns:
+            Document if found, None otherwise
+        """
+        pass
+    
+    @abstractmethod
+    def create(self, document):
+        """
+        Create a new document
+        
+        Returns:
+            Created document
+        """
         pass
 
 

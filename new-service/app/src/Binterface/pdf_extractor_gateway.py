@@ -1,6 +1,7 @@
 """
-PDF Extractor - Uses BCP parser from Denterprise layer
+PDF Extractor Gateway - Interface Adapter Layer
 Extracts transactions from BCP PDF bank statements
+Implements the PDFExtractorGateway interface
 """
 import fitz  # PyMuPDF
 from typing import BinaryIO
@@ -9,13 +10,14 @@ import os
 from dotenv import load_dotenv
 from src.Denterprise.entities import ExtractionResult
 from src.Denterprise.bcp_parser import BCPStatementParser
+from src.Capplication.gateways import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-class BCPPDFExtractor:
-    """Extractor for BCP PDF bank statements"""
+class BCPPDFExtractorGateway(PDFExtractorGateway):
+    """Gateway implementation for BCP PDF bank statements extraction"""
     
     def __init__(self):
         self.parser = BCPStatementParser()

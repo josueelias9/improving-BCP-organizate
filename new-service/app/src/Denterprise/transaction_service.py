@@ -98,25 +98,3 @@ class TransactionService:
         
         return transactions
     
-    @staticmethod
-    def validate_transaction_data(transaction: TransactionData) -> bool:
-        """
-        Validate transaction business rules
-        
-        Args:
-            transaction: Transaction to validate
-            
-        Returns:
-            True if valid, False otherwise
-        """
-        # Business rule: description should not be empty
-        if not transaction.description or not transaction.description.strip():
-            logger.warning(f"Transaction with empty description at order {transaction.order}")
-            return False
-        
-        # Business rule: at least one of cargos or abonos should be non-zero
-        if transaction.cargos == 0.0 and transaction.abonos == 0.0:
-            logger.warning(f"Transaction with zero amounts at order {transaction.order}")
-            return False
-        
-        return True
