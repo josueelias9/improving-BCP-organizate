@@ -21,6 +21,7 @@ class TransactionData:
     internal_transaction: bool
     type: Optional[str]
     order: int
+    history: Optional[str] = None
 
 
 @dataclass
@@ -88,7 +89,8 @@ class TransactionService:
                     fecha_consumo=transaction_dict.get("fecha_consumo"),
                     internal_transaction=transaction_dict.get("internal_transaction") == "*",
                     type=transaction_dict.get("type", "unknown"),
-                    order=idx + 1
+                    order=idx + 1,
+                    history=transaction_dict.get("history")
                 )
                 transactions.append(transaction)
                 

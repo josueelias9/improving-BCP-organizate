@@ -43,7 +43,8 @@ class TransactionGateway(ITransactionGateway):
                     internal_transaction=transaction_data.internal_transaction,
                     type=transaction_data.type,
                     document_id=document_id,
-                    order=transaction_data.order
+                    order=transaction_data.order,
+                    history=transaction_data.history
                 )
                 
                 self.session.add(transaction)
@@ -87,7 +88,8 @@ class TransactionGateway(ITransactionGateway):
             fecha_consumo=transaction.fecha_consumo,
             internal_transaction=transaction.internal_transaction,
             type=getattr(transaction, 'type', ''),  # Safe access since type might not exist in old records
-            order=transaction.order
+            order=transaction.order,
+            history=transaction.history
         )
     
     def update(self, transaction_id: uuid.UUID, transaction_data: TransactionData) -> bool:
@@ -98,15 +100,8 @@ class TransactionGateway(ITransactionGateway):
         if not transaction:
             return False
             
-        # Update fields
-        transaction.description = transaction_data.description
-        transaction.cargos = transaction_data.cargos
-        transaction.abonos = transaction_data.abonos
-        transaction.currency = transaction_data.currency
-        transaction.fecha_proceso = transaction_data.fecha_proceso
-        transaction.fecha_consumo = transaction_data.fecha_consumo
-        transaction.internal_transaction = transaction_data.internal_transaction
-        transaction.order = transaction_data.order
+        # Update only history field and timestamp
+        transaction.history = transaction_data.history
         transaction.updated_at = datetime.utcnow()
         
         try:

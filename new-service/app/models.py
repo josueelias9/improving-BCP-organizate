@@ -166,13 +166,5 @@ class Transaction(TransactionBase, table=True):
 
 
 class TransactionUpdate(SQLModel):
-    """Model for updating transaction fields"""
-    description: Optional[str] = Field(default=None, max_length=255)
-    cargos: Optional[float] = None
-    abonos: Optional[float] = None
-    currency: Optional[str] = Field(default=None)
-    fecha_proceso: Optional[str] = Field(default=None, max_length=20)
-    fecha_consumo: Optional[str] = Field(default=None, max_length=20)
-    internal_transaction: Optional[bool] = None
-    order: Optional[int] = None
-    category_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
+    """Model for updating transaction fields - only history is editable"""
+    history: Optional[str] = Field(default=None)

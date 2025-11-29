@@ -74,25 +74,26 @@ class UpdateTransactionUseCase:
         updates: Dict[str, Any]
     ) -> TransactionData:
         """
-        Prepare updated transaction data by merging existing data with updates
+        Prepare updated transaction data - only history can be updated
         
         Args:
             existing: Current transaction data
-            updates: Fields to update
+            updates: Fields to update (only 'history' is allowed)
             
         Returns:
-            TransactionData with updated values
+            TransactionData with updated history value
         """
         return TransactionData(
-            description=updates.get('description', existing.description),
-            cargos=updates.get('cargos', existing.cargos),
-            abonos=updates.get('abonos', existing.abonos),
-            currency=updates.get('currency', existing.currency),
-            fecha_proceso=updates.get('fecha_proceso', existing.fecha_proceso),
-            fecha_consumo=updates.get('fecha_consumo', existing.fecha_consumo),
-            internal_transaction=updates.get('internal_transaction', existing.internal_transaction),
-            type=updates.get('type', existing.type),
-            order=updates.get('order', existing.order)
+            description=existing.description,
+            cargos=existing.cargos,
+            abonos=existing.abonos,
+            currency=existing.currency,
+            fecha_proceso=existing.fecha_proceso,
+            fecha_consumo=existing.fecha_consumo,
+            internal_transaction=existing.internal_transaction,
+            type=existing.type,
+            order=existing.order,
+            history=updates.get('history', existing.history)  # Only history can be updated
         )
     
     def _validate_transaction_data(self, transaction: TransactionData) -> None:

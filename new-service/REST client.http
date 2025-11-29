@@ -51,12 +51,12 @@ Accept: application/json
 ###
 
 ### 5. Update Transaction by ID
-# Actualiza una transacción específica por su ID
-# Reemplaza {transaction_id} con un UUID válido de una transacción existente
+# Actualiza el campo 'history' de una transacción específica
+# Solo el campo 'history' puede ser editado, todos los demás campos son de solo lectura
 
 PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "description": "aaaay new comment!!!!"
+    "history": "xxxxizar como alimentación"
 }
