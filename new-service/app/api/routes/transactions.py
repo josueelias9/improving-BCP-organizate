@@ -141,10 +141,8 @@ def update_transaction(
         HTTPException: 404 if transaction not found, 400 for validation errors
     """
     try:
-        # Instantiate gateway
+        # Instantiate gateway and inject into use case
         transaction_gateway = TransactionGateway(session)
-        
-        # Inject gateway into use case
         use_case = UpdateTransactionUseCase(transaction_gateway)
         
         # Convert Pydantic model to dict, excluding None values
@@ -202,10 +200,8 @@ def batch_update_transactions(
         HTTPException: 400 for validation errors
     """
     try:
-        # Instantiate gateway
+        # Instantiate gateway and inject into use case
         transaction_gateway = TransactionGateway(session)
-        
-        # Inject gateway into use case
         use_case = BatchUpdateTransactionsUseCase(transaction_gateway)
         
         # Convert Pydantic models to domain objects

@@ -23,8 +23,8 @@ class PDFProcessRequest(BaseModel):
         }
 
 
-@router.post("/process-pdf")
-async def process_pdf_endpoint(
+@router.post("/pdf-processing")
+async def pdf_processing(
     request: PDFProcessRequest, 
     session: SessionDep
 ):
