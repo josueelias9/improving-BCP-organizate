@@ -9,9 +9,13 @@ import uuid
 import logging
 
 from api.deps import get_db_session
-from models import TransactionUpdate
+from models import TransactionUpdate, TransactionBatchUpdate
 from src.Capplication.load_transactions_use_case import LoadTransactionsUseCase
 from src.Capplication.update_transaction_use_case import UpdateTransactionUseCase
+from src.Capplication.batch_update_transactions_use_case import (
+    BatchUpdateTransactionsUseCase,
+    BatchUpdateItem
+)
 from src.Binterface.document_gateway import DocumentGateway
 from src.Binterface.transaction_gateway import TransactionGateway
 
@@ -170,6 +174,63 @@ def update_transaction(
     except Exception as e:
         # Unexpected errors
         logger.error(f"Unexpected error updating transaction: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+@router.patch("/batch", response_model=Dict[str, Any])
+def batch_update_transactions(
+    batch_update: TransactionBatchUpdate,
+    session: Session = Depends(get_db_session)
+) -> Dict[str, Any]:
+    """
+    Update multiple transactions simultaneously.
+    
+    Only the 'history' field can be updated for each transaction.
+    This endpoint processes all updates and returns a summary of the operation.
+    
+    Args:
+        batch_update: List of transaction updates to apply
+        session: Database session (injected)
+        
+    Returns:
+        Summary of batch update operation with success/failure counts
+        
+    Raises:
+        HTTPException: 400 for validation errors
+    """
+    try:
+        # Instantiate gateway
+        transaction_gateway = TransactionGateway(session)
+        
+        # Inject gateway into use case
+        use_case = BatchUpdateTransactionsUseCase(transaction_gateway)
+        
+        # Convert Pydantic models to domain objects
+        updates = [
+            BatchUpdateItem(
+                transaction_id=item.transaction_id,
+                history=item.history
+            )
+            for item in batch_update.updates
+        ]
+        
+        # Execute use case
+        result = use_case.execute(updates)
+        
+        return {
+            "total": result.total,
+            "updated": result.updated,
+            "failed": result.failed,
+            "errors": result.errors if result.errors else None,
+            "message": f"Successfully updated {result.updated}/{result.total} transactions"
+        }
+        
+    except Exception as e:
+        # Unexpected errors
+        logger.error(f"Unexpected error in batch update: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error: {str(e)}"

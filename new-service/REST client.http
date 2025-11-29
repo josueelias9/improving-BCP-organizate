@@ -58,5 +58,31 @@ PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "history": "xxxxizar como alimentación"
+    "history": "Gasto en supermercado - categorizar como alimentación"
+}
+
+###
+
+### 6. Batch Update Transactions
+# Actualiza múltiples transacciones simultáneamente
+# Solo el campo 'history' puede ser editado para cada transacción
+
+PATCH {{baseUrl}}/api/transactions/batch
+Content-Type: application/json
+
+{
+    "updates": [
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
+            "history": "Gasto en supermercado - categorizar como alimentación"
+        },
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
+            "history": "Pago de servicios - electricidad"
+        },
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
+            "history": "Transferencia bancaria - ahorro"
+        }
+    ]
 }

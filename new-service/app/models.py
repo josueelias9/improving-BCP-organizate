@@ -168,3 +168,30 @@ class Transaction(TransactionBase, table=True):
 class TransactionUpdate(SQLModel):
     """Model for updating transaction fields - only history is editable"""
     history: Optional[str] = Field(default=None)
+
+
+class TransactionBatchUpdateItem(SQLModel):
+    """Model for a single transaction update in a batch"""
+    transaction_id: uuid.UUID
+    history: str
+
+
+class TransactionBatchUpdate(SQLModel):
+    """Model for batch updating multiple transactions"""
+    updates: List[TransactionBatchUpdateItem] = Field(min_length=1)
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "updates": [
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "history": "Gasto en supermercado - alimentación"
+                    },
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174001",
+                        "history": "Pago de servicios - electricidad"
+                    }
+                ]
+            }
+        }

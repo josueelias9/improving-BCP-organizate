@@ -48,8 +48,11 @@ class UpdateTransactionUseCase:
             # Validate business rules
             self._validate_transaction_data(updated_transaction)
             
+            # Prepare update dict with only history field
+            update_dict = {"history": updated_transaction.history}
+            
             # Update transaction
-            success = self.transaction_gateway.update(transaction_id, updated_transaction)
+            success = self.transaction_gateway.update(transaction_id, update_dict)
             
             if not success:
                 raise ValueError("Failed to update transaction")

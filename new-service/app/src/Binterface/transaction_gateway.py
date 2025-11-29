@@ -5,7 +5,7 @@ Implements transaction persistence operations
 import uuid
 import logging
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, Any
 from sqlmodel import Session, select
 
 from models import Transaction
@@ -92,8 +92,8 @@ class TransactionGateway(ITransactionGateway):
             history=transaction.history
         )
     
-    def update(self, transaction_id: uuid.UUID, transaction_data: TransactionData) -> bool:
-        """Update transaction by ID"""
+    def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
+        """Update transaction by ID - only history field can be updated"""
         statement = select(Transaction).where(Transaction.id == transaction_id)
         transaction = self.session.exec(statement).first()
         
@@ -101,7 +101,8 @@ class TransactionGateway(ITransactionGateway):
             return False
             
         # Update only history field and timestamp
-        transaction.history = transaction_data.history
+        if 'history' in update_data:
+            transaction.history = update_data['history']
         transaction.updated_at = datetime.utcnow()
         
         try:
