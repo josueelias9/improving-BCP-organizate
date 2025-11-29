@@ -57,6 +57,30 @@ class IDocumentGateway(ABC):
         pass
 
 
+class IUserGateway(ABC):
+    """Interface for user persistence operations"""
+    
+    @abstractmethod
+    def get_by_email(self, email: str):
+        """
+        Get user by email
+        
+        Returns:
+            User if found, None otherwise
+        """
+        pass
+    
+    @abstractmethod
+    def create(self, user_data):
+        """
+        Create a new user
+        
+        Returns:
+            Created user
+        """
+        pass
+
+
 class ITransactionGateway(ABC):
     """Interface for transaction persistence operations"""
     

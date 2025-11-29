@@ -4,11 +4,14 @@ Processes extraction results and coordinates with application layer
 """
 import logging
 import uuid
+from typing import BinaryIO
 from sqlmodel import Session
 
 from src.Denterprise.entities import ExtractionResult
 from src.Capplication.process_pdf_use_case import ProcessPDFUseCase, ProcessPDFResult
 from src.Binterface.document_gateway import DocumentGateway
+from src.Binterface.user_gateway import UserGateway
+from src.Binterface.pdf_extractor_gateway import BCPPDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -19,32 +22,41 @@ class PDFProcessingController:
     def __init__(self, session: Session):
         self.session = session
         self.document_gateway = DocumentGateway(session)
+        self.user_gateway = UserGateway(session)
+        self.pdf_extractor_gateway = BCPPDFExtractorGateway()
     
     def process_and_save_document(
         self,
-        extraction_result: ExtractionResult,
-        user_id: uuid.UUID,
+        pdf_file: BinaryIO,
+        pdf_filename: str,
+        user_email: str,
         document_type: str = "BCP_STATEMENT"
     ) -> ProcessPDFResult:
         """
-        Process extraction result and save document using application layer
+        Process PDF file and save document using application layer
         
         Args:
-            extraction_result: The result from PDF extraction
-            user_id: User ID who owns the document
+            pdf_file: Binary PDF file content
+            pdf_filename: Name of the PDF file
+            user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
             
         Returns:
             ProcessPDFResult with operation details
             
         Raises:
-            ValueError: If extraction result is invalid
+            ValueError: If PDF processing fails
         """
         # Delegate all processing to application layer use case
-        use_case = ProcessPDFUseCase(self.document_gateway)
+        use_case = ProcessPDFUseCase(
+            self.document_gateway,
+            self.user_gateway,
+            self.pdf_extractor_gateway
+        )
         result = use_case.execute(
-            extraction_result=extraction_result,
-            user_id=user_id,
+            pdf_file=pdf_file,
+            pdf_filename=pdf_filename,
+            user_email=user_email,
             document_type=document_type
         )
         

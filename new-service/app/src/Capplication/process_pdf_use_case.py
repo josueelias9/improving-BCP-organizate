@@ -4,11 +4,11 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 import uuid
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, BinaryIO
 from dataclasses import dataclass
 
 from src.Denterprise.entities import ExtractionResult
-from src.Capplication.gateways import IDocumentGateway
+from src.Capplication.gateways import IDocumentGateway, IUserGateway, PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -27,21 +27,30 @@ class ProcessPDFResult:
 class ProcessPDFUseCase:
     """Use case for processing PDF and creating document"""
     
-    def __init__(self, document_gateway: IDocumentGateway):
+    def __init__(
+        self, 
+        document_gateway: IDocumentGateway,
+        user_gateway: IUserGateway,
+        pdf_extractor_gateway: PDFExtractorGateway
+    ):
         self.document_gateway = document_gateway
+        self.user_gateway = user_gateway
+        self.pdf_extractor_gateway = pdf_extractor_gateway
     
     def execute(
         self,
-        extraction_result: ExtractionResult,
-        user_id: uuid.UUID,
+        pdf_file: BinaryIO,
+        pdf_filename: str,
+        user_email: str,
         document_type: str = "BCP_STATEMENT"
     ) -> ProcessPDFResult:
         """
-        Process PDF extraction result and create document if it doesn't exist
+        Process PDF file: get/create user, extract transactions, and create document
         
         Args:
-            extraction_result: The result from PDF extraction
-            user_id: User ID who owns the document
+            pdf_file: Binary PDF file content
+            pdf_filename: Name of the PDF file
+            user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
             
         Returns:
@@ -51,6 +60,15 @@ class ProcessPDFUseCase:
             ValueError: If validation fails
         """
         try:
+            # Get or create user
+            user = self._get_or_create_user(user_email)
+            
+            # Extract transactions from PDF
+            extraction_result = self.pdf_extractor_gateway.extract_transactions(
+                pdf_file, 
+                pdf_filename
+            )
+            
             # Validate and process extraction result
             unique_id, transactions_list = self._process_extraction_result(extraction_result)
             
@@ -80,7 +98,7 @@ class ProcessPDFUseCase:
                 final_day=extraction_result.final_day,
                 data=transactions_list,
                 unique_identifier=unique_id,
-                user_id=user_id,
+                user_id=user.id,
             )
             
             created_document = self.document_gateway.create(document)
@@ -98,7 +116,31 @@ class ProcessPDFUseCase:
             
         except Exception as e:
             logger.error(f"Error processing PDF: {str(e)}")
-            raise ValueError(f"Error processing PDF: {str(e)}")
+            raise
+    
+    def _get_or_create_user(self, user_email: str):
+        """
+        Get existing user or create new one
+        
+        Args:
+            user_email: Email of the user
+            
+        Returns:
+            User object
+        """
+        user = self.user_gateway.get_by_email(user_email)
+        if not user:
+            from models import UserCreate, CustomerType
+            
+            user_create = UserCreate(
+                email=user_email,
+                name="Admin User",
+                customer_type=CustomerType.INDIVIDUAL
+            )
+            user = self.user_gateway.create(user_create)
+            logger.info(f"Created new user with email: {user_email}")
+        
+        return user
     
     @staticmethod
     def _process_extraction_result(extraction_result: ExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:

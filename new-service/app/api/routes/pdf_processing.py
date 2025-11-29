@@ -1,10 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.deps import SessionDep
-from src.Binterface.pdf_extractor_gateway import BCPPDFExtractorGateway
 from src.Binterface.pdf_processing_controller import PDFProcessingController
-from models import UserCreate, CustomerType
-from src.Binterface.user_gateway import UserGateway
 import os
 
 # Crear router para rutas de procesamiento de PDF
@@ -59,31 +56,16 @@ async def process_pdf_endpoint(
                 detail=f"File '{request.pdf_filename}' not found"
             )
         
-        # Instantiate gateways
-        user_gateway = UserGateway(session)
-        
-        # Get or create user
-        user = user_gateway.get_by_email(request.user_email)
-        if not user:
-            user_create = UserCreate(
-                email=request.user_email,
-                name="Admin User",
-                customer_type=CustomerType.INDIVIDUAL
-            )
-            user = user_gateway.create(user_create)
-        
-        # Extract transactions from PDF
-        extractor_gateway = BCPPDFExtractorGateway()
-        with open(request.pdf_filename, 'rb') as pdf_file:
-            extraction_result = extractor_gateway.extract_transactions(pdf_file, request.pdf_filename)
-        
-        # Process PDF and save document using controller and application layer
+        # Process PDF using controller (delegates to application layer)
         controller = PDFProcessingController(session)
-        result = controller.process_and_save_document(
-            extraction_result=extraction_result,
-            user_id=user.id,
-            document_type="BCP_STATEMENT"
-        )
+        
+        with open(request.pdf_filename, 'rb') as pdf_file:
+            result = controller.process_and_save_document(
+                pdf_file=pdf_file,
+                pdf_filename=request.pdf_filename,
+                user_email=request.user_email,
+                document_type="BCP_STATEMENT"
+            )
         
         # Return response based on result
         if result.already_exists:
@@ -97,9 +79,6 @@ async def process_pdf_endpoint(
             "success": True,
             "message": result.message,
             "document_id": result.document_id,
-            "user_id": str(user.id),
-            "account_number": extraction_result.account_code,
-            "filename": extraction_result.filename,
             "transactions_count": result.transactions_count
         }
         
