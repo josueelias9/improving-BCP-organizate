@@ -8,11 +8,12 @@ from sqlmodel import Session, select
 from typing import Optional
 
 from models import User, UserCreate
+from src.Capplication.gateways import IUserGateway
 
 logger = logging.getLogger(__name__)
 
 
-class UserGateway:
+class UserGateway(IUserGateway):
     """SQLModel implementation of user gateway"""
     
     def __init__(self, session: Session):
