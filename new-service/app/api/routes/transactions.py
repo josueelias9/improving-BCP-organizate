@@ -10,7 +10,7 @@ import logging
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
-from src.Capplication.load_transactions_use_case import LoadTransactionsUseCase
+from src.Capplication.load_transactions_from_document_use_case import LoadTransactionsFromDocumentUseCase
 from src.Capplication.update_transaction_use_case import UpdateTransactionUseCase
 from src.Capplication.batch_update_transactions_use_case import (
     BatchUpdateTransactionsUseCase,
@@ -18,6 +18,7 @@ from src.Capplication.batch_update_transactions_use_case import (
 )
 from src.Binterface.document_gateway import DocumentGateway
 from src.Binterface.transaction_gateway import TransactionGateway
+from src.Binterface.category_gateway import CategoryGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -32,24 +33,26 @@ def get_all_transactions(
     """
     Get all transactions with pagination
     
+    Includes category_name field with the name of the associated category.
+    
     Args:
         skip: Number of records to skip (default: 0)
         limit: Maximum number of records to return (default: 100, max: 1000)
         session: Database session (injected)
         
     Returns:
-        List of transactions
+        List of transactions with category_name included
     """
     try:
         # Validate limit
         if limit > 1000:
             limit = 1000
         
-        # Get transactions via gateway
+        # Get transactions via gateway (includes category_name)
         transaction_gateway = TransactionGateway(session)
         transactions = transaction_gateway.get_all(skip=skip, limit=limit)
         
-        return [t.model_dump() for t in transactions]
+        return transactions
         
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")
@@ -85,7 +88,7 @@ def load_transactions_from_document(
         transaction_gateway = TransactionGateway(session)
         
         # Inject gateways into use case
-        use_case = LoadTransactionsUseCase(document_gateway, transaction_gateway)
+        use_case = LoadTransactionsFromDocumentUseCase(document_gateway, transaction_gateway)
         
         # Execute use case
         result = use_case.execute(document_id)
@@ -141,9 +144,10 @@ def update_transaction(
         HTTPException: 404 if transaction not found, 400 for validation errors
     """
     try:
-        # Instantiate gateway and inject into use case
+        # Instantiate gateways and inject into use case
         transaction_gateway = TransactionGateway(session)
-        use_case = UpdateTransactionUseCase(transaction_gateway)
+        category_gateway = CategoryGateway(session)
+        use_case = UpdateTransactionUseCase(transaction_gateway, category_gateway)
         
         # Convert Pydantic model to dict, excluding None values
         update_data = transaction_update.model_dump(exclude_unset=True, exclude_none=True)
@@ -186,7 +190,8 @@ def batch_update_transactions(
     """
     Update multiple transactions simultaneously.
     
-    Only the 'history' field can be updated for each transaction.
+    Only 'history' and 'category_name' fields can be updated for each transaction.
+    If category_name is provided, it will be validated against existing categories.
     This endpoint processes all updates and returns a summary of the operation.
     
     Args:
@@ -200,15 +205,17 @@ def batch_update_transactions(
         HTTPException: 400 for validation errors
     """
     try:
-        # Instantiate gateway and inject into use case
+        # Instantiate gateways and inject into use case
         transaction_gateway = TransactionGateway(session)
-        use_case = BatchUpdateTransactionsUseCase(transaction_gateway)
+        category_gateway = CategoryGateway(session)
+        use_case = BatchUpdateTransactionsUseCase(transaction_gateway, category_gateway)
         
         # Convert Pydantic models to domain objects
         updates = [
             BatchUpdateItem(
                 transaction_id=item.transaction_id,
-                history=item.history
+                history=item.history,
+                category_name=item.category_name
             )
             for item in batch_update.updates
         ]

@@ -11,7 +11,7 @@ from src.Capplication.gateways import IDocumentGateway, ITransactionGateway
 logger = logging.getLogger(__name__)
 
 
-class LoadTransactionsUseCase:
+class LoadTransactionsFromDocumentUseCase:
     """Use case for loading transactions from document data into transaction table"""
     
     def __init__(

@@ -7,6 +7,7 @@ import logging
 from datetime import datetime
 from typing import List, Tuple, Optional, Dict, Any
 from sqlmodel import Session, select
+from sqlalchemy.orm import joinedload
 
 from models import Transaction
 from src.Capplication.gateways import ITransactionGateway
@@ -66,10 +67,24 @@ class TransactionGateway(ITransactionGateway):
         
         return loaded_count, skipped_count, errors
     
-    def get_all(self, skip: int = 0, limit: int = 100) -> List[dict]:
-        """Get all transactions with pagination"""
-        statement = select(Transaction).offset(skip).limit(limit)
-        return self.session.exec(statement).all()
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get all transactions with pagination, including category name"""
+        statement = (
+            select(Transaction)
+            .options(joinedload(Transaction.category))
+            .offset(skip)
+            .limit(limit)
+        )
+        transactions = self.session.exec(statement).all()
+        
+        # Convert to dict and add category_name
+        result = []
+        for t in transactions:
+            t_dict = t.model_dump()
+            t_dict['category_name'] = t.category.name if t.category else None
+            result.append(t_dict)
+        
+        return result
     
     def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
         """Get transaction by ID"""
@@ -93,16 +108,21 @@ class TransactionGateway(ITransactionGateway):
         )
     
     def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
-        """Update transaction by ID - only history field can be updated"""
+        """Update transaction by ID - only history and category_id fields can be updated"""
         statement = select(Transaction).where(Transaction.id == transaction_id)
         transaction = self.session.exec(statement).first()
         
         if not transaction:
             return False
             
-        # Update only history field and timestamp
+        # Update history field if provided
         if 'history' in update_data:
             transaction.history = update_data['history']
+        
+        # Update category_id if provided
+        if 'category_id' in update_data:
+            transaction.category_id = update_data['category_id']
+        
         transaction.updated_at = datetime.utcnow()
         
         try:

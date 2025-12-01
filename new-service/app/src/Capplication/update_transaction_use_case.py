@@ -6,7 +6,7 @@ import uuid
 import logging
 from typing import Dict, Any
 
-from src.Capplication.gateways import ITransactionGateway
+from src.Capplication.gateways import ITransactionGateway, ICategoryGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)
@@ -15,8 +15,13 @@ logger = logging.getLogger(__name__)
 class UpdateTransactionUseCase:
     """Use case for updating a transaction by ID"""
     
-    def __init__(self, transaction_gateway: ITransactionGateway):
+    def __init__(
+        self, 
+        transaction_gateway: ITransactionGateway,
+        category_gateway: ICategoryGateway
+    ):
         self.transaction_gateway = transaction_gateway
+        self.category_gateway = category_gateway
     
     def execute(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -48,8 +53,17 @@ class UpdateTransactionUseCase:
             # Validate business rules
             self._validate_transaction_data(updated_transaction)
             
-            # Prepare update dict with only history field
+            # Prepare update dict with history and category_id
             update_dict = {"history": updated_transaction.history}
+            
+            # Handle category update if provided
+            if 'category_name' in update_data and update_data['category_name']:
+                category = self.category_gateway.get_by_name(update_data['category_name'])
+                if category:
+                    update_dict['category_id'] = category.id
+                    logger.info(f"Category '{update_data['category_name']}' found, will update category_id")
+                else:
+                    logger.warning(f"Category '{update_data['category_name']}' not found, skipping category update")
             
             # Update transaction
             success = self.transaction_gateway.update(transaction_id, update_dict)

@@ -166,14 +166,16 @@ class Transaction(TransactionBase, table=True):
 
 
 class TransactionUpdate(SQLModel):
-    """Model for updating transaction fields - only history is editable"""
+    """Model for updating transaction fields - only history and category are editable"""
     history: Optional[str] = Field(default=None)
+    category_name: Optional[str] = Field(default=None, max_length=255)
 
 
 class TransactionBatchUpdateItem(SQLModel):
     """Model for a single transaction update in a batch"""
     transaction_id: uuid.UUID
     history: str
+    category_name: Optional[str] = Field(default=None, max_length=255)
 
 
 class TransactionBatchUpdate(SQLModel):

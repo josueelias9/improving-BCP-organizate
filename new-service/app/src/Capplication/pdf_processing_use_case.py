@@ -24,7 +24,7 @@ class ProcessPDFResult:
     message: str
 
 
-class ProcessPDFUseCase:
+class PDFProcessingUseCase:
     """Use case for processing PDF and creating document"""
     
     def __init__(

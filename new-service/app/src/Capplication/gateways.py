@@ -81,6 +81,20 @@ class IUserGateway(ABC):
         pass
 
 
+class ICategoryGateway(ABC):
+    """Interface for category persistence operations"""
+    
+    @abstractmethod
+    def get_by_name(self, name: str):
+        """
+        Get category by name
+        
+        Returns:
+            Category if found, None otherwise
+        """
+        pass
+
+
 class ITransactionGateway(ABC):
     """Interface for transaction persistence operations"""
     

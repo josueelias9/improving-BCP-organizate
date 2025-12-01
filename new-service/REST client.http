@@ -15,10 +15,10 @@ Accept: application/json
 ### === PDF PROCESSING WITH DATABASE ===
 
 ### 2. Process PDF and Save to Database
-# Extrae datos del PDF y los guarda como JSON en la tabla Documents
+# Extract data from PDF and save it as JSON in the Documents table
 
 # @name populateDocument
-POST {{baseUrl}}/api/process-pdf
+POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type: application/json
 ### === TRANSACTIONS ===
 
 ### 3. Load Transactions from Document
-# Migra los datos de la columna 'data' del documento a la tabla transactions
+# Migrate data from the 'data' column of the document to the transactions table
 
 # @name populateTransaction
 POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
@@ -43,7 +43,7 @@ Accept: application/json
 ###
 
 ### 4. Get All Transactions
-# Obtiene todas las transacciones con paginación
+# Get all transactions with pagination
 # @name getAllTransactions
 GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
 Accept: application/json
@@ -51,21 +51,24 @@ Accept: application/json
 ###
 
 ### 5. Update Transaction by ID
-# Actualiza el campo 'history' de una transacción específica
-# Solo el campo 'history' puede ser editado, todos los demás campos son de solo lectura
+# Update 'history' and/or 'category_name' fields of a specific transaction
+# Only 'history' and 'category_name' fields can be edited
+# If the category doesn't exist, only history will be updated
 
 PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "history": "Gasto en supermercado - categorizar como alimentación"
+    "history": "Grocery store expense - categorize as food",
+    "category_name": "Groceries"
 }
 
 ###
 
 ### 6. Batch Update Transactions
-# Actualiza múltiples transacciones simultáneamente
-# Solo el campo 'history' puede ser editado para cada transacción
+# Update multiple transactions simultaneously
+# Only 'history' and 'category_name' fields can be edited for each transaction
+# If a category doesn't exist, only history will be updated for that transaction
 
 PATCH {{baseUrl}}/api/transactions/batch
 Content-Type: application/json
@@ -74,15 +77,18 @@ Content-Type: application/json
     "updates": [
         {
             "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
-            "history": "Gasto en supermercado - categorizar como alimentación"
+            "history": "Grocery store expense - categorize as food",
+            "category_name": "Food"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
-            "history": "Pago de servicios - electricidad"
+            "history": "Utility payment - electricity",
+            "category_name": "Utilities"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
-            "history": "Transferencia bancaria - ahorro"
+            "history": "Bank transfer - savings",
+            "category_name": "Savings"
         }
     ]
 }

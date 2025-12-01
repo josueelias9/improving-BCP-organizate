@@ -7,8 +7,7 @@ import uuid
 from typing import BinaryIO
 from sqlmodel import Session
 
-from src.Denterprise.entities import ExtractionResult
-from src.Capplication.process_pdf_use_case import ProcessPDFUseCase, ProcessPDFResult
+from src.Capplication.pdf_processing_use_case import PDFProcessingUseCase, ProcessPDFResult
 from src.Binterface.document_gateway import DocumentGateway
 from src.Binterface.user_gateway import UserGateway
 from src.Binterface.pdf_extractor_gateway import BCPPDFExtractorGateway
@@ -48,7 +47,7 @@ class PDFProcessingController:
             ValueError: If PDF processing fails
         """
         # Delegate all processing to application layer use case
-        use_case = ProcessPDFUseCase(
+        use_case = PDFProcessingUseCase(
             self.document_gateway,
             self.user_gateway,
             self.pdf_extractor_gateway

@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any, List
 from dataclasses import dataclass
 
-from src.Capplication.gateways import ITransactionGateway
+from src.Capplication.gateways import ITransactionGateway, ICategoryGateway
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +17,7 @@ class BatchUpdateItem:
     """Single transaction update item"""
     transaction_id: uuid.UUID
     history: str
+    category_name: str = None
 
 
 @dataclass
@@ -31,8 +32,13 @@ class BatchUpdateResult:
 class BatchUpdateTransactionsUseCase:
     """Use case for updating multiple transactions simultaneously"""
     
-    def __init__(self, transaction_gateway: ITransactionGateway):
+    def __init__(
+        self, 
+        transaction_gateway: ITransactionGateway,
+        category_gateway: ICategoryGateway
+    ):
         self.transaction_gateway = transaction_gateway
+        self.category_gateway = category_gateway
     
     def execute(self, updates: List[BatchUpdateItem]) -> BatchUpdateResult:
         """
@@ -64,6 +70,15 @@ class BatchUpdateTransactionsUseCase:
                 
                 # Update only history
                 update_data = {"history": update_item.history}
+                
+                # Handle category if provided
+                if update_item.category_name:
+                    category = self.category_gateway.get_by_name(update_item.category_name)
+                    if category:
+                        update_data['category_id'] = category.id
+                        logger.info(f"Category '{update_item.category_name}' found for transaction {update_item.transaction_id}")
+                    else:
+                        logger.warning(f"Category '{update_item.category_name}' not found, skipping category update")
                 
                 # Execute update
                 success = self.transaction_gateway.update(update_item.transaction_id, update_data)
