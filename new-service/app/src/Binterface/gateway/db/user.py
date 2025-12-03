@@ -2,7 +2,6 @@
 User Gateway - Interface Adapter Layer
 Implements user persistence operations
 """
-import uuid
 import logging
 from sqlmodel import Session, select
 from typing import Optional

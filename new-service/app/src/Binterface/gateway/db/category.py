@@ -2,7 +2,6 @@
 Category Gateway - Interface Adapter Layer
 Implements category persistence operations
 """
-import uuid
 import logging
 from sqlmodel import Session, select
 from typing import Optional

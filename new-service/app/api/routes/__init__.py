@@ -3,7 +3,7 @@ Routes module for API endpoints
 """
 
 from . import health
-from . import pdf_processing
-from . import transactions
+from . import document
+from . import transaction
 
-__all__ = ["health", "pdf_processing", "transactions"]
+__all__ = ["health", "document", "transaction"]

@@ -3,7 +3,6 @@ PDF Processing Controller - Interface Adapter Layer
 Processes extraction results and coordinates with application layer
 """
 import logging
-import uuid
 from typing import BinaryIO
 from sqlmodel import Session
 
