@@ -31,9 +31,20 @@ Content-Type: application/json
 
 
 
+### === CATEGORIES ===
+
+### 3. Get All Categories
+# Get all categories from the database
+GET {{baseUrl}}/api/categories/
+Accept: application/json
+
+###
+
+
+
 ### === TRANSACTIONS ===
 
-### 3. Load Transactions from Document
+### 4. Load Transactions from Document
 # Migrate data from the 'data' column of the document to the transactions table
 
 # @name populateTransaction
@@ -42,7 +53,7 @@ Accept: application/json
 
 ###
 
-### 4. Get All Transactions
+### 5. Get All Transactions
 # Get all transactions with pagination
 # @name getAllTransactions
 GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
@@ -50,7 +61,7 @@ Accept: application/json
 
 ###
 
-### 5. Update Transaction by ID
+### 6. Update Transaction by ID
 # Update 'history' and/or 'category_name' fields of a specific transaction
 # Only 'history' and 'category_name' fields can be edited
 # If the category doesn't exist, only history will be updated
@@ -65,7 +76,7 @@ Content-Type: application/json
 
 ###
 
-### 6. Batch Update Transactions
+### 7. Batch Update Transactions
 # Update multiple transactions simultaneously
 # Only 'history' and 'category_name' fields can be edited for each transaction
 # If a category doesn't exist, only history will be updated for that transaction

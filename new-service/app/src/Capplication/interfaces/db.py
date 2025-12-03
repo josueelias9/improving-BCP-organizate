@@ -84,6 +84,16 @@ class ICategoryDbGateway(ABC):
             Category if found, None otherwise
         """
         pass
+    
+    @abstractmethod
+    def get_all(self):
+        """
+        Get all categories
+        
+        Returns:
+            List of all categories
+        """
+        pass
 
 
 class ITransactionDbGateway(ABC):

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import health, document, transaction
+from api.routes import health, document, transaction, category
 import logging
 from dotenv import load_dotenv
 
@@ -21,3 +21,4 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(document.router)
 app.include_router(transaction.router, prefix="/api/transactions", tags=["transactions"])
+app.include_router(category.router, prefix="/api/categories", tags=["categories"])

@@ -4,7 +4,7 @@ Implements category persistence operations
 """
 import logging
 from sqlmodel import Session, select
-from typing import Optional
+from typing import Optional, List
 
 from models import Category
 from src.Capplication.interfaces.db import ICategoryDbGateway
@@ -30,3 +30,13 @@ class CategoryDbGateway(ICategoryDbGateway):
         """
         statement = select(Category).where(Category.name.ilike(name))
         return self.session.exec(statement).first()
+    
+    def get_all(self) -> List[Category]:
+        """
+        Get all categories
+        
+        Returns:
+            List of all categories
+        """
+        statement = select(Category)
+        return self.session.exec(statement).all()
