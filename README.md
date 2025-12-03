@@ -1,3 +1,3 @@
 ```sh
-docker exec improving-bcp-organizate-new-service-1 ./scripts/prestart.sh
+docker exec new-service-container ./scripts/prestart.sh
 ```

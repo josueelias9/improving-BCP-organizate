@@ -16,9 +16,9 @@ from src.Capplication.batch_update_transactions_use_case import (
     BatchUpdateTransactionsUseCase,
     BatchUpdateItem
 )
-from src.Binterface.document_gateway import DocumentGateway
-from src.Binterface.transaction_gateway import TransactionGateway
-from src.Binterface.category_gateway import CategoryGateway
+from src.Binterface.gateway.db.document_gateway import DocumentGateway
+from src.Binterface.gateway.db.transaction_gateway import TransactionGateway
+from src.Binterface.gateway.db.category_gateway import CategoryGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

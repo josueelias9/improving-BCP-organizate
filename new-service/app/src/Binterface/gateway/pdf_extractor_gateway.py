@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-class BCPPDFExtractorGateway(PDFExtractorGateway):
+class PDFExtractorGateway(PDFExtractorGateway):
     """Gateway implementation for BCP PDF bank statements extraction"""
     
     def __init__(self):

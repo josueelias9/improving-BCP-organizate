@@ -1,5 +1,5 @@
 # this directories contains private information
-db/
+
 data/
 __pycache__/
 new-service/files/

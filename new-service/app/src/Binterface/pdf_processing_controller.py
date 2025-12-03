@@ -8,9 +8,9 @@ from typing import BinaryIO
 from sqlmodel import Session
 
 from src.Capplication.pdf_processing_use_case import PDFProcessingUseCase, ProcessPDFResult
-from src.Binterface.document_gateway import DocumentGateway
-from src.Binterface.user_gateway import UserGateway
-from src.Binterface.pdf_extractor_gateway import BCPPDFExtractorGateway
+from src.Binterface.gateway.db.document_gateway import DocumentGateway
+from src.Binterface.gateway.db.user_gateway import UserGateway
+from src.Binterface.gateway.pdf_extractor_gateway import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class PDFProcessingController:
         self.session = session
         self.document_gateway = DocumentGateway(session)
         self.user_gateway = UserGateway(session)
-        self.pdf_extractor_gateway = BCPPDFExtractorGateway()
+        self.pdf_extractor_gateway = PDFExtractorGateway()
     
     def process_and_save_document(
         self,

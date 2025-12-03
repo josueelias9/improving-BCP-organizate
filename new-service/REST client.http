@@ -59,7 +59,7 @@ PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "history": "Grocery store expense - categorize as food",
+    "history": "Lo gaste cuando fui al supermercado",
     "category_name": "Groceries"
 }
 
@@ -77,17 +77,17 @@ Content-Type: application/json
     "updates": [
         {
             "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
-            "history": "Grocery store expense - categorize as food",
+            "history": "Lo gaste cuando fui al supermercado",
             "category_name": "Food"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
-            "history": "Utility payment - electricity",
+            "history": "Pago de la luz que me pidio mi madre",
             "category_name": "Utilities"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
-            "history": "Bank transfer - savings",
+            "history": "Dinero que guarde para emergencias",
             "category_name": "Savings"
         }
     ]
