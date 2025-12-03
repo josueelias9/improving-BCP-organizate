@@ -10,7 +10,7 @@ from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
 from models import Transaction
-from src.Capplication.gateways import ITransactionGateway
+from src.Capplication.interfaces.db import ITransactionGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)

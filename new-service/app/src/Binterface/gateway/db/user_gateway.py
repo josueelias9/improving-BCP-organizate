@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from typing import Optional
 
 from models import User, UserCreate
-from src.Capplication.gateways import IUserGateway
+from src.Capplication.interfaces.db import IUserGateway
 
 logger = logging.getLogger(__name__)
 

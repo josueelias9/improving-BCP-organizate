@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from typing import Optional
 
 from models import Category
-from src.Capplication.gateways import ICategoryGateway
+from src.Capplication.interfaces.db import ICategoryGateway
 
 logger = logging.getLogger(__name__)
 

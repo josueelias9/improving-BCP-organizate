@@ -7,7 +7,7 @@ import logging
 from sqlmodel import Session, select
 
 from models import Document
-from src.Capplication.gateways import IDocumentGateway
+from src.Capplication.interfaces.db import IDocumentGateway
 from src.Denterprise.transaction_service import DocumentData
 
 logger = logging.getLogger(__name__)

@@ -4,18 +4,9 @@ Defines contracts for data access without implementation details
 """
 import uuid
 from abc import ABC, abstractmethod
-from typing import BinaryIO, List, Tuple, Optional, Dict, Any
-from src.Denterprise.entities import Transaction, ExtractionResult
+from typing import List, Tuple, Optional, Dict, Any
 from src.Denterprise.transaction_service import TransactionData, DocumentData
 
-
-class PDFExtractorGateway(ABC):
-    """Abstract gateway for PDF extraction operations"""
-    
-    @abstractmethod
-    def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
-        """Extract transactions from PDF file"""
-        pass
 
 
 class IDocumentGateway(ABC):

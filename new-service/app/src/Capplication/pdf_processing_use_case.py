@@ -3,12 +3,12 @@ Process PDF Use Case - Application Layer
 Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
-import uuid
 from typing import Dict, Any, List, Tuple, BinaryIO
 from dataclasses import dataclass
 
 from src.Denterprise.entities import ExtractionResult
-from src.Capplication.gateways import IDocumentGateway, IUserGateway, PDFExtractorGateway
+from src.Capplication.interfaces.db import IDocumentGateway, IUserGateway
+from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 

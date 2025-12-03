@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 from src.Denterprise.entities import ExtractionResult
 from src.Denterprise.bcp_parser import BCPStatementParser
-from src.Capplication.gateways import PDFExtractorGateway
+from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 load_dotenv()
