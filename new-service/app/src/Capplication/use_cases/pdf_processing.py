@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Tuple, BinaryIO
 from dataclasses import dataclass
 
 from src.Denterprise.entities import ExtractionResult
-from src.Capplication.interfaces.db import IDocumentGateway, IUserGateway
+from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
@@ -29,8 +29,8 @@ class PDFProcessingUseCase:
     
     def __init__(
         self, 
-        document_gateway: IDocumentGateway,
-        user_gateway: IUserGateway,
+        document_gateway: IDocumentDbGateway,
+        user_gateway: IUserDbGateway,
         pdf_extractor_gateway: PDFExtractorGateway
     ):
         self.document_gateway = document_gateway

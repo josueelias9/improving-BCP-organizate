@@ -6,7 +6,7 @@ import logging
 import uuid
 
 from src.Denterprise.transaction_service import TransactionService, LoadTransactionsResult
-from src.Capplication.interfaces.db import IDocumentGateway, ITransactionGateway
+from src.Capplication.interfaces.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ class LoadTransactionsFromDocumentUseCase:
     
     def __init__(
         self,
-        document_gateway: IDocumentGateway,
-        transaction_gateway: ITransactionGateway
+        document_gateway: IDocumentDbGateway,
+        transaction_gateway: ITransactionDbGateway
     ):
         """
         Initialize use case with gateway dependencies

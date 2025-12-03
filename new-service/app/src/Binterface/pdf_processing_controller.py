@@ -7,10 +7,10 @@ import uuid
 from typing import BinaryIO
 from sqlmodel import Session
 
-from src.Capplication.pdf_processing_use_case import PDFProcessingUseCase, ProcessPDFResult
-from src.Binterface.gateway.db.document_gateway import DocumentGateway
-from src.Binterface.gateway.db.user_gateway import UserGateway
-from src.Binterface.gateway.pdf_extractor_gateway import PDFExtractorGateway
+from src.Capplication.use_cases.pdf_processing import PDFProcessingUseCase, ProcessPDFResult
+from src.Binterface.gateway.db.document import DocumentDbGateway
+from src.Binterface.gateway.db.user import UserDbGateway
+from src.Binterface.gateway.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,8 @@ class PDFProcessingController:
     
     def __init__(self, session: Session):
         self.session = session
-        self.document_gateway = DocumentGateway(session)
-        self.user_gateway = UserGateway(session)
+        self.document_gateway = DocumentDbGateway(session)
+        self.user_gateway = UserDbGateway(session)
         self.pdf_extractor_gateway = PDFExtractorGateway()
     
     def process_and_save_document(

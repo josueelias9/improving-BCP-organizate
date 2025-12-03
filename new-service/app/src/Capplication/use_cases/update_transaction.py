@@ -6,7 +6,7 @@ import uuid
 import logging
 from typing import Dict, Any
 
-from src.Capplication.interfaces.db import ITransactionGateway, ICategoryGateway
+from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)
@@ -17,8 +17,8 @@ class UpdateTransactionUseCase:
     
     def __init__(
         self, 
-        transaction_gateway: ITransactionGateway,
-        category_gateway: ICategoryGateway
+        transaction_gateway: ITransactionDbGateway,
+        category_gateway: ICategoryDbGateway
     ):
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway

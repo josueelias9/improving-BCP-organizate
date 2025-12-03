@@ -8,12 +8,12 @@ from sqlmodel import Session, select
 from typing import Optional
 
 from models import Category
-from src.Capplication.interfaces.db import ICategoryGateway
+from src.Capplication.interfaces.db import ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 
 
-class CategoryGateway(ICategoryGateway):
+class CategoryDbGateway(ICategoryDbGateway):
     """SQLModel implementation of category gateway"""
     
     def __init__(self, session: Session):

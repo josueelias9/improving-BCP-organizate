@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any, List
 from dataclasses import dataclass
 
-from src.Capplication.interfaces.db import ITransactionGateway, ICategoryGateway
+from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +34,8 @@ class BatchUpdateTransactionsUseCase:
     
     def __init__(
         self, 
-        transaction_gateway: ITransactionGateway,
-        category_gateway: ICategoryGateway
+        transaction_gateway: ITransactionDbGateway,
+        category_gateway: ICategoryDbGateway
     ):
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway

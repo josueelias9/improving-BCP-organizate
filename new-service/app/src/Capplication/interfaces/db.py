@@ -9,7 +9,7 @@ from src.Denterprise.transaction_service import TransactionData, DocumentData
 
 
 
-class IDocumentGateway(ABC):
+class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
     
     @abstractmethod
@@ -48,7 +48,7 @@ class IDocumentGateway(ABC):
         pass
 
 
-class IUserGateway(ABC):
+class IUserDbGateway(ABC):
     """Interface for user persistence operations"""
     
     @abstractmethod
@@ -72,7 +72,7 @@ class IUserGateway(ABC):
         pass
 
 
-class ICategoryGateway(ABC):
+class ICategoryDbGateway(ABC):
     """Interface for category persistence operations"""
     
     @abstractmethod
@@ -86,7 +86,7 @@ class ICategoryGateway(ABC):
         pass
 
 
-class ITransactionGateway(ABC):
+class ITransactionDbGateway(ABC):
     """Interface for transaction persistence operations"""
     
     @abstractmethod

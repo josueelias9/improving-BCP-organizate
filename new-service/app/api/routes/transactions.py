@@ -10,15 +10,15 @@ import logging
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
-from src.Capplication.load_transactions_from_document_use_case import LoadTransactionsFromDocumentUseCase
-from src.Capplication.update_transaction_use_case import UpdateTransactionUseCase
-from src.Capplication.batch_update_transactions_use_case import (
+from src.Capplication.use_cases.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
+from src.Capplication.use_cases.update_transaction import UpdateTransactionUseCase
+from src.Capplication.use_cases.batch_update_transactions import (
     BatchUpdateTransactionsUseCase,
     BatchUpdateItem
 )
-from src.Binterface.gateway.db.document_gateway import DocumentGateway
-from src.Binterface.gateway.db.transaction_gateway import TransactionGateway
-from src.Binterface.gateway.db.category_gateway import CategoryGateway
+from src.Binterface.gateway.db.document import DocumentDbGateway
+from src.Binterface.gateway.db.transaction import TransactionDbGateway
+from src.Binterface.gateway.db.category import CategoryDbGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def get_all_transactions(
             limit = 1000
         
         # Get transactions via gateway (includes category_name)
-        transaction_gateway = TransactionGateway(session)
+        transaction_gateway = TransactionDbGateway(session)
         transactions = transaction_gateway.get_all(skip=skip, limit=limit)
         
         return transactions
@@ -84,8 +84,8 @@ def load_transactions_from_document(
     """
     try:
         # Instantiate concrete gateways
-        document_gateway = DocumentGateway(session)
-        transaction_gateway = TransactionGateway(session)
+        document_gateway = DocumentDbGateway(session)
+        transaction_gateway = TransactionDbGateway(session)
         
         # Inject gateways into use case
         use_case = LoadTransactionsFromDocumentUseCase(document_gateway, transaction_gateway)
@@ -145,8 +145,8 @@ def update_transaction(
     """
     try:
         # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionGateway(session)
-        category_gateway = CategoryGateway(session)
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
         use_case = UpdateTransactionUseCase(transaction_gateway, category_gateway)
         
         # Convert Pydantic model to dict, excluding None values
@@ -206,8 +206,8 @@ def batch_update_transactions(
     """
     try:
         # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionGateway(session)
-        category_gateway = CategoryGateway(session)
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
         use_case = BatchUpdateTransactionsUseCase(transaction_gateway, category_gateway)
         
         # Convert Pydantic models to domain objects

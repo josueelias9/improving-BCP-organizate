@@ -10,13 +10,13 @@ from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
 from models import Transaction
-from src.Capplication.interfaces.db import ITransactionGateway
+from src.Capplication.interfaces.db import ITransactionDbGateway
 from src.Denterprise.transaction_service import TransactionData
 
 logger = logging.getLogger(__name__)
 
 
-class TransactionGateway(ITransactionGateway):
+class TransactionDbGateway(ITransactionDbGateway):
     """SQLModel implementation of transaction gateway"""
     
     def __init__(self, session: Session):

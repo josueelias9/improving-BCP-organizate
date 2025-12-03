@@ -7,13 +7,13 @@ import logging
 from sqlmodel import Session, select
 
 from models import Document
-from src.Capplication.interfaces.db import IDocumentGateway
+from src.Capplication.interfaces.db import IDocumentDbGateway
 from src.Denterprise.transaction_service import DocumentData
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentGateway(IDocumentGateway):
+class DocumentDbGateway(IDocumentDbGateway):
     """SQLModel implementation of document gateway"""
     
     def __init__(self, session: Session):
