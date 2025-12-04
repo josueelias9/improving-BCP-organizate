@@ -145,6 +145,7 @@ class TransactionBase(SQLModel):
     internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
     history: Optional[str] = Field(default=None)
     order: int
+    unique_identifier: Optional[str] = Field(default=None, max_length=500)
 
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"
@@ -174,7 +175,7 @@ class TransactionUpdate(SQLModel):
 class TransactionBatchUpdateItem(SQLModel):
     """Model for a single transaction update in a batch"""
     transaction_id: uuid.UUID
-    history: str
+    history: Optional[str] = Field(default=None)
     category_name: Optional[str] = Field(default=None, max_length=255)
 
 

@@ -34,6 +34,9 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         for transaction_data in transactions:
             try:
+                # Generate unique_identifier: {fecha_proceso}__{cargos}__{description}
+                unique_id = f"{transaction_data.fecha_proceso}__{transaction_data.cargos}__{transaction_data.description}"
+                
                 transaction = Transaction(
                     description=transaction_data.description,
                     cargos=transaction_data.cargos,
@@ -42,10 +45,10 @@ class TransactionDbGateway(ITransactionDbGateway):
                     fecha_proceso=transaction_data.fecha_proceso,
                     fecha_consumo=transaction_data.fecha_consumo,
                     internal_transaction=transaction_data.internal_transaction,
-                    type=transaction_data.type,
                     document_id=document_id,
                     order=transaction_data.order,
-                    history=transaction_data.history
+                    history=transaction_data.history,
+                    unique_identifier=unique_id
                 )
                 
                 self.session.add(transaction)
@@ -102,7 +105,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             fecha_proceso=transaction.fecha_proceso,
             fecha_consumo=transaction.fecha_consumo,
             internal_transaction=transaction.internal_transaction,
-            type=getattr(transaction, 'type', ''),  # Safe access since type might not exist in old records
+            type='',  # Default empty string since type is not in Transaction model
             order=transaction.order,
             history=transaction.history
         )

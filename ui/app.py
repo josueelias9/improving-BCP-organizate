@@ -100,6 +100,10 @@ def load_transactions() -> pd.DataFrame:
             # Calculate amount (cargos are negative, abonos are positive)
             df['amount'] = df['abonos'] - df['cargos']
             
+            # Sort by order column
+            if 'order' in df.columns:
+                df = df.sort_values('order', ascending=True)
+            
             logger.info(f"Loaded {len(df)} transactions")
             return df
             
@@ -151,6 +155,36 @@ def main():
     # Sidebar
     with st.sidebar:
         st.header("⚙️ Configuración")
+        
+        # File upload section
+        st.subheader("📄 Subir PDF")
+        uploaded_file = st.file_uploader(
+            "Selecciona un archivo PDF de transacciones BCP",
+            type=['pdf'],
+            help="Sube el PDF del estado de cuenta de BCP"
+        )
+        
+        if uploaded_file is not None:
+            if st.button("💾 Guardar PDF", use_container_width=True):
+                try:
+                    # Create files directory if it doesn't exist
+                    import os
+                    files_dir = "/workspace/ui/files"
+                    os.makedirs(files_dir, exist_ok=True)
+                    
+                    # Save the file
+                    file_path = os.path.join(files_dir, uploaded_file.name)
+                    with open(file_path, "wb") as f:
+                        f.write(uploaded_file.getbuffer())
+                    
+                    st.success(f"✅ Archivo guardado: {uploaded_file.name}")
+                    logger.info(f"File saved: {file_path}")
+                    
+                except Exception as e:
+                    st.error(f"❌ Error guardando archivo: {str(e)}")
+                    logger.error(f"Error saving file: {str(e)}")
+        
+        st.divider()
         
         # Reload button
         if st.button("🔄 Recargar Datos", use_container_width=True):
@@ -258,6 +292,9 @@ def main():
         st.info("No hay transacciones que coincidan con los filtros seleccionados")
         return
     
+    # Sort by order before displaying
+    filtered_df = filtered_df.sort_values('order', ascending=True)
+    
     # Prepare display dataframe
     display_df = filtered_df[[
         'order', 'id', 'fecha_proceso', 'description', 'cargos', 'abonos', 
@@ -333,10 +370,31 @@ def main():
                             if (orig_row['Historial'] != edited_row['Historial'] or 
                                 orig_row['Categoría'] != edited_row['Categoría']):
                                 
+                                # Extract scalar values and convert to proper types
+                                history_raw = edited_row['Historial']
+                                category_raw = edited_row['Categoría']
+                                
+                                # Handle lists (in case of multiple values) - extract first element BEFORE converting to string
+                                if isinstance(history_raw, list):
+                                    history_raw = history_raw[0] if len(history_raw) > 0 else ""
+                                if isinstance(category_raw, list):
+                                    category_raw = category_raw[0] if len(category_raw) > 0 else None
+                                
+                                # Now convert to string after extracting from list
+                                if pd.notna(history_raw) and history_raw != "":
+                                    history_val = str(history_raw)
+                                else:
+                                    history_val = ""
+                                    
+                                if pd.notna(category_raw) and category_raw != "":
+                                    category_val = str(category_raw)
+                                else:
+                                    category_val = None
+                                
                                 updates.append({
-                                    "transaction_id": orig_row['_ID'],
-                                    "history": edited_row['Historial'] if pd.notna(edited_row['Historial']) else "",
-                                    "category_name": edited_row['Categoría'] if pd.notna(edited_row['Categoría']) else None
+                                    "transaction_id": str(orig_row['_ID']),
+                                    "history": history_val,
+                                    "category_name": category_val
                                 })
                     
                     if updates:
