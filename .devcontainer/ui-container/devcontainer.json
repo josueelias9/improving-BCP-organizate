@@ -1,9 +1,9 @@
 {
-  "name": "New Service Container",
-  "dockerComposeFile": ["../../docker-compose.yml","../../docker-compose.new-service.yml"],
-  "service": "new-service",
+  "name": "Ui Container",
+  "dockerComposeFile": ["../../docker-compose.yml","../../docker-compose.ui.yml"],
+  "service": "ui",
   "shutdownAction": "none",
-  "workspaceFolder": "/workspace/new-service",
+  "workspaceFolder": "/workspace/ui",
   "customizations": {
     "vscode": {
       "extensions": [

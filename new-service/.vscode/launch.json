@@ -1,23 +1,31 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Extract PDF Script",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/extract_pdf_script.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "justMyCode": true
-        },
-        {
-            "name": "Run main.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/app/main.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "justMyCode": true
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Extract PDF Script",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/extract_pdf_script.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
+    },
+    {
+      "name": "Run FastAPI Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "fastapi",
+      "args": ["run", "app/main.py"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
+    },
+    {
+      "name": "test clean architecture!",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/clean_arch.py",
+      "console": "integratedTerminal"
+    }
+  ]
 }
