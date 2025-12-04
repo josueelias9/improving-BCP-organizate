@@ -1,0 +1,105 @@
+### BCP PDF Extractor - REST Client Tests
+### Variables
+@baseUrl = http://127.0.0.1:8001
+
+### === HEALTH CHECK ===
+
+### 1. Health Check - Get API Info
+GET {{baseUrl}}/api
+Accept: application/json
+
+###
+
+
+
+### === PDF PROCESSING WITH DATABASE ===
+
+### 2. Process PDF and Save to Database
+# Extract data from PDF and save it as JSON in the Documents table
+
+# @name populateDocument
+POST {{baseUrl}}/api/pdf-processing
+Content-Type: application/json
+
+{
+    "pdf_filename": "files/EECC102025_07750301.PDF",
+    "type": "debit",
+    "user_email": "admin@bcpextractor.com"
+}
+
+###
+
+
+
+### === CATEGORIES ===
+
+### 3. Get All Categories
+# Get all categories from the database
+GET {{baseUrl}}/api/categories/
+Accept: application/json
+
+###
+
+
+
+### === TRANSACTIONS ===
+
+### 4. Load Transactions from Document
+# Migrate data from the 'data' column of the document to the transactions table
+
+# @name populateTransaction
+POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
+Accept: application/json
+
+###
+
+### 5. Get All Transactions
+# Get all transactions with pagination
+# @name getAllTransactions
+GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
+Accept: application/json
+
+###
+
+### 6. Update Transaction by ID
+# Update 'history' and/or 'category_name' fields of a specific transaction
+# Only 'history' and 'category_name' fields can be edited
+# If the category doesn't exist, only history will be updated
+
+PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
+Content-Type: application/json
+
+{
+    "history": "Lo gaste cuando fui al supermercado",
+    "category_name": "Groceries"
+}
+
+###
+
+### 7. Batch Update Transactions
+# Update multiple transactions simultaneously
+# Only 'history' and 'category_name' fields can be edited for each transaction
+# If a category doesn't exist, only history will be updated for that transaction
+
+PATCH {{baseUrl}}/api/transactions/batch
+Content-Type: application/json
+
+{
+    "updates": [
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
+            "history": "Lo gaste cuando fui al supermercado",
+            "category_name": "Food"
+        },
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
+            "history": "Pago de la luz que me pidio mi madre",
+            "category_name": "Utilities"
+        },
+        {
+            "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
+            "history": "Dinero que guarde para emergencias",
+            "category_name": "Savings"
+        }
+    ]
+}

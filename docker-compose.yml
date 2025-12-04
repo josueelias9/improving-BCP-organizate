@@ -1,0 +1,37 @@
+services:
+
+  new-service:
+    container_name: new-service-container
+    build: 
+      context: ./new-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/workspace
+    env_file:
+      - .env
+    command: sleep infinity
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+volumes:
+  pgadmin_data:

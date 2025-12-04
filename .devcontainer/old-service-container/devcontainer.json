@@ -1,0 +1,7 @@
+{
+  "name": "Old Service Container",
+  "dockerComposeFile": ["../../docker-compose.yml"],
+  "service": "old-service",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/old-service"
+}
