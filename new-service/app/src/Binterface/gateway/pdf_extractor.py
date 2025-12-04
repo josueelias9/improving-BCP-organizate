@@ -22,11 +22,11 @@ class PDFExtractorGateway(PDFExtractorGateway):
     def __init__(self):
         self.parser = BCPStatementParser()
     
-    def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
+    def extract_transactions(self, pdf_file: BinaryIO, filename: str = "") -> ExtractionResult:
         """Extract transactions from PDF file"""
         try:
             password = os.getenv('PDF_PASSWORD')
-            full_text = self._extract_text_from_pdf(pdf_file, filename, password)
+            full_text = self._extract_text_from_pdf(pdf_file, password)
             
             # Use parser from Denterprise layer for business logic
             account_code, currency = self.parser.extract_account_code(full_text)            
@@ -35,7 +35,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
             transactions = self.parser.parse_transactions(full_text)
             
             return ExtractionResult(
-                filename=filename,
+                filename=filename or "uploaded_file.pdf",
                 transactions=transactions,
                 total_transactions=len(transactions),
                 success=True,
@@ -48,9 +48,9 @@ class PDFExtractorGateway(PDFExtractorGateway):
             )
             
         except Exception as e:
-            logger.error(f"Error extracting transactions from PDF {filename}: {str(e)}")
+            logger.error(f"Error extracting transactions from PDF: {str(e)}")
             return ExtractionResult(
-                filename=filename,
+                filename=filename or "uploaded_file.pdf",
                 transactions=[],
                 total_transactions=0,
                 success=False,
@@ -60,9 +60,9 @@ class PDFExtractorGateway(PDFExtractorGateway):
                 currency=None
             )
     
-    def _extract_text_from_pdf(self, pdf_file: BinaryIO, filename: str, password: str = None) -> str:
+    def _extract_text_from_pdf(self, pdf_file: BinaryIO, password: str = None) -> str:
         """Extract text from PDF using PyMuPDF"""
-        logger.info(f"Extracting text from PDF: {filename}")
+        logger.info("Extracting text from PDF")
         
         try:
             text = ""

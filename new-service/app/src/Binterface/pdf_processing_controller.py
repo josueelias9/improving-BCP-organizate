@@ -4,12 +4,10 @@ Processes extraction results and coordinates with application layer
 """
 import logging
 from typing import BinaryIO
-from sqlmodel import Session
 
 from src.Capplication.use_cases.pdf_processing import PDFProcessingUseCase, ProcessPDFResult
-from src.Binterface.gateway.db.document import DocumentDbGateway
-from src.Binterface.gateway.db.user import UserDbGateway
-from src.Binterface.gateway.pdf_extractor import PDFExtractorGateway
+from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
+from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -17,16 +15,27 @@ logger = logging.getLogger(__name__)
 class PDFProcessingController:
     """Controller for processing PDF extraction results"""
     
-    def __init__(self, session: Session):
-        self.session = session
-        self.document_gateway = DocumentDbGateway(session)
-        self.user_gateway = UserDbGateway(session)
-        self.pdf_extractor_gateway = PDFExtractorGateway()
+    def __init__(
+        self,
+        document_gateway: IDocumentDbGateway,
+        user_gateway: IUserDbGateway,
+        pdf_extractor_gateway: PDFExtractorGateway
+    ):
+        """
+        Initialize controller with dependency injection
+        
+        Args:
+            document_gateway: Gateway for document persistence
+            user_gateway: Gateway for user persistence
+            pdf_extractor_gateway: Gateway for PDF extraction
+        """
+        self.document_gateway = document_gateway
+        self.user_gateway = user_gateway
+        self.pdf_extractor_gateway = pdf_extractor_gateway
     
     def process_and_save_document(
         self,
         pdf_file: BinaryIO,
-        pdf_filename: str,
         user_email: str,
         document_type: str = "BCP_STATEMENT"
     ) -> ProcessPDFResult:
@@ -34,8 +43,7 @@ class PDFProcessingController:
         Process PDF file and save document using application layer
         
         Args:
-            pdf_file: Binary PDF file content
-            pdf_filename: Name of the PDF file
+            pdf_file: Binary PDF file content (file stream)
             user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
             
@@ -44,6 +52,7 @@ class PDFProcessingController:
             
         Raises:
             ValueError: If PDF processing fails
+            UnsupportedDocumentTypeException: If document type is not supported
         """
         # Delegate all processing to application layer use case
         use_case = PDFProcessingUseCase(
@@ -53,7 +62,7 @@ class PDFProcessingController:
         )
         result = use_case.execute(
             pdf_file=pdf_file,
-            pdf_filename=pdf_filename,
+            pdf_filename="",  # No longer needed by use case
             user_email=user_email,
             document_type=document_type
         )

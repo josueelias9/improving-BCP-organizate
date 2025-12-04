@@ -7,6 +7,7 @@ from typing import Dict, Any, List, Tuple, BinaryIO
 from dataclasses import dataclass
 
 from src.Denterprise.entities import ExtractionResult
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
@@ -40,26 +41,30 @@ class PDFProcessingUseCase:
     def execute(
         self,
         pdf_file: BinaryIO,
-        pdf_filename: str,
         user_email: str,
-        document_type: str = "BCP_STATEMENT"
+        document_type: str = "BCP_STATEMENT",
+        pdf_filename: str = ""
     ) -> ProcessPDFResult:
         """
         Process PDF file: get/create user, extract transactions, and create document
         
         Args:
             pdf_file: Binary PDF file content
-            pdf_filename: Name of the PDF file
             user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
+            pdf_filename: Optional filename for logging purposes only
             
         Returns:
             ProcessPDFResult with operation details
             
         Raises:
             ValueError: If validation fails
+            UnsupportedDocumentTypeException: If document type is not supported
         """
         try:
+            # Validate document type (business rule)
+            self._validate_document_type(document_type)
+            
             # Get or create user
             user = self._get_or_create_user(user_email)
             
@@ -117,6 +122,32 @@ class PDFProcessingUseCase:
         except Exception as e:
             logger.error(f"Error processing PDF: {str(e)}")
             raise
+    
+    def _validate_document_type(self, document_type: str) -> None:
+        """
+        Validate that the document type is supported (business rule)
+        
+        Args:
+            document_type: Type of document to validate
+            
+        Raises:
+            UnsupportedDocumentTypeException: If document type is not supported
+        """
+        supported_types = ["BCP_STATEMENT", "DEBIT_STATEMENT"]
+        
+        # For now, only debit statements are fully implemented
+        if document_type not in supported_types:
+            raise UnsupportedDocumentTypeException(
+                document_type=document_type,
+                supported_types=supported_types
+            )
+        
+        # Credit card processing not implemented yet
+        if document_type == "CREDIT_STATEMENT":
+            raise UnsupportedDocumentTypeException(
+                document_type="credit",
+                supported_types=["debit"]
+            )
     
     def _get_or_create_user(self, user_email: str):
         """

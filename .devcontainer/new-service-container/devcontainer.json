@@ -12,7 +12,8 @@
         "humao.rest-client",
         "mechatroner.rainbow-csv",
         "bierner.markdown-mermaid",
-        "stateful.runme"
+        "stateful.runme",
+        "eamodio.gitlens"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"

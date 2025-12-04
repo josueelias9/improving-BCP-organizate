@@ -2,6 +2,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from api.deps import SessionDep
 from src.Binterface.pdf_processing_controller import PDFProcessingController
+from src.Binterface.gateway.db.document import DocumentDbGateway
+from src.Binterface.gateway.db.user import UserDbGateway
+from src.Binterface.gateway.pdf_extractor import PDFExtractorGateway
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 import os
 
 # Crear router para rutas de procesamiento de PDF
@@ -37,34 +41,44 @@ async def pdf_processing(
     - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
     try:
-        # Verify PDF type
-        if request.type.lower() == "credit":
-            raise HTTPException(
-                status_code=501,
-                detail="Credit card PDF processing not implemented yet. Only debit accounts are supported."
-            )
-        elif request.type.lower() != "debit":
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid PDF type. Use 'debit' or 'credit'."
-            )
-        
-        # Verify file exists
+        # Verify file exists (infrastructure concern - stays in route)
         if not os.path.exists(request.pdf_filename):
             raise HTTPException(
                 status_code=404, 
                 detail=f"File '{request.pdf_filename}' not found"
             )
         
-        # Process PDF using controller (delegates to application layer)
-        controller = PDFProcessingController(session)
+        # Map request type to document type
+        document_type_map = {
+            "debit": "BCP_STATEMENT",
+            "credit": "CREDIT_STATEMENT"
+        }
         
+        document_type = document_type_map.get(request.type.lower())
+        if not document_type:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid PDF type '{request.type}'. Use 'debit' or 'credit'."
+            )
+        
+        # Initialize gateways (dependency injection at composition root)
+        document_gateway = DocumentDbGateway(session)
+        user_gateway = UserDbGateway(session)
+        pdf_extractor_gateway = PDFExtractorGateway()
+        
+        # Create controller with injected dependencies
+        controller = PDFProcessingController(
+            document_gateway=document_gateway,
+            user_gateway=user_gateway,
+            pdf_extractor_gateway=pdf_extractor_gateway
+        )
+        
+        # Open file and pass binary content to controller
         with open(request.pdf_filename, 'rb') as pdf_file:
             result = controller.process_and_save_document(
                 pdf_file=pdf_file,
-                pdf_filename=request.pdf_filename,
                 user_email=request.user_email,
-                document_type="BCP_STATEMENT"
+                document_type=document_type
             )
         
         # Return response based on result
@@ -82,6 +96,12 @@ async def pdf_processing(
             "transactions_count": result.transactions_count
         }
         
+    except UnsupportedDocumentTypeException as e:
+        # Adapt business exception to HTTP response
+        raise HTTPException(
+            status_code=501,
+            detail=str(e)
+        )
     except HTTPException:
         raise
     except Exception as e:
