@@ -260,13 +260,14 @@ def main():
     
     # Prepare display dataframe
     display_df = filtered_df[[
-        'id', 'fecha_proceso', 'description', 'cargos', 'abonos', 
+        'order', 'id', 'fecha_proceso', 'description', 'cargos', 'abonos', 
         'amount', 'category_name', 'history'
     ]].copy()
     
     display_df['fecha_proceso'] = display_df['fecha_proceso'].dt.strftime('%d/%m/%Y')
     display_df = display_df.rename(columns={
-        'id': 'ID',
+        'order': 'Orden',
+        'id': '_ID',
         'fecha_proceso': 'Fecha',
         'description': 'Descripción',
         'cargos': 'Cargos (S/)',
@@ -286,7 +287,8 @@ def main():
     edited_df = st.data_editor(
         display_df,
         column_config={
-            "ID": st.column_config.TextColumn("ID", disabled=True, width="small"),
+            "Orden": st.column_config.NumberColumn("Orden", disabled=True, width="small"),
+            "_ID": None,  # Hide the UUID column
             "Fecha": st.column_config.TextColumn("Fecha", disabled=True, width="small"),
             "Descripción": st.column_config.TextColumn("Descripción", disabled=True, width="large"),
             "Cargos (S/)": st.column_config.NumberColumn("Cargos (S/)", disabled=True, format="%.2f", width="small"),
@@ -332,7 +334,7 @@ def main():
                                 orig_row['Categoría'] != edited_row['Categoría']):
                                 
                                 updates.append({
-                                    "transaction_id": orig_row['ID'],
+                                    "transaction_id": orig_row['_ID'],
                                     "history": edited_row['Historial'] if pd.notna(edited_row['Historial']) else "",
                                     "category_name": edited_row['Categoría'] if pd.notna(edited_row['Categoría']) else None
                                 })

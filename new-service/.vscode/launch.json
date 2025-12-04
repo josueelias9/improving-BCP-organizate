@@ -11,7 +11,7 @@
       "justMyCode": true
     },
     {
-      "name": "Run FastAPI Server",
+      "name": "🟢 Run FastAPI Server",
       "type": "debugpy",
       "request": "launch",
       "module": "fastapi",
