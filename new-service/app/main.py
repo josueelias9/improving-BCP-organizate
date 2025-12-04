@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import health, document, transaction, category
+from api.main import api_router
 import logging
 from dotenv import load_dotenv
 
@@ -17,8 +17,5 @@ app = FastAPI(
     description="Servicio para extraer transacciones de PDFs del BCP usando Clean Architecture"
 )
 
-# Incluir las rutas desde los diferentes módulos
-app.include_router(health.router)
-app.include_router(document.router)
-app.include_router(transaction.router, prefix="/api/transactions", tags=["transactions"])
-app.include_router(category.router, prefix="/api/categories", tags=["categories"])
+# Include API router
+app.include_router(api_router)
