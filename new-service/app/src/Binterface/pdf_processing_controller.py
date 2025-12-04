@@ -5,7 +5,7 @@ Processes extraction results and coordinates with application layer
 import logging
 from typing import BinaryIO
 
-from src.Capplication.use_cases.pdf_processing import PDFProcessingUseCase, ProcessPDFResult
+from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase, ProcessPDFResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
