@@ -10,25 +10,18 @@ RUN apt-get update && apt-get install -y \
 
 # install python dependencies globally
 RUN <<EOF
-pip install vulture
-pip install "fastapi[standard]"
-pip install sqlmodel
 pip install pandas
 pip install streamlit
-pip install pydantic_settings
-pip install psycopg[binary]
-pip install pymupdf
+pip install requests
 EOF
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8501
 
 # Set working directory
 WORKDIR /app
 
-# Copy application code
 COPY . .
 
-# Run the application
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-CMD ["fastapi", "run", "app/main.py"]
+# Command to run the application
+CMD ["streamlit", "run", "app.py"]

@@ -1,6 +1,6 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
-@baseUrl = http://127.0.0.1:8001
+@baseUrl = http://127.0.0.1:8000
 
 ### === HEALTH CHECK ===
 
