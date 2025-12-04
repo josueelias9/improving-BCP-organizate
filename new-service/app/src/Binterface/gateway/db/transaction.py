@@ -35,7 +35,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         for transaction_data in transactions:
             try:
                 # Generate unique_identifier: {fecha_proceso}__{cargos}__{description}
-                unique_id = f"{transaction_data.fecha_proceso}__{transaction_data.cargos}__{transaction_data.description}"
+                unique_id = f"{transaction_data.order}__{transaction_data.fecha_proceso}__{transaction_data.cargos}__{transaction_data.abonos}__{transaction_data.description}"
                 
                 transaction = Transaction(
                     description=transaction_data.description,
