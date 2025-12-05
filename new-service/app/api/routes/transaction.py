@@ -3,18 +3,14 @@ Transaction Routes - HTTP Interface
 Delegates to application layer use cases
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from sqlmodel import Session, select
+from sqlmodel import Session
 from typing import Dict, Any, List, Optional
 import uuid
 import logging
-import csv
-import io
-from datetime import datetime
 from pathlib import Path
 
 from api.deps import get_db_session
-from models import TransactionUpdate, TransactionBatchUpdate, Transaction
+from models import TransactionUpdate, TransactionBatchUpdate
 from src.Capplication.use_cases.transaction.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
 from src.Capplication.use_cases.transaction.batch_update_transactions import (
@@ -24,6 +20,9 @@ from src.Capplication.use_cases.transaction.batch_update_transactions import (
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
     ExportFilter
+)
+from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
+    ImportTransactionsFromCsvUseCase
 )
 from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.transaction import TransactionDbGateway
@@ -250,7 +249,7 @@ def batch_update_transactions(
 
 
 @router.get("/export/csv")
-def export_transactions_csv(
+def export_transactions(
     month: Optional[str] = Query(None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"),
     document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
     session: Session = Depends(get_db_session)
@@ -318,4 +317,61 @@ def export_transactions_csv(
         raise HTTPException(
             status_code=500,
             detail=f"Error exporting transactions: {str(e)}"
+        )
+
+
+@router.post("/import/csv")
+def import_transactions_from_csv(
+    csv_filename: Optional[str] = Query(None, description="Specific CSV filename to import (optional, uses latest if not provided)"),
+    session: Session = Depends(get_db_session)
+) -> Dict[str, Any]:
+    """
+    Import and update transactions from CSV file
+    
+    Reads a CSV file from the output/ directory and updates transactions based on unique_identifier.
+    Updates the 'history' and 'category_name' fields for matching transactions.
+    
+    Args:
+        csv_filename: Optional specific CSV filename. If not provided, uses the most recent CSV file.
+        
+    Returns:
+        JSON with import summary including updated count, errors, etc.
+        
+    Examples:
+        - POST /transactions/import/csv - Import from latest CSV file
+        - POST /transactions/import/csv?csv_filename=transactions_226records_20251205_221111.csv - Import from specific file
+    """
+    try:
+        # Instantiate gateways and inject into use case
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
+        use_case = ImportTransactionsFromCsvUseCase(transaction_gateway, category_gateway)
+        
+        # Execute use case
+        result = use_case.execute(csv_filename)
+        
+        if not result.success and result.total_rows == 0:
+            raise HTTPException(
+                status_code=404,
+                detail=result.message
+            )
+        
+        logger.info(f"Import completed: {result.updated_count} updated, {result.skipped_count} skipped")
+        
+        return {
+            "success": result.success,
+            "message": result.message,
+            "updated_count": result.updated_count,
+            "skipped_count": result.skipped_count,
+            "total_rows": result.total_rows,
+            "errors": result.errors[:10] if result.errors else []  # Limit errors to first 10
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error importing transactions from CSV: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error importing transactions: {str(e)}"
         )

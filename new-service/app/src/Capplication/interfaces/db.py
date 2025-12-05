@@ -154,3 +154,16 @@ class ITransactionDbGateway(ABC):
             List of transaction dictionaries including category_name
         """
         pass
+    
+    @abstractmethod
+    def get_by_unique_identifier(self, unique_identifier: str):
+        """
+        Get transaction by unique_identifier
+        
+        Args:
+            unique_identifier: Unique identifier string
+        
+        Returns:
+            Transaction if found, None otherwise
+        """
+        pass

@@ -168,3 +168,9 @@ class TransactionDbGateway(ITransactionDbGateway):
             result.append(t_dict)
         
         return result
+    
+    def get_by_unique_identifier(self, unique_identifier: str):
+        """Get transaction by unique_identifier"""
+        statement = select(Transaction).where(Transaction.unique_identifier == unique_identifier)
+        transaction = self.session.exec(statement).first()
+        return transaction
