@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any
 
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
-from src.Denterprise.transaction_service import TransactionData
+from src.Capplication.DTO import TransactionData
 
 logger = logging.getLogger(__name__)
 

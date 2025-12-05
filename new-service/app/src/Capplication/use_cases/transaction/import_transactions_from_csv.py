@@ -6,22 +6,11 @@ import logging
 import csv
 from pathlib import Path
 from typing import Optional, List
-from dataclasses import dataclass
 
+from src.Capplication.DTO import ImportTransactionsResult
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ImportTransactionsResult:
-    """Result of import transactions operation"""
-    success: bool
-    updated_count: int
-    skipped_count: int
-    errors: List[str]
-    total_rows: int
-    message: str
 
 
 class ImportTransactionsFromCsvUseCase:

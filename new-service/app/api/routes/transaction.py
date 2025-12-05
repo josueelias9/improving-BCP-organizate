@@ -11,19 +11,12 @@ from pathlib import Path
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
+from src.Capplication.DTO import BatchUpdateItem, ExportFilter
 from src.Capplication.use_cases.transaction.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
-from src.Capplication.use_cases.transaction.batch_update_transactions import (
-    BatchUpdateTransactionsUseCase,
-    BatchUpdateItem
-)
-from src.Capplication.use_cases.transaction.export_transactions import (
-    ExportTransactionsUseCase,
-    ExportFilter
-)
-from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
-    ImportTransactionsFromCsvUseCase
-)
+from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase
+from src.Capplication.use_cases.transaction.export_transactions import ExportTransactionsUseCase
+from src.Capplication.use_cases.transaction.import_transactions_from_csv import ImportTransactionsFromCsvUseCase
 from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.transaction import TransactionDbGateway
 from src.Binterface.gateway.db.category import CategoryDbGateway

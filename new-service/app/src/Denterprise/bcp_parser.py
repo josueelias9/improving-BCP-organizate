@@ -5,7 +5,7 @@ Contains business logic for parsing BCP PDF statements
 import re
 import logging
 from typing import List, Optional, Tuple
-from .entities import Transaction
+from src.Capplication.DTO import Transaction
 
 logger = logging.getLogger(__name__)
 

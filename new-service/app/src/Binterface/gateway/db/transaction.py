@@ -11,7 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from models import Transaction
 from src.Capplication.interfaces.db import ITransactionDbGateway
-from src.Denterprise.transaction_service import TransactionData
+from src.Capplication.DTO import TransactionData
 
 logger = logging.getLogger(__name__)
 

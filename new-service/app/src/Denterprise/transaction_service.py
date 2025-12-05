@@ -4,43 +4,10 @@ Contains core business rules and validations for transaction processing
 """
 import logging
 from typing import Dict, Any, List, Optional
-from dataclasses import dataclass
+
+from src.Capplication.DTO import TransactionData, DocumentData, LoadTransactionsResult
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class TransactionData:
-    """Data structure for transaction information"""
-    description: str
-    cargos: float
-    abonos: float
-    currency: str
-    fecha_proceso: Optional[str]
-    fecha_consumo: Optional[str]
-    internal_transaction: bool
-    type: Optional[str]
-    order: int
-    history: Optional[str] = None
-
-
-@dataclass
-class DocumentData:
-    """Data structure for document information"""
-    id: str
-    data: List[Dict[str, Any]]
-    currency: str
-    processed: bool
-
-
-@dataclass
-class LoadTransactionsResult:
-    """Result of loading transactions operation"""
-    success: bool
-    loaded_count: int
-    skipped_count: int
-    errors: List[str]
-    total_records: int
 
 
 class TransactionService:

@@ -8,28 +8,11 @@ import csv
 import io
 from typing import Optional, List
 from datetime import datetime
-from dataclasses import dataclass
 
+from src.Capplication.DTO import ExportFilter, ExportTransactionsResult
 from src.Capplication.interfaces.db import ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ExportFilter:
-    """Filter criteria for transaction export"""
-    month: Optional[str] = None  # Format: YYYY-MM
-    document_id: Optional[uuid.UUID] = None
-
-
-@dataclass
-class ExportTransactionsResult:
-    """Result of export transactions operation"""
-    success: bool
-    csv_content: str
-    filename: str
-    transaction_count: int
-    error_message: Optional[str] = None
 
 
 class ExportTransactionsUseCase:

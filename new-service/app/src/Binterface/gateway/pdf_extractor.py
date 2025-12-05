@@ -8,7 +8,7 @@ from typing import BinaryIO
 import logging
 import os
 from dotenv import load_dotenv
-from src.Denterprise.entities import ExtractionResult
+from src.Capplication.DTO import ExtractionResult, Transaction
 from src.Denterprise.bcp_parser import BCPStatementParser
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 

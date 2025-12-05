@@ -4,7 +4,7 @@ Defines contracts for data access without implementation details
 """
 from abc import ABC, abstractmethod
 from typing import BinaryIO
-from src.Denterprise.entities import ExtractionResult
+from src.Capplication.DTO import ExtractionResult
 
 
 class PDFExtractorGateway(ABC):

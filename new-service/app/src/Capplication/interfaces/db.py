@@ -5,7 +5,7 @@ Defines contracts for data access without implementation details
 import uuid
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
-from src.Denterprise.transaction_service import TransactionData, DocumentData
+from src.Capplication.DTO import TransactionData, DocumentData
 
 
 

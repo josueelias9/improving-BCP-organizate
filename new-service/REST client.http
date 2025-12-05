@@ -104,3 +104,19 @@ Content-Type: application/json
         }
     ]
 }
+
+###
+
+### 8. Export Transactions to CSV - All Transactions
+# Export all transactions to CSV format
+# File will be saved in the output/ directory
+GET {{baseUrl}}/api/transactions/export/csv
+Accept: application/json
+
+###
+
+### 9. Import Transactions from CSV - Latest File
+# Import and update transactions from the most recent CSV file in output/ directory
+# Updates 'history' and 'category_name' fields based on unique_identifier
+POST {{baseUrl}}/api/transactions/import/csv
+Accept: application/json

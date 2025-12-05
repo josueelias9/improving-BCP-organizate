@@ -4,25 +4,13 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
-from dataclasses import dataclass
 
-from src.Denterprise.entities import ExtractionResult
+from src.Capplication.DTO import ExtractionResult, ProcessPDFResult
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ProcessPDFResult:
-    """Result of processing a PDF"""
-    success: bool
-    document_id: str
-    unique_identifier: str
-    already_exists: bool
-    transactions_count: int
-    message: str
 
 
 class PDFProcessingUseCase:
