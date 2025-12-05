@@ -2,19 +2,28 @@
 Transaction Routes - HTTP Interface
 Delegates to application layer use cases
 """
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
-from typing import Dict, Any, List
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import StreamingResponse
+from sqlmodel import Session, select
+from typing import Dict, Any, List, Optional
 import uuid
 import logging
+import csv
+import io
+from datetime import datetime
+from pathlib import Path
 
 from api.deps import get_db_session
-from models import TransactionUpdate, TransactionBatchUpdate
+from models import TransactionUpdate, TransactionBatchUpdate, Transaction
 from src.Capplication.use_cases.transaction.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
 from src.Capplication.use_cases.transaction.batch_update_transactions import (
     BatchUpdateTransactionsUseCase,
     BatchUpdateItem
+)
+from src.Capplication.use_cases.transaction.export_transactions import (
+    ExportTransactionsUseCase,
+    ExportFilter
 )
 from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.transaction import TransactionDbGateway
@@ -237,4 +246,76 @@ def batch_update_transactions(
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error: {str(e)}"
+        )
+
+
+@router.get("/export/csv")
+def export_transactions_csv(
+    month: Optional[str] = Query(None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"),
+    document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
+    session: Session = Depends(get_db_session)
+) -> Dict[str, Any]:
+    """
+    Export transactions to CSV format and save to file
+    
+    Filters:
+        - month: Optional filter by month in format YYYY-MM (e.g., "2025-01")
+        - document_id: Optional filter by specific document
+        
+    Returns:
+        JSON with file path, transaction count, and status
+        
+    Examples:
+        - GET /transactions/export/csv - Export all transactions
+        - GET /transactions/export/csv?month=2025-01 - Export transactions from January 2025
+        - GET /transactions/export/csv?document_id=xxx-xxx-xxx - Export transactions from specific document
+        - GET /transactions/export/csv?month=2025-01&document_id=xxx-xxx-xxx - Combined filters
+    """
+    try:
+        # Instantiate gateway and inject into use case
+        transaction_gateway = TransactionDbGateway(session)
+        use_case = ExportTransactionsUseCase(transaction_gateway)
+        
+        # Create filter object
+        filters = ExportFilter(month=month, document_id=document_id)
+        
+        # Execute use case
+        result = use_case.execute(filters)
+        
+        if not result.success:
+            raise HTTPException(
+                status_code=400 if "Invalid" in result.error_message else 404,
+                detail=result.error_message
+            )
+        
+        # Save CSV to file in output directory
+        output_dir = Path("output")
+        output_dir.mkdir(exist_ok=True)
+        
+        file_path = output_dir / result.filename
+        
+        with open(file_path, 'w', encoding='utf-8', newline='') as f:
+            f.write(result.csv_content)
+        
+        logger.info(f"Exported {result.transaction_count} transactions to CSV: {file_path}")
+        
+        return {
+            "success": True,
+            "message": f"Successfully exported {result.transaction_count} transactions",
+            "file_path": str(file_path),
+            "filename": result.filename,
+            "transaction_count": result.transaction_count,
+            "filters": {
+                "month": month,
+                "document_id": str(document_id) if document_id else None
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error exporting transactions to CSV: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error exporting transactions: {str(e)}"
         )

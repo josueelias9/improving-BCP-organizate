@@ -13,8 +13,6 @@ RUN <<EOF
 pip install vulture
 pip install "fastapi[standard]"
 pip install sqlmodel
-pip install pandas
-pip install streamlit
 pip install pydantic_settings
 pip install psycopg[binary]
 pip install pymupdf

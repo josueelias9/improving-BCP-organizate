@@ -137,3 +137,34 @@ class TransactionDbGateway(ITransactionDbGateway):
             self.session.rollback()
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
+    
+    def get_all_filtered(
+        self, 
+        month: Optional[str] = None,
+        document_id: Optional[uuid.UUID] = None
+    ) -> List[Dict[str, Any]]:
+        """Get all transactions with optional filters, including category name"""
+        # Build query
+        statement = select(Transaction).options(joinedload(Transaction.category))
+        
+        # Apply document_id filter if provided
+        if document_id:
+            statement = statement.where(Transaction.document_id == document_id)
+        
+        # Apply month filter if provided
+        if month:
+            # Filter transactions where fecha_proceso contains the month
+            # This works for dates in formats like "DD/MM/YYYY" or "YYYY-MM-DD"
+            statement = statement.where(Transaction.fecha_proceso.contains(month))
+        
+        # Execute query
+        transactions = self.session.exec(statement).all()
+        
+        # Convert to dict and add category_name
+        result = []
+        for t in transactions:
+            t_dict = t.model_dump()
+            t_dict['category_name'] = t.category.name if t.category else None
+            result.append(t_dict)
+        
+        return result

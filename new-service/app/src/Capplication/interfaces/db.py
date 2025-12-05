@@ -136,3 +136,21 @@ class ITransactionDbGateway(ABC):
             True if updated successfully, False if not found
         """
         pass
+    
+    @abstractmethod
+    def get_all_filtered(
+        self, 
+        month: Optional[str] = None,
+        document_id: Optional[uuid.UUID] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get all transactions with optional filters
+        
+        Args:
+            month: Optional month filter in format YYYY-MM
+            document_id: Optional document UUID filter
+        
+        Returns:
+            List of transaction dictionaries including category_name
+        """
+        pass
