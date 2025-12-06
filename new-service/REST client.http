@@ -23,7 +23,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "files/{{fileName}}",
+    "pdf_filename": "/shared_files/examples/{{fileName}}",
     "type": "debit",
     "user_email": "admin@bcpextractor.com"
 }
@@ -71,7 +71,7 @@ PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "history": "Lo gaste cuando fui al supermercado",
+    "history": "This is a test history",
     "category_name": "Groceries"
 }
 
@@ -89,18 +89,13 @@ Content-Type: application/json
     "updates": [
         {
             "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
-            "history": "Lo gaste cuando fui al supermercado",
+            "history": "This is the first test history",
             "category_name": "Food"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
-            "history": "Pago de la luz que me pidio mi madre",
+            "history": "This is the second test history",
             "category_name": "Utilities"
-        },
-        {
-            "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
-            "history": "Dinero que guarde para emergencias",
-            "category_name": "Savings"
         }
     ]
 }

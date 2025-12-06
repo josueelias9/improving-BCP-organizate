@@ -3,10 +3,9 @@ Export Transactions Use Case - Application Layer
 Orchestrates the flow of exporting transactions to CSV format
 """
 import logging
-import uuid
 import csv
 import io
-from typing import Optional, List
+from typing import List
 from datetime import datetime
 
 from src.Capplication.DTO.transaction_dto import DTOExportFilter, DTOExportTransactionsResult
@@ -143,18 +142,7 @@ class ExportTransactionsUseCase:
             count: Number of transactions exported
             
         Returns:
-            Generated filename
+            Generated filename (always the same name)
         """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        parts = ["transactions"]
-        
-        if filters.month:
-            parts.append(f"month_{filters.month.replace('-', '_')}")
-        
-        if filters.document_id:
-            parts.append(f"doc_{str(filters.document_id)[:8]}")
-        
-        parts.append(f"{count}records")
-        parts.append(f"{timestamp}.csv")
-        
-        return "_".join(parts)
+        # Always return the same filename
+        return "transactions.csv"

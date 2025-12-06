@@ -5,7 +5,8 @@ Processes extraction results and coordinates with application layer
 import logging
 from typing import BinaryIO
 
-from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase, ProcessPDFResult
+from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
+from src.Capplication.DTO.document_dto import DTOProcessPDFResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
@@ -38,7 +39,7 @@ class PDFProcessingController:
         pdf_file: BinaryIO,
         user_email: str,
         document_type: str = "BCP_STATEMENT"
-    ) -> ProcessPDFResult:
+    ) -> DTOProcessPDFResult:
         """
         Process PDF file and save document using application layer
         
@@ -48,7 +49,7 @@ class PDFProcessingController:
             document_type: Type of document (default: BCP_STATEMENT)
             
         Returns:
-            ProcessPDFResult with operation details
+            DTOProcessPDFResult with operation details
             
         Raises:
             ValueError: If PDF processing fails
