@@ -2,6 +2,7 @@
 Entity DTOs - Domain Entities as Data Transfer Objects
 Used for transferring entity data between layers
 """
+from datetime import date
 from typing import Optional
 from dataclasses import dataclass
 
@@ -9,8 +10,8 @@ from dataclasses import dataclass
 @dataclass
 class DTOTransaction:
     """Transaction entity representing a bank transaction"""
-    fecha_proceso: Optional[str] = None
-    fecha_valor: Optional[str] = None
+    fecha_proceso: Optional[date] = None
+    fecha_valor: Optional[date] = None
     description: Optional[str] = None
     cargos: float = 0.0
     abonos: float = 0.0
@@ -37,5 +38,5 @@ class DTOExtractionResult:
     account_code: Optional[str] = None
     currency: Optional[str] = None  # 'PEN' or 'USD'
     saldo_anterior: Optional[float] = None
-    initial_day: Optional[str] = None
-    final_day: Optional[str] = None
+    initial_day: Optional[date] = None
+    final_day: Optional[date] = None

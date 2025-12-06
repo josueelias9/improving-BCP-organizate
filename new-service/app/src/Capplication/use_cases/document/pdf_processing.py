@@ -192,11 +192,21 @@ class PDFProcessingUseCase:
         if not extraction_result.currency:
             raise ValueError("Missing currency in extraction result")
         
-        # Convert transactions to dict list
-        transactions_list = [t.__dict__ for t in extraction_result.transactions]
+        # Convert transactions to dict list with date serialization
+        transactions_list = []
+        for t in extraction_result.transactions:
+            t_dict = t.__dict__.copy()
+            # Convert date objects to ISO format strings for JSON storage
+            if t_dict.get('fecha_proceso'):
+                t_dict['fecha_proceso'] = t_dict['fecha_proceso'].isoformat()
+            if t_dict.get('fecha_valor'):
+                t_dict['fecha_valor'] = t_dict['fecha_valor'].isoformat()
+            transactions_list.append(t_dict)
         
-        # Generate unique identifier
-        unique_id = f"{extraction_result.initial_day}__{extraction_result.final_day}__{extraction_result.account_code}__{extraction_result.currency}"
+        # Generate unique identifier with date strings
+        initial_day_str = extraction_result.initial_day.isoformat()
+        final_day_str = extraction_result.final_day.isoformat()
+        unique_id = f"{initial_day_str}__{final_day_str}__{extraction_result.account_code}__{extraction_result.currency}"
         
         logger.info(f"Processed extraction result: {len(transactions_list)} transactions, unique_id: {unique_id}")
         

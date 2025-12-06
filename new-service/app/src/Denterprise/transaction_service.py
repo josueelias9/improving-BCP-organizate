@@ -3,6 +3,7 @@ Transaction Service - Business Logic Layer
 Contains core business rules and validations for transaction processing
 """
 import logging
+from datetime import date
 from typing import Dict, Any, List, Optional
 
 from src.Capplication.DTO.document_dto import DTODocumentData
@@ -48,13 +49,22 @@ class TransactionService:
         
         for idx, transaction_dict in enumerate(document_data.data):
             try:
+                # Parse date strings from JSON back to date objects
+                fecha_proceso = transaction_dict.get("fecha_proceso")
+                if fecha_proceso and isinstance(fecha_proceso, str):
+                    fecha_proceso = date.fromisoformat(fecha_proceso)
+                
+                fecha_consumo = transaction_dict.get("fecha_valor")
+                if fecha_consumo and isinstance(fecha_consumo, str):
+                    fecha_consumo = date.fromisoformat(fecha_consumo)
+                
                 transaction = DTOTransactionData(
                     description=transaction_dict.get("description", ""),
                     cargos=float(transaction_dict.get("cargos", 0.0)),
                     abonos=float(transaction_dict.get("abonos", 0.0)),
                     currency=document_data.currency,
-                    fecha_proceso=transaction_dict.get("fecha_proceso"),
-                    fecha_consumo=transaction_dict.get("fecha_consumo"),
+                    fecha_proceso=fecha_proceso,
+                    fecha_consumo=fecha_consumo,
                     internal_transaction=transaction_dict.get("internal_transaction") == "*",
                     type=transaction_dict.get("type", "unknown"),
                     order=idx + 1,

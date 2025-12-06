@@ -4,6 +4,7 @@ Contains business logic for parsing BCP PDF statements
 """
 import re
 import logging
+from datetime import date
 from typing import List, Optional, Tuple
 from src.Capplication.DTO.entity_dto import DTOTransaction
 
@@ -119,28 +120,28 @@ class BCPStatementParser:
         return transactions
 
     @staticmethod
-    def convert_bcp_date(date_str: str) -> str:
-        """Convierte fecha BCP de DDMMM a DD/MM/YYYY"""
+    def convert_bcp_date(date_str: str) -> Optional[date]:
+        """Convierte fecha BCP de DDMMM a objeto date de Python"""
         if not date_str or len(date_str) < 5:
-            return date_str
+            return None
         
         try:
             # Extraer día y mes
-            day = date_str[:2]
+            day = int(date_str[:2])
             month_abbr = date_str[2:5].upper()
             
             if month_abbr in BCPStatementParser.MONTHS_MAP:
-                month = BCPStatementParser.MONTHS_MAP[month_abbr]
+                month = int(BCPStatementParser.MONTHS_MAP[month_abbr])
                 # Asumir año actual (2025 basado en el ejemplo)
-                year = "2025"
-                return f"{day}/{month}/{year}"
+                year = 2025
+                return date(year, month, day)
             else:
                 logger.warning(f"Mes no reconocido: {month_abbr}")
-                return date_str
+                return None
                 
         except Exception as e:
             logger.error(f"Error convirtiendo fecha {date_str}: {str(e)}")
-            return date_str
+            return None
 
     @staticmethod
     def extract_account_code(text: str) -> Optional[tuple[str, str]]:
@@ -220,7 +221,7 @@ class BCPStatementParser:
             return None
     
     @staticmethod
-    def extract_period(text: str) -> Tuple[Optional[str], Optional[str]]:
+    def extract_period(text: str) -> Tuple[Optional[date], Optional[date]]:
         """
         Extrae el período del estado de cuenta del PDF
         
@@ -228,19 +229,28 @@ class BCPStatementParser:
         Ejemplo: DEL  01/10/25  AL  31/10/25
         
         Returns:
-            tuple: (initial_day, final_day) o (None, None) si no se encuentra
+            tuple: (initial_day, final_day) como objetos date o (None, None) si no se encuentra
         """
         try:
             lines = text.split('\n')
             
             # Patrón: DEL  NN/NN/NN  AL  NN/NN/NN
-            period_pattern = r'DEL\s+(\d{2}/\d{2}/\d{2})\s+AL\s+(\d{2}/\d{2}/\d{2})'
+            period_pattern = r'DEL\s+(\d{2})/(\d{2})/(\d{2})\s+AL\s+(\d{2})/(\d{2})/(\d{2})'
             
             for line in lines:
                 match = re.search(period_pattern, line.upper())
                 if match:
-                    initial_day = match.group(1)
-                    final_day = match.group(2)
+                    # Convertir fechas de DD/MM/YY a objetos date
+                    day1, month1, year1 = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                    day2, month2, year2 = int(match.group(4)), int(match.group(5)), int(match.group(6))
+                    
+                    # Asumir año 2000+ si es < 50, sino 1900+
+                    year1 = 2000 + year1 if year1 < 50 else 1900 + year1
+                    year2 = 2000 + year2 if year2 < 50 else 1900 + year2
+                    
+                    initial_day = date(year1, month1, day1)
+                    final_day = date(year2, month2, day2)
+                    
                     logger.info(f"Período encontrado: DEL {initial_day} AL {final_day}")
                     return (initial_day, final_day)
             

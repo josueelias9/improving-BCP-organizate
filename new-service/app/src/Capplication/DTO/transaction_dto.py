@@ -3,6 +3,7 @@ Transaction DTOs - Data Transfer Objects
 Used for transferring transaction data between layers
 """
 import uuid
+from datetime import date
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 
@@ -14,8 +15,8 @@ class DTOTransactionData:
     cargos: float
     abonos: float
     currency: str
-    fecha_proceso: Optional[str]
-    fecha_consumo: Optional[str]
+    fecha_proceso: Optional[date]
+    fecha_consumo: Optional[date]
     internal_transaction: bool
     type: Optional[str]
     order: int

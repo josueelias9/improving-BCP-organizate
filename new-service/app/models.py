@@ -2,7 +2,7 @@
 Database models based on UML diagram
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from sqlmodel import Field, Relationship, SQLModel, Column, Text
 from sqlalchemy import JSON
@@ -93,8 +93,8 @@ class DocumentBase(SQLModel):
     type: DocumentType
     currency: str = Field(default="")
     previous_balance: Optional[float] = Field(default=None)
-    initial_day: Optional[str] = Field(default=None, max_length=20)
-    final_day: Optional[str] = Field(default=None, max_length=20)
+    initial_day: Optional[date] = Field(default=None)
+    final_day: Optional[date] = Field(default=None)
     data: Optional[List[Dict[str, Any]]] = Field(default=None, sa_column=Column(JSON))  # List of transaction dicts from PDF
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
@@ -126,8 +126,8 @@ class DocumentUpdate(SQLModel):
     type: Optional[DocumentType] = None
     currency: Optional[str] = None
     previous_balance: Optional[float] = None
-    initial_day: Optional[str] = None
-    final_day: Optional[str] = None
+    initial_day: Optional[date] = None
+    final_day: Optional[date] = None
     data: Optional[List[Dict[str, Any]]] = None
     processed: Optional[bool] = None
 
@@ -140,8 +140,8 @@ class TransactionBase(SQLModel):
     cargos: float
     abonos: float
     currency: str = Field(default="")
-    fecha_proceso: Optional[str] = Field(default=None, max_length=20)
-    fecha_consumo: Optional[str] = Field(default=None, max_length=20)
+    fecha_proceso: Optional[date] = Field(default=None)
+    fecha_consumo: Optional[date] = Field(default=None)
     internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
     history: Optional[str] = Field(default=None)
     order: int
