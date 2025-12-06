@@ -52,3 +52,28 @@ class DocumentDbGateway(IDocumentDbGateway):
         self.session.commit()
         self.session.refresh(document)
         return document
+    
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[dict]:
+        """Get all documents with pagination"""
+        statement = select(Document).offset(skip).limit(limit)
+        documents = self.session.exec(statement).all()
+        
+        # Convert to dict with all properties
+        result = []
+        for doc in documents:
+            doc_dict = {
+                "id": str(doc.id),
+                "account_number": doc.account_number,
+                "type": doc.type,
+                "currency": doc.currency,
+                "previous_balance": doc.previous_balance,
+                "initial_day": doc.initial_day,
+                "final_day": doc.final_day,
+                "unique_identifier": doc.unique_identifier,
+                "processed": doc.processed,
+                "user_id": str(doc.user_id),
+                "transactions_count": len(doc.data) if doc.data else 0
+            }
+            result.append(doc_dict)
+        
+        return result

@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
+from typing import List, Dict, Any
 from api.deps import SessionDep
 from src.Binterface.pdf_processing_controller import PDFProcessingController
 from src.Binterface.gateway.db.document import DocumentDbGateway
@@ -25,6 +26,33 @@ class PDFProcessRequest(BaseModel):
                 "user_email": "admin@bcpextractor.com"
             }
         }
+
+
+@router.get("/documents/")
+async def get_all_documents(
+    session: SessionDep,
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return")
+) -> List[Dict[str, Any]]:
+    """
+    Get all documents with pagination
+    
+    Returns all documents with their properties including:
+    - id, account_number, type, currency
+    - previous_balance, initial_day, final_day
+    - unique_identifier, processed status
+    - user_id and transaction count
+    """
+    try:
+        # Use gateway to retrieve documents
+        document_gateway = DocumentDbGateway(session)
+        return document_gateway.get_all(skip=skip, limit=limit)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving documents: {str(e)}"
+        )
 
 
 @router.post("/pdf-processing")

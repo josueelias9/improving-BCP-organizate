@@ -15,7 +15,14 @@ Accept: application/json
 
 ### === PDF PROCESSING WITH DATABASE ===
 
-### 2. Process PDF and Save to Database
+### 2. Get All Documents
+# Get all documents from the database with their properties
+GET {{baseUrl}}/api/documents/?skip=0&limit=100
+Accept: application/json
+
+###
+
+### 3. Process PDF and Save to Database
 # Extract data from PDF and save it as JSON in the Documents table
 
 # @name populateDocument
@@ -34,7 +41,7 @@ Content-Type: application/json
 
 ### === CATEGORIES ===
 
-### 3. Get All Categories
+### 4. Get All Categories
 # Get all categories from the database
 GET {{baseUrl}}/api/categories/
 Accept: application/json
@@ -45,7 +52,7 @@ Accept: application/json
 
 ### === TRANSACTIONS ===
 
-### 4. Load Transactions from Document
+### 5. Load Transactions from Document
 # Migrate data from the 'data' column of the document to the transactions table
 
 # @name populateTransaction
@@ -54,7 +61,7 @@ Accept: application/json
 
 ###
 
-### 5. Get All Transactions
+### 6. Get All Transactions
 # Get all transactions with pagination
 # @name getAllTransactions
 GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
@@ -62,7 +69,7 @@ Accept: application/json
 
 ###
 
-### 6. Update Transaction by ID
+### 7. Update Transaction by ID
 # Update 'history' and/or 'category_name' fields of a specific transaction
 # Only 'history' and 'category_name' fields can be edited
 # If the category doesn't exist, only history will be updated
@@ -77,7 +84,7 @@ Content-Type: application/json
 
 ###
 
-### 7. Batch Update Transactions
+### 8. Batch Update Transactions
 # Update multiple transactions simultaneously
 # Only 'history' and 'category_name' fields can be edited for each transaction
 # If a category doesn't exist, only history will be updated for that transaction
@@ -102,7 +109,7 @@ Content-Type: application/json
 
 ###
 
-### 8. Export Transactions to CSV - All Transactions
+### 9. Export Transactions to CSV - All Transactions
 # Export all transactions to CSV format
 # File will be saved in the output/ directory
 GET {{baseUrl}}/api/transactions/export/csv
@@ -110,7 +117,7 @@ Accept: application/json
 
 ###
 
-### 9. Import Transactions from CSV - Latest File
+### 10. Import Transactions from CSV - Latest File
 # Import and update transactions from the most recent CSV file in output/ directory
 # Updates 'history' and 'category_name' fields based on unique_identifier
 POST {{baseUrl}}/api/transactions/import/csv
