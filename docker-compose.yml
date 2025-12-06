@@ -11,6 +11,8 @@ services:
       - .env
     depends_on:
       - postgres
+    volumes:
+      - ./files:/shared_files
 
   postgres:
     image: postgres:15
@@ -39,7 +41,18 @@ services:
       - "8501:8501"
     env_file:
       - .env
+    volumes:
+      - ./files:/shared_files
 
+  frontend:
+    container_name: frontend-container
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
 
 volumes:
   pgadmin_data:

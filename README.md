@@ -14,10 +14,10 @@ docker exec new-service-container ./scripts/prestart.sh
 ```
 
 - go to the `new-service/REST client.http` file and execute the following endpoints:
-  - `populateDocument`
-  - `populateTransaction`
+   - `populateDocument`
+   - `populateTransaction`
 
-## stop processess
+## stop processes
 
 ```sh
 docker compose down
