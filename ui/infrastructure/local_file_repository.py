@@ -2,6 +2,7 @@
 Local File System Implementation of File Repository
 """
 import os
+import shutil
 import logging
 from domain.repositories import FileRepository
 
@@ -18,6 +19,17 @@ class LocalFileRepository(FileRepository):
     def save_file(self, file_content: bytes, filename: str) -> str:
         """Save file to local directory"""
         try:
+            # Check if directory has files and clear it
+            if os.path.exists(self.base_dir) and os.listdir(self.base_dir):
+                logger.info(f"Clearing directory: {self.base_dir}")
+                for item in os.listdir(self.base_dir):
+                    item_path = os.path.join(self.base_dir, item)
+                    if os.path.isfile(item_path):
+                        os.remove(item_path)
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+            
+            # Save the new file
             file_path = os.path.join(self.base_dir, filename)
             
             with open(file_path, "wb") as f:
