@@ -1,6 +1,7 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
-@baseUrl = http://127.0.0.1:8001
+@baseUrl = http://127.0.0.1:8000
+@fileName = EECC102025_07750301.PDF
 
 ### === HEALTH CHECK ===
 
@@ -22,7 +23,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "files/EECC102025_07750301.PDF",
+    "pdf_filename": "files/{{fileName}}",
     "type": "debit",
     "user_email": "admin@bcpextractor.com"
 }
@@ -103,3 +104,19 @@ Content-Type: application/json
         }
     ]
 }
+
+###
+
+### 8. Export Transactions to CSV - All Transactions
+# Export all transactions to CSV format
+# File will be saved in the output/ directory
+GET {{baseUrl}}/api/transactions/export/csv
+Accept: application/json
+
+###
+
+### 9. Import Transactions from CSV - Latest File
+# Import and update transactions from the most recent CSV file in output/ directory
+# Updates 'history' and 'category_name' fields based on unique_identifier
+POST {{baseUrl}}/api/transactions/import/csv
+Accept: application/json

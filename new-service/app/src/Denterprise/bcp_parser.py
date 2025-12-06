@@ -5,7 +5,7 @@ Contains business logic for parsing BCP PDF statements
 import re
 import logging
 from typing import List, Optional, Tuple
-from .entities import Transaction
+from src.Capplication.DTO.entity_dto import DTOTransaction
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class BCPStatementParser:
     }
     
     @staticmethod
-    def parse_transactions(text: str) -> List[Transaction]:
+    def parse_transactions(text: str) -> List[DTOTransaction]:
         """
         Extrae y parsea las transacciones del texto del PDF BCP usando posiciones fijas
         
@@ -96,7 +96,7 @@ class BCPStatementParser:
                         pass
                 
                 # Crear transacción
-                transaction = Transaction(
+                transaction = DTOTransaction(
                     fecha_proceso=fecha_proceso_formatted,
                     fecha_valor=fecha_valor_formatted,
                     description=description,

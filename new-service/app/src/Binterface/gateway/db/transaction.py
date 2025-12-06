@@ -11,7 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from models import Transaction
 from src.Capplication.interfaces.db import ITransactionDbGateway
-from src.Denterprise.transaction_service import TransactionData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class TransactionDbGateway(ITransactionDbGateway):
     
     def save_batch(
         self,
-        transactions: List[TransactionData],
+        transactions: List[DTOTransactionData],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
         """Save multiple transactions to database"""
@@ -34,6 +34,9 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         for transaction_data in transactions:
             try:
+                # Generate unique_identifier: {fecha_proceso}__{cargos}__{description}
+                unique_id = f"{transaction_data.order}__{transaction_data.fecha_proceso}__{transaction_data.cargos}__{transaction_data.abonos}__{transaction_data.description}"
+                
                 transaction = Transaction(
                     description=transaction_data.description,
                     cargos=transaction_data.cargos,
@@ -42,10 +45,10 @@ class TransactionDbGateway(ITransactionDbGateway):
                     fecha_proceso=transaction_data.fecha_proceso,
                     fecha_consumo=transaction_data.fecha_consumo,
                     internal_transaction=transaction_data.internal_transaction,
-                    type=transaction_data.type,
                     document_id=document_id,
                     order=transaction_data.order,
-                    history=transaction_data.history
+                    history=transaction_data.history,
+                    unique_identifier=unique_id
                 )
                 
                 self.session.add(transaction)
@@ -86,7 +89,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         return result
     
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
         """Get transaction by ID"""
         statement = select(Transaction).where(Transaction.id == transaction_id)
         transaction = self.session.exec(statement).first()
@@ -94,7 +97,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         if not transaction:
             return None
             
-        return TransactionData(
+        return DTOTransactionData(
             description=transaction.description,
             cargos=transaction.cargos,
             abonos=transaction.abonos,
@@ -102,7 +105,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             fecha_proceso=transaction.fecha_proceso,
             fecha_consumo=transaction.fecha_consumo,
             internal_transaction=transaction.internal_transaction,
-            type=getattr(transaction, 'type', ''),  # Safe access since type might not exist in old records
+            type='',  # Default empty string since type is not in Transaction model
             order=transaction.order,
             history=transaction.history
         )
@@ -134,3 +137,40 @@ class TransactionDbGateway(ITransactionDbGateway):
             self.session.rollback()
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
+    
+    def get_all_filtered(
+        self, 
+        month: Optional[str] = None,
+        document_id: Optional[uuid.UUID] = None
+    ) -> List[Dict[str, Any]]:
+        """Get all transactions with optional filters, including category name"""
+        # Build query
+        statement = select(Transaction).options(joinedload(Transaction.category))
+        
+        # Apply document_id filter if provided
+        if document_id:
+            statement = statement.where(Transaction.document_id == document_id)
+        
+        # Apply month filter if provided
+        if month:
+            # Filter transactions where fecha_proceso contains the month
+            # This works for dates in formats like "DD/MM/YYYY" or "YYYY-MM-DD"
+            statement = statement.where(Transaction.fecha_proceso.contains(month))
+        
+        # Execute query
+        transactions = self.session.exec(statement).all()
+        
+        # Convert to dict and add category_name
+        result = []
+        for t in transactions:
+            t_dict = t.model_dump()
+            t_dict['category_name'] = t.category.name if t.category else None
+            result.append(t_dict)
+        
+        return result
+    
+    def get_by_unique_identifier(self, unique_identifier: str):
+        """Get transaction by unique_identifier"""
+        statement = select(Transaction).where(Transaction.unique_identifier == unique_identifier)
+        transaction = self.session.exec(statement).first()
+        return transaction

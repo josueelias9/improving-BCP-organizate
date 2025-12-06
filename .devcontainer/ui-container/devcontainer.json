@@ -1,0 +1,28 @@
+{
+  "name": "Ui Container",
+  "dockerComposeFile": ["../../docker-compose.yml","../../docker-compose.ui.yml"],
+  "service": "ui",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/ui",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "tomoki1207.pdf",
+        "ms-python.python",
+        "humao.rest-client",
+        "mechatroner.rainbow-csv",
+        "bierner.markdown-mermaid",
+        "stateful.runme",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "workbench.colorTheme": "Monokai"
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers-extra/features/curl-apt-get:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
+}

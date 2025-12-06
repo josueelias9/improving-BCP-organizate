@@ -5,7 +5,8 @@ Defines contracts for data access without implementation details
 import uuid
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
-from src.Denterprise.transaction_service import TransactionData, DocumentData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
+from src.Capplication.DTO.document_dto import DTODocumentData
 
 
 
@@ -13,7 +14,7 @@ class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
     
     @abstractmethod
-    def get_by_id(self, document_id: uuid.UUID) -> DocumentData:
+    def get_by_id(self, document_id: uuid.UUID) -> DTODocumentData:
         """
         Retrieve document by ID
         
@@ -102,7 +103,7 @@ class ITransactionDbGateway(ABC):
     @abstractmethod
     def save_batch(
         self, 
-        transactions: List[TransactionData],
+        transactions: List[DTOTransactionData],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
         """
@@ -114,7 +115,7 @@ class ITransactionDbGateway(ABC):
         pass
     
     @abstractmethod
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
         """
         Get transaction by ID
         
@@ -134,5 +135,36 @@ class ITransactionDbGateway(ABC):
         
         Returns:
             True if updated successfully, False if not found
+        """
+        pass
+    
+    @abstractmethod
+    def get_all_filtered(
+        self, 
+        month: Optional[str] = None,
+        document_id: Optional[uuid.UUID] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get all transactions with optional filters
+        
+        Args:
+            month: Optional month filter in format YYYY-MM
+            document_id: Optional document UUID filter
+        
+        Returns:
+            List of transaction dictionaries including category_name
+        """
+        pass
+    
+    @abstractmethod
+    def get_by_unique_identifier(self, unique_identifier: str):
+        """
+        Get transaction by unique_identifier
+        
+        Args:
+            unique_identifier: Unique identifier string
+        
+        Returns:
+            Transaction if found, None otherwise
         """
         pass

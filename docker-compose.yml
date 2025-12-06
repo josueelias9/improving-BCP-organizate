@@ -7,11 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    volumes:
-      - .:/workspace
     env_file:
       - .env
-    command: sleep infinity
     depends_on:
       - postgres
 
@@ -32,6 +29,17 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+
+  ui:
+    container_name: ui-container
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+
 
 volumes:
   pgadmin_data:

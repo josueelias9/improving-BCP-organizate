@@ -4,24 +4,14 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
-from dataclasses import dataclass
 
-from src.Denterprise.entities import ExtractionResult
+from src.Capplication.DTO.entity_dto import DTOExtractionResult
+from src.Capplication.DTO.document_dto import DTOProcessPDFResult
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ProcessPDFResult:
-    """Result of processing a PDF"""
-    success: bool
-    document_id: str
-    unique_identifier: str
-    already_exists: bool
-    transactions_count: int
-    message: str
 
 
 class PDFProcessingUseCase:
@@ -40,26 +30,30 @@ class PDFProcessingUseCase:
     def execute(
         self,
         pdf_file: BinaryIO,
-        pdf_filename: str,
         user_email: str,
-        document_type: str = "BCP_STATEMENT"
-    ) -> ProcessPDFResult:
+        document_type: str = "BCP_STATEMENT",
+        pdf_filename: str = ""
+    ) -> DTOProcessPDFResult:
         """
         Process PDF file: get/create user, extract transactions, and create document
         
         Args:
             pdf_file: Binary PDF file content
-            pdf_filename: Name of the PDF file
             user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
+            pdf_filename: Optional filename for logging purposes only
             
         Returns:
             ProcessPDFResult with operation details
             
         Raises:
             ValueError: If validation fails
+            UnsupportedDocumentTypeException: If document type is not supported
         """
         try:
+            # Validate document type (business rule)
+            self._validate_document_type(document_type)
+            
             # Get or create user
             user = self._get_or_create_user(user_email)
             
@@ -77,7 +71,7 @@ class PDFProcessingUseCase:
             
             if existing_document:
                 logger.info(f"Document already exists with unique_id: {unique_id}")
-                return ProcessPDFResult(
+                return DTOProcessPDFResult(
                     success=True,
                     document_id=str(existing_document.id),
                     unique_identifier=unique_id,
@@ -105,7 +99,7 @@ class PDFProcessingUseCase:
             
             logger.info(f"Created new document with ID: {created_document.id}")
             
-            return ProcessPDFResult(
+            return DTOProcessPDFResult(
                 success=True,
                 document_id=str(created_document.id),
                 unique_identifier=unique_id,
@@ -117,6 +111,32 @@ class PDFProcessingUseCase:
         except Exception as e:
             logger.error(f"Error processing PDF: {str(e)}")
             raise
+    
+    def _validate_document_type(self, document_type: str) -> None:
+        """
+        Validate that the document type is supported (business rule)
+        
+        Args:
+            document_type: Type of document to validate
+            
+        Raises:
+            UnsupportedDocumentTypeException: If document type is not supported
+        """
+        supported_types = ["BCP_STATEMENT", "DEBIT_STATEMENT"]
+        
+        # For now, only debit statements are fully implemented
+        if document_type not in supported_types:
+            raise UnsupportedDocumentTypeException(
+                document_type=document_type,
+                supported_types=supported_types
+            )
+        
+        # Credit card processing not implemented yet
+        if document_type == "CREDIT_STATEMENT":
+            raise UnsupportedDocumentTypeException(
+                document_type="credit",
+                supported_types=["debit"]
+            )
     
     def _get_or_create_user(self, user_email: str):
         """
@@ -143,7 +163,7 @@ class PDFProcessingUseCase:
         return user
     
     @staticmethod
-    def _process_extraction_result(extraction_result: ExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:
+    def _process_extraction_result(extraction_result: DTOExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:
         """
         Process extraction result and generate unique identifier and transactions list
         

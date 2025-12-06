@@ -5,28 +5,11 @@ Handles the business logic for updating multiple transactions simultaneously
 import uuid
 import logging
 from typing import Dict, Any, List
-from dataclasses import dataclass
 
+from src.Capplication.DTO.transaction_dto import DTOBatchUpdateItem, DTOBatchUpdateResult
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class BatchUpdateItem:
-    """Single transaction update item"""
-    transaction_id: uuid.UUID
-    history: str
-    category_name: str = None
-
-
-@dataclass
-class BatchUpdateResult:
-    """Result of batch update operation"""
-    total: int
-    updated: int
-    failed: int
-    errors: List[Dict[str, Any]]
 
 
 class BatchUpdateTransactionsUseCase:
@@ -40,7 +23,7 @@ class BatchUpdateTransactionsUseCase:
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway
     
-    def execute(self, updates: List[BatchUpdateItem]) -> BatchUpdateResult:
+    def execute(self, updates: List[DTOBatchUpdateItem]) -> DTOBatchUpdateResult:
         """
         Update multiple transactions simultaneously
         
@@ -102,7 +85,7 @@ class BatchUpdateTransactionsUseCase:
         
         logger.info(f"Batch update completed: {updated}/{total} successful, {failed} failed")
         
-        return BatchUpdateResult(
+        return DTOBatchUpdateResult(
             total=total,
             updated=updated,
             failed=failed,

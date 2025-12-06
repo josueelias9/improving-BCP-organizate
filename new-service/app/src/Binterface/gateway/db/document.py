@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 
 from models import Document
 from src.Capplication.interfaces.db import IDocumentDbGateway
-from src.Denterprise.transaction_service import DocumentData
+from src.Capplication.DTO.document_dto import DTODocumentData
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +19,13 @@ class DocumentDbGateway(IDocumentDbGateway):
     def __init__(self, session: Session):
         self.session = session
     
-    def get_by_id(self, document_id: uuid.UUID) -> DocumentData:
+    def get_by_id(self, document_id: uuid.UUID) -> DTODocumentData:
         """Retrieve document and map to domain model"""
         document = self.session.get(Document, document_id)
         if not document:
             raise ValueError("Document not found")
         
-        return DocumentData(
+        return DTODocumentData(
             id=str(document.id),
             data=document.data or [],
             currency=document.currency,

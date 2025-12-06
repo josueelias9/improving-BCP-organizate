@@ -1,6 +1,6 @@
 {
   "name": "New Service Container",
-  "dockerComposeFile": ["../../docker-compose.yml"],
+  "dockerComposeFile": ["../../docker-compose.yml","../../docker-compose.new-service.yml"],
   "service": "new-service",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/new-service",
@@ -12,7 +12,9 @@
         "humao.rest-client",
         "mechatroner.rainbow-csv",
         "bierner.markdown-mermaid",
-        "stateful.runme"
+        "stateful.runme",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"

@@ -1,0 +1,6 @@
+services:
+
+  ui:
+    volumes:
+      - .:/workspace
+    command: sleep infinity

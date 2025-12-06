@@ -4,14 +4,14 @@ Defines contracts for data access without implementation details
 """
 from abc import ABC, abstractmethod
 from typing import BinaryIO
-from src.Denterprise.entities import ExtractionResult
+from src.Capplication.DTO.entity_dto import DTOExtractionResult
 
 
 class PDFExtractorGateway(ABC):
     """Abstract gateway for PDF extraction operations"""
     
     @abstractmethod
-    def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> ExtractionResult:
+    def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> DTOExtractionResult:
         """Extract transactions from PDF file"""
         pass
 

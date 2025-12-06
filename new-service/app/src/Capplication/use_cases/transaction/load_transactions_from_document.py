@@ -5,7 +5,8 @@ Orchestrates the flow of loading transactions from a document
 import logging
 import uuid
 
-from src.Denterprise.transaction_service import TransactionService, LoadTransactionsResult
+from src.Denterprise.transaction_service import TransactionService
+from src.Capplication.DTO.transaction_dto import DTOLoadTransactionsResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class LoadTransactionsFromDocumentUseCase:
         self.transaction_gateway = transaction_gateway
         self.service = TransactionService()
     
-    def execute(self, document_id: uuid.UUID) -> LoadTransactionsResult:
+    def execute(self, document_id: uuid.UUID) -> DTOLoadTransactionsResult:
         """
         Execute the use case: load transactions from document
         
@@ -62,7 +63,7 @@ class LoadTransactionsFromDocumentUseCase:
         self.document_gateway.mark_as_processed(uuid.UUID(document_data.id))
         
         # 6. Return result
-        return LoadTransactionsResult(
+        return DTOLoadTransactionsResult(
             success=True,
             loaded_count=loaded_count,
             skipped_count=skipped_count,

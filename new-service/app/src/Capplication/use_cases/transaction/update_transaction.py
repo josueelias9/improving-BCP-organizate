@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any
 
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
-from src.Denterprise.transaction_service import TransactionData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
 
@@ -87,9 +87,9 @@ class UpdateTransactionUseCase:
     
     def _prepare_updated_transaction(
         self, 
-        existing: TransactionData, 
+        existing: DTOTransactionData, 
         updates: Dict[str, Any]
-    ) -> TransactionData:
+    ) -> DTOTransactionData:
         """
         Prepare updated transaction data - only history can be updated
         
@@ -98,9 +98,9 @@ class UpdateTransactionUseCase:
             updates: Fields to update (only 'history' is allowed)
             
         Returns:
-            TransactionData with updated history value
+            DTOTransactionData with updated history value
         """
-        return TransactionData(
+        return DTOTransactionData(
             description=existing.description,
             cargos=existing.cargos,
             abonos=existing.abonos,
@@ -113,7 +113,7 @@ class UpdateTransactionUseCase:
             history=updates.get('history', existing.history)  # Only history can be updated
         )
     
-    def _validate_transaction_data(self, transaction: TransactionData) -> None:
+    def _validate_transaction_data(self, transaction: DTOTransactionData) -> None:
         """
         Validate transaction data according to business rules
         
