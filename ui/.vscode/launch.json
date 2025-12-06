@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "🟢 Streamlit: Run App",
+            "name": "Streamlit: Run App",
             "type": "debugpy",
             "request": "launch",
             "module": "streamlit",
             "args": [
                 "run",
-                "${workspaceFolder}/app.py",
+                "${workspaceFolder}/main.py",
                 "--server.port",
                 "8501"
             ],
