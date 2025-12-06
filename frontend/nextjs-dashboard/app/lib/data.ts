@@ -5,7 +5,8 @@ import {
     InvoiceForm,
     InvoicesTable,
     LatestInvoiceRaw,
-    Revenue
+    Revenue,
+    TransactionTable
 } from './definitions'
 import { formatCurrency } from './utils'
 
@@ -213,3 +214,33 @@ export async function fetchFilteredCustomers(query: string) {
         throw new Error('Failed to fetch customer table.')
     }
 }
+
+export async function fetchTransactions(skip: number = 0, limit: number = 1000) {
+    try {
+        // Use absolute URL for server-side fetch
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        const url = `${baseUrl}/api/transactions?skip=${skip}&limit=${limit}`
+        
+        console.log('Fetching transactions from internal API:', url)
+        
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store',
+            next: { revalidate: 0 }
+        })
+
+        if (!response.ok) {
+            console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`)
+            return []
+        }
+
+        const data: TransactionTable[] = await response.json()
+        return data
+    } catch (error) {
+        console.error('API Error:', error)
+        return []
+    }
+}
+
