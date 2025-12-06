@@ -7,7 +7,7 @@ import csv
 from pathlib import Path
 from typing import Optional, List
 
-from src.Capplication.DTO import ImportTransactionsResult
+from src.Capplication.DTO.transaction_dto import ImportTransactionsResult
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)

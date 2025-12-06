@@ -11,7 +11,7 @@ from pathlib import Path
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
-from src.Capplication.DTO import BatchUpdateItem, ExportFilter
+from src.Capplication.DTO.transaction_dto import BatchUpdateItem, ExportFilter
 from src.Capplication.use_cases.transaction.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
 from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase

@@ -6,7 +6,7 @@ import uuid
 import logging
 from typing import Dict, Any, List
 
-from src.Capplication.DTO import BatchUpdateItem, BatchUpdateResult
+from src.Capplication.DTO.transaction_dto import BatchUpdateItem, BatchUpdateResult
 from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)

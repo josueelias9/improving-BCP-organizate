@@ -5,7 +5,8 @@ Orchestrates the flow of processing a PDF and creating a document
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
 
-from src.Capplication.DTO import ExtractionResult, ProcessPDFResult
+from src.Capplication.DTO.entity_dto import ExtractionResult
+from src.Capplication.DTO.document_dto import ProcessPDFResult
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway

@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 
 from models import Document
 from src.Capplication.interfaces.db import IDocumentDbGateway
-from src.Capplication.DTO import DocumentData
+from src.Capplication.DTO.document_dto import DocumentData
 
 logger = logging.getLogger(__name__)
 

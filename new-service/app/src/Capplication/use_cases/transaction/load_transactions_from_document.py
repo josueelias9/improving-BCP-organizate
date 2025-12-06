@@ -6,7 +6,7 @@ import logging
 import uuid
 
 from src.Denterprise.transaction_service import TransactionService
-from src.Capplication.DTO import LoadTransactionsResult
+from src.Capplication.DTO.transaction_dto import LoadTransactionsResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)

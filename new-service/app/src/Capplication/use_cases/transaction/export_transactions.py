@@ -9,7 +9,7 @@ import io
 from typing import Optional, List
 from datetime import datetime
 
-from src.Capplication.DTO import ExportFilter, ExportTransactionsResult
+from src.Capplication.DTO.transaction_dto import ExportFilter, ExportTransactionsResult
 from src.Capplication.interfaces.db import ITransactionDbGateway
 
 logger = logging.getLogger(__name__)

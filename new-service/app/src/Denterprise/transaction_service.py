@@ -5,7 +5,8 @@ Contains core business rules and validations for transaction processing
 import logging
 from typing import Dict, Any, List, Optional
 
-from src.Capplication.DTO import TransactionData, DocumentData, LoadTransactionsResult
+from src.Capplication.DTO.document_dto import DocumentData
+from src.Capplication.DTO.transaction_dto import TransactionData, LoadTransactionsResult
 
 logger = logging.getLogger(__name__)
 
