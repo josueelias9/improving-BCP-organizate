@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DocumentData:
+class DTODocumentData:
     """Data structure for document information"""
     id: str
     data: List[Dict[str, Any]]
@@ -16,7 +16,7 @@ class DocumentData:
 
 
 @dataclass
-class ProcessPDFResult:
+class DTOProcessPDFResult:
     """Result of processing a PDF"""
     success: bool
     document_id: str

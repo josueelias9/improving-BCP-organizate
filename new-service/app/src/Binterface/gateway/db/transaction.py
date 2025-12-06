@@ -11,7 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from models import Transaction
 from src.Capplication.interfaces.db import ITransactionDbGateway
-from src.Capplication.DTO.transaction_dto import TransactionData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class TransactionDbGateway(ITransactionDbGateway):
     
     def save_batch(
         self,
-        transactions: List[TransactionData],
+        transactions: List[DTOTransactionData],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
         """Save multiple transactions to database"""
@@ -89,7 +89,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         return result
     
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
         """Get transaction by ID"""
         statement = select(Transaction).where(Transaction.id == transaction_id)
         transaction = self.session.exec(statement).first()
@@ -97,7 +97,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         if not transaction:
             return None
             
-        return TransactionData(
+        return DTOTransactionData(
             description=transaction.description,
             cargos=transaction.cargos,
             abonos=transaction.abonos,

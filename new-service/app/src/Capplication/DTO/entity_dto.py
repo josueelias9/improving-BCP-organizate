@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Transaction:
+class DTOTransaction:
     """Transaction entity representing a bank transaction"""
     fecha_proceso: Optional[str] = None
     fecha_valor: Optional[str] = None
@@ -26,10 +26,10 @@ class Transaction:
 
 
 @dataclass
-class ExtractionResult:
+class DTOExtractionResult:
     """Result of PDF extraction operation"""
     filename: str
-    transactions: list[Transaction]
+    transactions: list[DTOTransaction]
     total_transactions: int
     success: bool
     error_message: Optional[str] = None

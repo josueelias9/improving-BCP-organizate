@@ -9,7 +9,7 @@ import io
 from typing import Optional, List
 from datetime import datetime
 
-from src.Capplication.DTO.transaction_dto import ExportFilter, ExportTransactionsResult
+from src.Capplication.DTO.transaction_dto import DTOExportFilter, DTOExportTransactionsResult
 from src.Capplication.interfaces.db import ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class ExportTransactionsUseCase:
         """
         self.transaction_gateway = transaction_gateway
     
-    def execute(self, filters: ExportFilter) -> ExportTransactionsResult:
+    def execute(self, filters: DTOExportFilter) -> DTOExportTransactionsResult:
         """
         Execute the use case: export transactions to CSV
         
@@ -62,7 +62,7 @@ class ExportTransactionsUseCase:
             
             logger.info(f"Successfully exported {len(transactions)} transactions to CSV")
             
-            return ExportTransactionsResult(
+            return DTOExportTransactionsResult(
                 success=True,
                 csv_content=csv_content,
                 filename=filename,
@@ -71,7 +71,7 @@ class ExportTransactionsUseCase:
             
         except ValueError as e:
             logger.error(f"Export validation error: {str(e)}")
-            return ExportTransactionsResult(
+            return DTOExportTransactionsResult(
                 success=False,
                 csv_content="",
                 filename="",
@@ -80,7 +80,7 @@ class ExportTransactionsUseCase:
             )
         except Exception as e:
             logger.error(f"Unexpected error during export: {str(e)}")
-            return ExportTransactionsResult(
+            return DTOExportTransactionsResult(
                 success=False,
                 csv_content="",
                 filename="",
@@ -134,7 +134,7 @@ class ExportTransactionsUseCase:
         
         return output.getvalue()
     
-    def _generate_filename(self, filters: ExportFilter, count: int) -> str:
+    def _generate_filename(self, filters: DTOExportFilter, count: int) -> str:
         """
         Generate descriptive filename for export
         

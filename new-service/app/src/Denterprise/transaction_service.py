@@ -5,8 +5,8 @@ Contains core business rules and validations for transaction processing
 import logging
 from typing import Dict, Any, List, Optional
 
-from src.Capplication.DTO.document_dto import DocumentData
-from src.Capplication.DTO.transaction_dto import TransactionData, LoadTransactionsResult
+from src.Capplication.DTO.document_dto import DTODocumentData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData, DTOLoadTransactionsResult
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class TransactionService:
     """Service containing business logic for transaction operations"""
     
     @staticmethod
-    def validate_document_for_processing(document_data: DocumentData) -> None:
+    def validate_document_for_processing(document_data: DTODocumentData) -> None:
         """
         Validate that a document can be processed
         
@@ -33,8 +33,8 @@ class TransactionService:
     
     @staticmethod
     def transform_document_data_to_transactions(
-        document_data: DocumentData
-    ) -> List[TransactionData]:
+        document_data: DTODocumentData
+    ) -> List[DTOTransactionData]:
         """
         Transform document data into transaction entities
         
@@ -48,7 +48,7 @@ class TransactionService:
         
         for idx, transaction_dict in enumerate(document_data.data):
             try:
-                transaction = TransactionData(
+                transaction = DTOTransactionData(
                     description=transaction_dict.get("description", ""),
                     cargos=float(transaction_dict.get("cargos", 0.0)),
                     abonos=float(transaction_dict.get("abonos", 0.0)),

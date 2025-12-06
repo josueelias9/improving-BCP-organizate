@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class TransactionData:
+class DTOTransactionData:
     """Data structure for transaction information"""
     description: str
     cargos: float
@@ -23,7 +23,7 @@ class TransactionData:
 
 
 @dataclass
-class LoadTransactionsResult:
+class DTOLoadTransactionsResult:
     """Result of loading transactions operation"""
     success: bool
     loaded_count: int
@@ -33,7 +33,7 @@ class LoadTransactionsResult:
 
 
 @dataclass
-class BatchUpdateItem:
+class DTOBatchUpdateItem:
     """Single transaction update item"""
     transaction_id: uuid.UUID
     history: str
@@ -41,7 +41,7 @@ class BatchUpdateItem:
 
 
 @dataclass
-class BatchUpdateResult:
+class DTOBatchUpdateResult:
     """Result of batch update operation"""
     total: int
     updated: int
@@ -50,14 +50,14 @@ class BatchUpdateResult:
 
 
 @dataclass
-class ExportFilter:
+class DTOExportFilter:
     """Filter criteria for transaction export"""
     month: Optional[str] = None  # Format: YYYY-MM
     document_id: Optional[uuid.UUID] = None
 
 
 @dataclass
-class ExportTransactionsResult:
+class DTOExportTransactionsResult:
     """Result of export transactions operation"""
     success: bool
     csv_content: str
@@ -67,7 +67,7 @@ class ExportTransactionsResult:
 
 
 @dataclass
-class ImportTransactionsResult:
+class DTOImportTransactionsResult:
     """Result of import transactions operation"""
     success: bool
     updated_count: int

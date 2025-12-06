@@ -5,8 +5,8 @@ Defines contracts for data access without implementation details
 import uuid
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
-from src.Capplication.DTO.transaction_dto import TransactionData
-from src.Capplication.DTO.document_dto import DocumentData
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
+from src.Capplication.DTO.document_dto import DTODocumentData
 
 
 
@@ -14,7 +14,7 @@ class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
     
     @abstractmethod
-    def get_by_id(self, document_id: uuid.UUID) -> DocumentData:
+    def get_by_id(self, document_id: uuid.UUID) -> DTODocumentData:
         """
         Retrieve document by ID
         
@@ -103,7 +103,7 @@ class ITransactionDbGateway(ABC):
     @abstractmethod
     def save_batch(
         self, 
-        transactions: List[TransactionData],
+        transactions: List[DTOTransactionData],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
         """
@@ -115,7 +115,7 @@ class ITransactionDbGateway(ABC):
         pass
     
     @abstractmethod
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionData]:
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
         """
         Get transaction by ID
         

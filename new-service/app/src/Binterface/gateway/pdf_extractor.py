@@ -8,7 +8,7 @@ from typing import BinaryIO
 import logging
 import os
 from dotenv import load_dotenv
-from src.Capplication.DTO.entity_dto import ExtractionResult, Transaction
+from src.Capplication.DTO.entity_dto import DTOExtractionResult
 from src.Denterprise.bcp_parser import BCPStatementParser
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
 
@@ -22,7 +22,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
     def __init__(self):
         self.parser = BCPStatementParser()
     
-    def extract_transactions(self, pdf_file: BinaryIO, filename: str = "") -> ExtractionResult:
+    def extract_transactions(self, pdf_file: BinaryIO, filename: str = "") -> DTOExtractionResult:
         """Extract transactions from PDF file"""
         try:
             password = os.getenv('PDF_PASSWORD')
@@ -34,7 +34,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
             initial_day, final_day = self.parser.extract_period(full_text)
             transactions = self.parser.parse_transactions(full_text)
             
-            return ExtractionResult(
+            return DTOExtractionResult(
                 filename=filename or "uploaded_file.pdf",
                 transactions=transactions,
                 total_transactions=len(transactions),
@@ -49,7 +49,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
             
         except Exception as e:
             logger.error(f"Error extracting transactions from PDF: {str(e)}")
-            return ExtractionResult(
+            return DTOExtractionResult(
                 filename=filename or "uploaded_file.pdf",
                 transactions=[],
                 total_transactions=0,

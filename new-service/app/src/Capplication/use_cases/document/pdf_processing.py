@@ -5,8 +5,8 @@ Orchestrates the flow of processing a PDF and creating a document
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
 
-from src.Capplication.DTO.entity_dto import ExtractionResult
-from src.Capplication.DTO.document_dto import ProcessPDFResult
+from src.Capplication.DTO.entity_dto import DTOExtractionResult
+from src.Capplication.DTO.document_dto import DTOProcessPDFResult
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
@@ -33,7 +33,7 @@ class PDFProcessingUseCase:
         user_email: str,
         document_type: str = "BCP_STATEMENT",
         pdf_filename: str = ""
-    ) -> ProcessPDFResult:
+    ) -> DTOProcessPDFResult:
         """
         Process PDF file: get/create user, extract transactions, and create document
         
@@ -71,7 +71,7 @@ class PDFProcessingUseCase:
             
             if existing_document:
                 logger.info(f"Document already exists with unique_id: {unique_id}")
-                return ProcessPDFResult(
+                return DTOProcessPDFResult(
                     success=True,
                     document_id=str(existing_document.id),
                     unique_identifier=unique_id,
@@ -99,7 +99,7 @@ class PDFProcessingUseCase:
             
             logger.info(f"Created new document with ID: {created_document.id}")
             
-            return ProcessPDFResult(
+            return DTOProcessPDFResult(
                 success=True,
                 document_id=str(created_document.id),
                 unique_identifier=unique_id,
@@ -163,7 +163,7 @@ class PDFProcessingUseCase:
         return user
     
     @staticmethod
-    def _process_extraction_result(extraction_result: ExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:
+    def _process_extraction_result(extraction_result: DTOExtractionResult) -> Tuple[str, List[Dict[str, Any]]]:
         """
         Process extraction result and generate unique identifier and transactions list
         
