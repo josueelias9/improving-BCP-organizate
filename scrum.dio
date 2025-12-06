@@ -1,0 +1,70 @@
+<mxfile host="65bd71144e">
+    <diagram id="2vwq39nvkF-C-bEVSrWH" name="Page-1">
+        <mxGraphModel dx="1263" dy="814" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;convert the column &quot;date&quot; from stringType to dateType&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="473" y="222" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;move to Next.js&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="223" y="351" width="106" height="63" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;backend&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="272" width="96" height="43" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;frontend&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="54" y="408" width="83" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;todo&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="285" y="125" width="94" height="43" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;doing&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="473" y="119" width="92" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;done&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="116" width="95" height="51" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;some transactions are not displayed on frontend&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="225" y="422" width="104" height="69" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;enable login&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="347" y="387" width="104" height="69" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;enable login&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="300" y="234" width="104" height="69" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="" style="endArrow=none;html=1;sketch=1;curveFitting=1;jiggle=2;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="66" y="196" as="sourcePoint"/>
+                        <mxPoint x="831.3333129882812" y="192" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="18" value="" style="endArrow=none;html=1;sketch=1;curveFitting=1;jiggle=2;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="180" y="638" as="sourcePoint"/>
+                        <mxPoint x="172" y="94" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="19" value="" style="endArrow=none;html=1;sketch=1;curveFitting=1;jiggle=2;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="464" y="638" as="sourcePoint"/>
+                        <mxPoint x="455" y="88" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="20" value="" style="endArrow=none;html=1;sketch=1;curveFitting=1;jiggle=2;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="608" y="614" as="sourcePoint"/>
+                        <mxPoint x="603" y="70" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="21" value="" style="endArrow=none;html=1;sketch=1;curveFitting=1;jiggle=2;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="52" y="338" as="sourcePoint"/>
+                        <mxPoint x="839.3333740234375" y="328" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
