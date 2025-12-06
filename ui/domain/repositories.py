@@ -41,3 +41,17 @@ class FileRepository(ABC):
     def save_file(self, file_content: bytes, filename: str) -> str:
         """Save file and return path"""
         pass
+    
+    @abstractmethod
+    def get_single_file_path(self) -> Optional[str]:
+        """Get the path of the single file in the directory"""
+        pass
+
+
+class PdfProcessingRepository(ABC):
+    """Interface for PDF processing"""
+    
+    @abstractmethod
+    def process_pdf(self, pdf_filename: str, doc_type: str, user_email: str) -> dict:
+        """Process PDF file"""
+        pass

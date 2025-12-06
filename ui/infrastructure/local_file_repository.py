@@ -41,3 +41,21 @@ class LocalFileRepository(FileRepository):
         except Exception as e:
             logger.error(f"Error saving file: {str(e)}")
             raise
+    
+    def get_single_file_path(self) -> str:
+        """Get the path of the single file in the directory"""
+        try:
+            if not os.path.exists(self.base_dir):
+                return None
+            
+            files = [f for f in os.listdir(self.base_dir) if os.path.isfile(os.path.join(self.base_dir, f))]
+            
+            if not files:
+                return None
+            
+            # Return the first (and should be only) file
+            return os.path.join(self.base_dir, files[0])
+            
+        except Exception as e:
+            logger.error(f"Error getting file path: {str(e)}")
+            return None

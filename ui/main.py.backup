@@ -195,12 +195,12 @@ def extract_updates(display_df, edited_df):
                     "category_name": category_val
                 })
     
-    return updates
-
-
-def main():
-    """Main application"""
-    # Initialize
+    # Sidebar
+    with st.sidebar:
+        st.header("⚙️ Configuración")
+        
+        # File upload
+        handle_file_upload(use_cases['save_file'], use_cases['process_pdf'])
     init_dependencies()
     init_session_state()
     
@@ -220,7 +220,7 @@ def main():
         st.header("⚙️ Configuración")
         
         # File upload
-        handle_file_upload(use_cases['save_file'], use_cases['process_pdf'])
+        handle_file_upload(use_cases['save_file'])
         
         st.divider()
         
