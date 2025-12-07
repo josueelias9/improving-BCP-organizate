@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { formatCurrency } from '@/app/lib/utils'
 import { lusitana } from '@/app/ui/fonts'
-import EditTransactionModal from './edit-transaction-modal'
+import EditTransactionModal from '../dashboard/edit-transaction-modal'
 import type { Category } from '@/app/lib/definitions'
 
 function formatTransactionDate(dateString: string) {
@@ -34,6 +34,14 @@ export default function TransactionsTable({
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)
 
+    // Sort transactions by 'order' column if it exists
+    const sortedTransactions = [...transactions].sort((a, b) => {
+        if (a.order !== undefined && b.order !== undefined) {
+            return a.order - b.order
+        }
+        return 0
+    })
+
     const handleRowClick = (transaction: any) => {
         setSelectedTransaction(transaction)
         setIsModalOpen(true)
@@ -55,8 +63,8 @@ export default function TransactionsTable({
     const not_included_columns = ["unique_identifier","created_at","updated_at","id","document_id","category_id","user_id","fecha_proceso"]
     
     // Get column names from the first transaction
-    const columns = transactions.length > 0 
-        ? Object.keys(transactions[0]).filter(col => !not_included_columns.includes(col))
+    const columns = sortedTransactions.length > 0 
+        ? Object.keys(sortedTransactions[0]).filter(col => !not_included_columns.includes(col))
         : []
 
     return (
@@ -77,7 +85,7 @@ export default function TransactionsTable({
                             </tr>
                         </thead>
                         <tbody className='bg-white'>
-                            {transactions.map((transaction) => (
+                            {sortedTransactions.map((transaction) => (
                                 <tr
                                     key={transaction.id}
                                     onClick={() => handleRowClick(transaction)}
@@ -134,7 +142,7 @@ export default function TransactionsTable({
                             ))}
                         </tbody>
                     </table>
-                    {transactions.length === 0 && (
+                    {sortedTransactions.length === 0 && (
                         <div className='flex items-center justify-center py-10'>
                             <p className='text-gray-500'>No transactions found.</p>
                         </div>
@@ -142,7 +150,7 @@ export default function TransactionsTable({
                 </div>
                 <div className='flex items-center pt-6'>
                     <p className='text-sm text-gray-500'>
-                        Total: {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+                        Total: {sortedTransactions.length} transaction{sortedTransactions.length !== 1 ? 's' : ''}
                     </p>
                 </div>
             </div>

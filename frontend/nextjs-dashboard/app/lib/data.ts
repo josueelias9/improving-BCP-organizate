@@ -7,7 +7,8 @@ import {
     LatestInvoiceRaw,
     Revenue,
     TransactionTable,
-    Category
+    Category,
+    DocumentTable
 } from './definitions'
 import { formatCurrency } from './utils'
 
@@ -265,6 +266,34 @@ export async function fetchCategories() {
         }
 
         const data: Category[] = await response.json()
+        return data
+    } catch (error) {
+        console.error('API Error:', error)
+        return []
+    }
+}
+
+export async function fetchDocuments(skip: number = 0, limit: number = 100) {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const url = `${baseUrl}/api/documents/?skip=${skip}&limit=${limit}`
+        
+        console.log('Fetching documents from:', url)
+        
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store',
+            next: { revalidate: 0 }
+        })
+
+        if (!response.ok) {
+            console.error(`Failed to fetch documents: ${response.status} ${response.statusText}`)
+            return []
+        }
+
+        const data: DocumentTable[] = await response.json()
         return data
     } catch (error) {
         console.error('API Error:', error)

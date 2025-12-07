@@ -183,3 +183,89 @@ export async function updateTransaction(
     revalidatePath('/dashboard/transactions')
     return { message: 'Transaction updated successfully!' }
 }
+
+const ProcessPDFSchema = z.object({
+    type: z.enum(['debit', 'credit'], {
+        invalid_type_error: 'Please select a document type.'
+    }),
+    user_email: z.string().email({ message: 'Please enter a valid email.' })
+})
+
+export type ProcessPDFState = {
+    errors?: {
+        type?: string[]
+        user_email?: string[]
+        file?: string[]
+    }
+    message?: string | null
+}
+
+export async function processPDF(prevState: ProcessPDFState, formData: FormData) {
+    const validatedFields = ProcessPDFSchema.safeParse({
+        type: formData.get('type'),
+        user_email: formData.get('user_email')
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Process PDF.'
+        }
+    }
+
+    const file = formData.get('file') as File
+    if (!file || file.size === 0) {
+        return {
+            errors: { file: ['Please select a PDF file.'] },
+            message: 'No file selected.'
+        }
+    }
+
+    if (!file.name.endsWith('.PDF')) {
+        return {
+            errors: { file: ['Only PDF files are allowed.'] },
+            message: 'Invalid file type.'
+        }
+    }
+
+    const { type, user_email } = validatedFields.data
+
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        
+        // Save file to /shared_files/only_one_file
+        const fileBuffer = await file.arrayBuffer()
+        const fileName = file.name
+        const filePath = `/shared_files/only_one_file/${fileName}`
+
+        // Send to API for processing
+        const response = await fetch(`${baseUrl}/api/pdf-processing`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                pdf_filename: filePath,
+                type,
+                user_email
+            }),
+            cache: 'no-store'
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.detail || `Failed to process PDF: ${response.statusText}`)
+        }
+
+        const result = await response.json()
+        revalidatePath('/dashboard/documents')
+        return { 
+            message: `PDF processed successfully! Document ID: ${result.id || 'N/A'}` 
+        }
+    } catch (error) {
+        console.error('API Error:', error)
+        return { 
+            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.' 
+        }
+    }
+}

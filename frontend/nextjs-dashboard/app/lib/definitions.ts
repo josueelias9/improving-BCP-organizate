@@ -113,3 +113,21 @@ export type Category = {
     name: string
     description?: string
 }
+
+export type Document = {
+    id: string
+    filename: string
+    type: string
+    user_email: string
+    json_data?: any
+    created_at: string
+    updated_at: string
+}
+
+export type DocumentTable = {
+    id: string
+    filename: string
+    type: string
+    user_email: string
+    created_at: string
+}
