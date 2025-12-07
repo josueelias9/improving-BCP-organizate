@@ -33,9 +33,17 @@ export default function TransactionsTable({
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)
+    const [filterUniqueId, setFilterUniqueId] = useState('')
+
+    // Filter transactions by unique_identifier if filter is set
+    const filteredTransactions = filterUniqueId
+        ? transactions.filter(t => 
+            t.unique_identifier?.toLowerCase().includes(filterUniqueId.toLowerCase())
+          )
+        : transactions
 
     // Sort transactions by 'order' column if it exists
-    const sortedTransactions = [...transactions].sort((a, b) => {
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         if (a.order !== undefined && b.order !== undefined) {
             return a.order - b.order
         }
@@ -60,6 +68,11 @@ export default function TransactionsTable({
         setShowEditTooltip(false)
     }
 
+    // Check if transaction needs completion (missing history or category_name)
+    const isIncomplete = (transaction: any) => {
+        return !transaction.history || !transaction.category_name
+    }
+
     const not_included_columns = [
         'unique_identifier',
         'created_at',
@@ -80,6 +93,22 @@ export default function TransactionsTable({
     return (
         <div className='flex w-full flex-col md:col-span-4'>
             <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>All Transactions</h2>
+            
+            {/* Filter by unique_identifier */}
+            <div className='mb-4'>
+                <label htmlFor='filter-unique-id' className='block text-sm font-medium text-gray-700 mb-2'>
+                    Filter by Unique Identifier
+                </label>
+                <input
+                    id='filter-unique-id'
+                    type='text'
+                    value={filterUniqueId}
+                    onChange={(e) => setFilterUniqueId(e.target.value)}
+                    placeholder='Search by unique identifier...'
+                    className='w-full md:w-96 rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                />
+            </div>
+
             <div className='flex grow flex-col justify-between rounded-xl bg-gray-50 p-4'>
                 <div className='overflow-x-auto'>
                     <table className='min-w-full text-gray-900'>
@@ -93,7 +122,12 @@ export default function TransactionsTable({
                             </tr>
                         </thead>
                         <tbody className='bg-white'>
-                            {sortedTransactions.map(transaction => (
+                            {sortedTransactions.map(transaction => {
+                                const incomplete = isIncomplete(transaction)
+                                const bgColor = incomplete ? 'bg-yellow-50' : 'bg-green-50'
+                                const hoverColor = incomplete ? 'hover:bg-yellow-100' : 'hover:bg-green-100'
+                                
+                                return (
                                 <tr
                                     key={transaction.id}
                                     onClick={() => handleRowClick(transaction)}
@@ -101,14 +135,15 @@ export default function TransactionsTable({
                                     onMouseLeave={handleMouseLeave}
                                     className={`w-full border-b py-3 text-sm last-of-type:border-none cursor-pointer transition-colors ${
                                         hoveredRow === transaction.id
-                                            ? 'bg-blue-50'
-                                            : 'hover:bg-gray-50'
-                                    } [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg`}
+                                            ? (incomplete ? 'bg-yellow-100' : 'bg-green-100')
+                                            : bgColor
+                                    } ${hoverColor} [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg`}
                                 >
                                     {columns.map((column, index) => {
                                         const value =
                                             transaction[column as keyof typeof transaction]
-                                        let displayValue: React.ReactNode = value || 'N/A'
+                                        let displayValue: React.ReactNode = value ?? ''
+                                        const isEditableColumn = column === 'history' || column === 'category_name'
 
                                         // Special formatting for specific columns
                                         if (column === 'amount') {
@@ -145,21 +180,26 @@ export default function TransactionsTable({
                                         return (
                                             <td
                                                 key={column}
-                                                className={`whitespace-nowrap px-3 py-3 ${isLastColumn ? 'relative' : ''}`}
+                                                className={`whitespace-nowrap px-3 py-3 ${isLastColumn ? 'relative' : ''} ${
+                                                    isEditableColumn ? 'font-semibold border-l-2 border-blue-400' : ''
+                                                }`}
                                             >
-                                                {displayValue}
+                                                {isEditableColumn && !value && (
+                                                    <span className='text-gray-400 italic text-xs'>Click to edit</span>
+                                                )}
+                                                {value && displayValue}
                                                 {isLastColumn &&
                                                     hoveredRow === transaction.id &&
                                                     showEditTooltip && (
-                                                        <span className='absolute right-4 top-1/2 -translate-y-1/2 rounded bg-gray-800 px-2 py-1 text-xs text-white shadow-lg pointer-events-none'>
-                                                            Edit
+                                                        <span className='absolute right-4 top-1/2 -translate-y-1/2 rounded bg-blue-600 px-3 py-1.5 text-xs text-white shadow-lg pointer-events-none'>
+                                                            ✏️ Click to edit History & Category
                                                         </span>
                                                     )}
                                             </td>
                                         )
                                     })}
                                 </tr>
-                            ))}
+                            )})}
                         </tbody>
                     </table>
                     {sortedTransactions.length === 0 && (
