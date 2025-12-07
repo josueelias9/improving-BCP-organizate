@@ -96,7 +96,7 @@ export default function EditTransactionModal({
                             aria-describedby='category_name-error'
                         >
                             <option value=''>Select a category</option>
-                            {categories.map((category) => (
+                            {categories.map(category => (
                                 <option key={category.id} value={category.name}>
                                     {category.name}
                                 </option>

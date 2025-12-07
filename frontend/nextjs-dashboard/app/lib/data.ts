@@ -221,12 +221,12 @@ export async function fetchTransactions(skip: number = 0, limit: number = 1000) 
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
         const url = `${baseUrl}/api/transactions?skip=${skip}&limit=${limit}`
-        
+
         console.log('Fetching transactions from:', url)
-        
+
         const response = await fetch(url, {
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store',
             next: { revalidate: 0 }
@@ -249,12 +249,12 @@ export async function fetchCategories() {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
         const url = `${baseUrl}/api/categories/`
-        
+
         console.log('Fetching categories from:', url)
-        
+
         const response = await fetch(url, {
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store',
             next: { revalidate: 0 }
@@ -277,12 +277,12 @@ export async function fetchDocuments(skip: number = 0, limit: number = 100) {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
         const url = `${baseUrl}/api/documents/?skip=${skip}&limit=${limit}`
-        
+
         console.log('Fetching documents from:', url)
-        
+
         const response = await fetch(url, {
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store',
             next: { revalidate: 0 }
@@ -300,4 +300,3 @@ export async function fetchDocuments(skip: number = 0, limit: number = 100) {
         return []
     }
 }
-

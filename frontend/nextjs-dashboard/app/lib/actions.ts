@@ -232,7 +232,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
 
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        
+
         // Save file to /shared_files/only_one_file
         const fileBuffer = await file.arrayBuffer()
         const fileName = file.name
@@ -259,13 +259,13 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
 
         const result = await response.json()
         revalidatePath('/dashboard/documents')
-        return { 
-            message: `PDF processed successfully! Document ID: ${result.id || 'N/A'}` 
+        return {
+            message: `PDF processed successfully! Document ID: ${result.id || 'N/A'}`
         }
     } catch (error) {
         console.error('API Error:', error)
-        return { 
-            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.' 
+        return {
+            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.'
         }
     }
 }

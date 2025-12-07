@@ -25,10 +25,7 @@ export default function UploadPDFForm() {
 
             <form action={dispatch} className='space-y-4'>
                 <div>
-                    <label
-                        htmlFor='file'
-                        className='mb-2 block text-sm font-medium text-gray-700'
-                    >
+                    <label htmlFor='file' className='mb-2 block text-sm font-medium text-gray-700'>
                         PDF File *
                     </label>
                     <div className='flex items-center gap-4'>
@@ -37,9 +34,7 @@ export default function UploadPDFForm() {
                             className='flex cursor-pointer items-center gap-2 rounded-md border-2 border-dashed border-gray-300 bg-white px-4 py-6 text-sm text-gray-600 transition hover:border-blue-400 hover:bg-blue-50'
                         >
                             <DocumentPlusIcon className='h-6 w-6' />
-                            <span>
-                                {selectedFile ? selectedFile.name : 'Choose PDF file...'}
-                            </span>
+                            <span>{selectedFile ? selectedFile.name : 'Choose PDF file...'}</span>
                         </label>
                         <input
                             id='file'
@@ -61,10 +56,7 @@ export default function UploadPDFForm() {
                 </div>
 
                 <div>
-                    <label
-                        htmlFor='type'
-                        className='mb-2 block text-sm font-medium text-gray-700'
-                    >
+                    <label htmlFor='type' className='mb-2 block text-sm font-medium text-gray-700'>
                         Document Type *
                     </label>
                     <select

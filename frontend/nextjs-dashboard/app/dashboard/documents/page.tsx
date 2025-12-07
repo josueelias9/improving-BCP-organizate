@@ -9,9 +9,7 @@ export default async function DocumentsPage() {
 
     return (
         <main>
-            <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-                Documents
-            </h1>
+            <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Documents</h1>
             <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-3'>
                 <div className='md:col-span-1'>
                     <UploadPDFForm />

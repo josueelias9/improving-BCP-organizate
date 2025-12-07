@@ -22,24 +22,29 @@ function formatDocumentDate(dateString: string) {
 }
 
 export default function DocumentsTable({ documents }: { documents: DocumentTable[] }) {
-    const not_included_columns = ["account_number","unique_identifier","user_id","id","previous_balance"]
-    
+    const not_included_columns = [
+        'account_number',
+        'unique_identifier',
+        'user_id',
+        'id',
+        'previous_balance'
+    ]
+
     // Get column names from the first document
-    const columns = documents.length > 0 
-        ? Object.keys(documents[0]).filter(col => !not_included_columns.includes(col))
-        : []
+    const columns =
+        documents.length > 0
+            ? Object.keys(documents[0]).filter(col => !not_included_columns.includes(col))
+            : []
 
     return (
         <div className='flex w-full flex-col'>
-            <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-                All Documents
-            </h2>
+            <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>All Documents</h2>
             <div className='flex grow flex-col justify-between rounded-xl bg-gray-50 p-4'>
                 <div className='overflow-x-auto'>
                     <table className='min-w-full text-gray-900'>
                         <thead className='rounded-lg text-left text-sm font-normal'>
                             <tr>
-                                {columns.map((column) => (
+                                {columns.map(column => (
                                     <th key={column} scope='col' className='px-3 py-5 font-medium'>
                                         {column}
                                     </th>
@@ -47,12 +52,12 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                             </tr>
                         </thead>
                         <tbody className='bg-white'>
-                            {documents.map((document) => (
+                            {documents.map(document => (
                                 <tr
                                     key={document.id}
                                     className='w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg'
                                 >
-                                    {columns.map((column) => {
+                                    {columns.map(column => {
                                         const value = document[column as keyof typeof document]
                                         let displayValue: React.ReactNode = value || 'N/A'
 
@@ -91,14 +96,20 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                         } else if (typeof value === 'string' && value.length > 30) {
                                             // Truncate long strings
                                             displayValue = (
-                                                <div className='truncate max-w-[200px]' title={value}>
+                                                <div
+                                                    className='truncate max-w-[200px]'
+                                                    title={value}
+                                                >
                                                     {value.substring(0, 30)}...
                                                 </div>
                                             )
                                         }
 
                                         return (
-                                            <td key={column} className='whitespace-nowrap px-3 py-3'>
+                                            <td
+                                                key={column}
+                                                className='whitespace-nowrap px-3 py-3'
+                                            >
                                                 {displayValue}
                                             </td>
                                         )
