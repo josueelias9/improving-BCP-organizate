@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { formatCurrency } from '@/app/lib/utils'
 import { lusitana } from '@/app/ui/fonts'
 import EditTransactionModal from './edit-transaction-modal'
+import type { Category } from '@/app/lib/definitions'
 
 function formatTransactionDate(dateString: string) {
     try {
@@ -21,7 +22,13 @@ function formatTransactionDate(dateString: string) {
     }
 }
 
-export default function TransactionsTable({ transactions }: { transactions: any[] }) {
+export default function TransactionsTable({ 
+    transactions, 
+    categories 
+}: { 
+    transactions: any[]
+    categories: Category[]
+}) {
     const [selectedTransaction, setSelectedTransaction] = useState<any>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
@@ -148,6 +155,7 @@ export default function TransactionsTable({ transactions }: { transactions: any[
                         setIsModalOpen(false)
                         setSelectedTransaction(null)
                     }}
+                    categories={categories}
                 />
             )}
         </div>

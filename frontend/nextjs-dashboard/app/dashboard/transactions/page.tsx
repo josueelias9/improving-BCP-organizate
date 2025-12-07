@@ -1,10 +1,13 @@
 import { Suspense } from 'react'
 import TransactionsTable from '@/app/ui/dashboard/transactions-table'
 import { lusitana } from '@/app/ui/fonts'
-import { fetchTransactions } from '@/app/lib/data'
+import { fetchTransactions, fetchCategories } from '@/app/lib/data'
 
 export default async function TransactionsPage() {
-    const transactions = await fetchTransactions()
+    const [transactions, categories] = await Promise.all([
+        fetchTransactions(),
+        fetchCategories()
+    ])
 
     return (
         <main>
@@ -13,7 +16,7 @@ export default async function TransactionsPage() {
             </h1>
             <div className='mt-6 grid grid-cols-1 gap-6'>
                 <Suspense fallback={<div>Loading transactions...</div>}>
-                    <TransactionsTable transactions={transactions} />
+                    <TransactionsTable transactions={transactions} categories={categories} />
                 </Suspense>
             </div>
         </main>

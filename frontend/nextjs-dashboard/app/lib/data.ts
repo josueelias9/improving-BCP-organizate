@@ -6,7 +6,8 @@ import {
     InvoicesTable,
     LatestInvoiceRaw,
     Revenue,
-    TransactionTable
+    TransactionTable,
+    Category
 } from './definitions'
 import { formatCurrency } from './utils'
 
@@ -236,6 +237,34 @@ export async function fetchTransactions(skip: number = 0, limit: number = 1000) 
         }
 
         const data: TransactionTable[] = await response.json()
+        return data
+    } catch (error) {
+        console.error('API Error:', error)
+        return []
+    }
+}
+
+export async function fetchCategories() {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const url = `${baseUrl}/api/categories/`
+        
+        console.log('Fetching categories from:', url)
+        
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store',
+            next: { revalidate: 0 }
+        })
+
+        if (!response.ok) {
+            console.error(`Failed to fetch categories: ${response.status} ${response.statusText}`)
+            return []
+        }
+
+        const data: Category[] = await response.json()
         return data
     } catch (error) {
         console.error('API Error:', error)

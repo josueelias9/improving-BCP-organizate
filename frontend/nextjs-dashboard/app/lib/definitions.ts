@@ -107,3 +107,9 @@ export type TransactionTable = {
     transaction_date: string
     created_at: string
 }
+
+export type Category = {
+    id: string
+    name: string
+    description?: string
+}

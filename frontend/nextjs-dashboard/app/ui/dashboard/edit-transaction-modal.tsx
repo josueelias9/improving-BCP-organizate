@@ -3,7 +3,8 @@
 import { useActionState } from 'react'
 import { updateTransaction, TransactionState } from '@/app/lib/actions'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { Category } from '@/app/lib/definitions'
 
 interface EditTransactionModalProps {
     transaction: {
@@ -13,12 +14,14 @@ interface EditTransactionModalProps {
     }
     isOpen: boolean
     onClose: () => void
+    categories: Category[]
 }
 
 export default function EditTransactionModal({
     transaction,
     isOpen,
-    onClose
+    onClose,
+    categories
 }: EditTransactionModalProps) {
     const initialState: TransactionState = { message: null, errors: {} }
     const updateTransactionWithId = updateTransaction.bind(null, transaction.id)
@@ -85,14 +88,20 @@ export default function EditTransactionModal({
                         >
                             Category Name *
                         </label>
-                        <input
+                        <select
                             id='category_name'
                             name='category_name'
-                            type='text'
                             defaultValue={transaction.category_name || ''}
                             className='block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                             aria-describedby='category_name-error'
-                        />
+                        >
+                            <option value=''>Select a category</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.name}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                         {state.errors?.category_name && (
                             <div id='category_name-error' className='mt-2 text-sm text-red-500'>
                                 {state.errors.category_name.map((error: string) => (
