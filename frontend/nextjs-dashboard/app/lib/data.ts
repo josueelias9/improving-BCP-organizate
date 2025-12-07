@@ -217,11 +217,10 @@ export async function fetchFilteredCustomers(query: string) {
 
 export async function fetchTransactions(skip: number = 0, limit: number = 1000) {
     try {
-        // Use absolute URL for server-side fetch
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
         const url = `${baseUrl}/api/transactions?skip=${skip}&limit=${limit}`
         
-        console.log('Fetching transactions from internal API:', url)
+        console.log('Fetching transactions from:', url)
         
         const response = await fetch(url, {
             headers: {
