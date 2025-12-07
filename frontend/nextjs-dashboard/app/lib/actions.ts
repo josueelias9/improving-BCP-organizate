@@ -123,3 +123,63 @@ export async function authenticate(prevState: string | undefined, formData: Form
         throw error
     }
 }
+
+const TransactionUpdateSchema = z.object({
+    history: z.string().optional(),
+    category_name: z.string().min(1, { message: 'Please enter a category name.' })
+})
+
+export type TransactionState = {
+    errors?: {
+        history?: string[]
+        category_name?: string[]
+    }
+    message?: string | null
+}
+
+export async function updateTransaction(
+    id: string,
+    prevState: TransactionState,
+    formData: FormData
+) {
+    const validatedFields = TransactionUpdateSchema.safeParse({
+        history: formData.get('history'),
+        category_name: formData.get('category_name')
+    })
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Missing Fields. Failed to Update Transaction.'
+        }
+    }
+
+    const { history, category_name } = validatedFields.data
+
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const url = `${baseUrl}/api/transactions/${id}`
+
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                history,
+                category_name
+            }),
+            cache: 'no-store'
+        })
+
+        if (!response.ok) {
+            throw new Error(`Failed to update transaction: ${response.statusText}`)
+        }
+    } catch (error) {
+        console.error('API Error:', error)
+        return { message: 'API Error: Failed to Update Transaction.' }
+    }
+
+    revalidatePath('/dashboard/transactions')
+    return { message: 'Transaction updated successfully!' }
+}
