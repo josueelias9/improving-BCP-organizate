@@ -264,8 +264,41 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         }
     } catch (error) {
         console.error('API Error:', error)
-        return {
-            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.'
+        return { 
+            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.' 
+        }
+    }
+}
+
+export async function processDocument(documentId: string) {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const url = `${baseUrl}/api/load-from-document/${documentId}`
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store'
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.detail || `Failed to process document: ${response.statusText}`)
+        }
+
+        const result = await response.json()
+        revalidatePath('/dashboard/documents')
+        return { 
+            success: true,
+            message: `Document processed successfully! ${result.message || ''}` 
+        }
+    } catch (error) {
+        console.error('API Error:', error)
+        return { 
+            success: false,
+            message: error instanceof Error ? error.message : 'API Error: Failed to Process Document.' 
         }
     }
 }

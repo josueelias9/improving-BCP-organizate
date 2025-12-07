@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { lusitana } from '@/app/ui/fonts'
 import type { DocumentTable } from '@/app/lib/definitions'
+import { processDocument } from '@/app/lib/actions'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
 
 function formatDocumentDate(dateString: string) {
     try {
@@ -22,6 +25,25 @@ function formatDocumentDate(dateString: string) {
 }
 
 export default function DocumentsTable({ documents }: { documents: DocumentTable[] }) {
+    const [processingId, setProcessingId] = useState<string | null>(null)
+    const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+
+    const handleProcessDocument = async (documentId: string) => {
+        setProcessingId(documentId)
+        setMessage(null)
+        
+        const result = await processDocument(documentId)
+        
+        setProcessingId(null)
+        setMessage({
+            text: result.message,
+            type: result.success ? 'success' : 'error'
+        })
+        
+        // Clear message after 5 seconds
+        setTimeout(() => setMessage(null), 5000)
+    }
+
     const not_included_columns = [
         'account_number',
         'unique_identifier',
@@ -39,6 +61,19 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
     return (
         <div className='flex w-full flex-col'>
             <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>All Documents</h2>
+            
+            {message && (
+                <div
+                    className={`mb-4 rounded-md px-4 py-3 text-sm ${
+                        message.type === 'success'
+                            ? 'bg-green-50 text-green-800'
+                            : 'bg-red-50 text-red-800'
+                    }`}
+                >
+                    {message.text}
+                </div>
+            )}
+
             <div className='flex grow flex-col justify-between rounded-xl bg-gray-50 p-4'>
                 <div className='overflow-x-auto'>
                     <table className='min-w-full text-gray-900'>
@@ -49,6 +84,9 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                         {column}
                                     </th>
                                 ))}
+                                <th scope='col' className='px-3 py-5 font-medium'>
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody className='bg-white'>
@@ -114,6 +152,21 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                             </td>
                                         )
                                     })}
+                                    <td className='whitespace-nowrap px-3 py-3'>
+                                        <button
+                                            onClick={() => handleProcessDocument(document.id)}
+                                            disabled={processingId === document.id}
+                                            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                                                processingId === document.id
+                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                            }`}
+                                            title='Process document and load to transactions'
+                                        >
+                                            <ArrowPathIcon className={`h-4 w-4 ${processingId === document.id ? 'animate-spin' : ''}`} />
+                                            {processingId === document.id ? 'Processing...' : 'Process'}
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
