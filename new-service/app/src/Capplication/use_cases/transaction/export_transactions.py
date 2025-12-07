@@ -105,6 +105,7 @@ class ExportTransactionsUseCase:
     def _generate_csv(self, transactions: List[dict]) -> str:
         """
         Generate CSV content from transactions
+        Only includes transactions that have category_name or history data
         
         Args:
             transactions: List of transaction dictionaries
@@ -123,13 +124,18 @@ class ExportTransactionsUseCase:
         ]
         writer.writerow(headers)
         
-        # Write data rows - only the 3 required fields
+        # Write data rows - only transactions with category_name or history
         for transaction in transactions:
-            writer.writerow([
-                transaction.get('category_name', ''),
-                transaction.get('unique_identifier', ''),
-                transaction.get('history', '')
-            ])
+            category_name = transaction.get('category_name', '') or ''
+            history = transaction.get('history', '') or ''
+            
+            # Only include if category_name or history has data
+            if category_name.strip() or history.strip():
+                writer.writerow([
+                    category_name,
+                    transaction.get('unique_identifier', ''),
+                    history
+                ])
         
         return output.getvalue()
     

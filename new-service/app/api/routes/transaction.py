@@ -220,8 +220,8 @@ def export_transactions(
                 detail=result.error_message
             )
         
-        # Save CSV to file in output directory
-        output_dir = Path("output")
+        # Save CSV to file in shared_files/output directory
+        output_dir = Path("/shared_files/output")
         output_dir.mkdir(exist_ok=True)
         
         file_path = output_dir / result.filename
