@@ -4,12 +4,13 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
+from models import Document, DocumentType
 
 from src.Capplication.DTO.entity_dto import DTOExtractionResult
 from src.Capplication.DTO.document_dto import DTOProcessPDFResult
-from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,6 @@ class PDFProcessingUseCase:
                 )
             
             # Create new document
-            from models import Document, DocumentType
             
             document = Document(
                 account_number=extraction_result.account_code or "UNKNOWN",

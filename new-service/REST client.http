@@ -3,28 +3,22 @@
 @baseUrl = http://127.0.0.1:8000
 @fileName = EECC102025_07750301.PDF
 
-### === HEALTH CHECK ===
+### =================================================================== health.py
 
-### 1. Health Check - Get API Info
+# @name getApiInfo
 GET {{baseUrl}}/api
 Accept: application/json
 
-###
+### =================================================================== document.py
 
-
-
-### === PDF PROCESSING WITH DATABASE ===
-
-### 2. Get All Documents
 # Get all documents from the database with their properties
+# @name getAllDocuments
 GET {{baseUrl}}/api/documents/?skip=0&limit=100
 Accept: application/json
 
 ###
 
-### 3. Process PDF and Save to Database
 # Extract data from PDF and save it as JSON in the Documents table
-
 # @name populateDocument
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
@@ -37,31 +31,20 @@ Content-Type: application/json
 
 ###
 
+# Migrate data from the 'data' column of the document to the transactions table
+# @name processDocument
+POST {{baseUrl}}/api/load-from-document/{{populateDocument.response.body.$.document_id}}
+Accept: application/json
 
+### =================================================================== category.py
 
-### === CATEGORIES ===
-
-### 4. Get All Categories
 # Get all categories from the database
+# @name getAllCategories
 GET {{baseUrl}}/api/categories/
 Accept: application/json
 
-###
+### =================================================================== transaction.py
 
-
-
-### === TRANSACTIONS ===
-
-### 5. Load Transactions from Document
-# Migrate data from the 'data' column of the document to the transactions table
-
-# @name populateTransaction
-POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
-Accept: application/json
-
-###
-
-### 6. Get All Transactions
 # Get all transactions with pagination
 # @name getAllTransactions
 GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
@@ -69,11 +52,10 @@ Accept: application/json
 
 ###
 
-### 7. Update Transaction by ID
 # Update 'history' and/or 'category_name' fields of a specific transaction
 # Only 'history' and 'category_name' fields can be edited
 # If the category doesn't exist, only history will be updated
-
+# @name updateTransactionById
 PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
@@ -84,11 +66,10 @@ Content-Type: application/json
 
 ###
 
-### 8. Batch Update Transactions
 # Update multiple transactions simultaneously
 # Only 'history' and 'category_name' fields can be edited for each transaction
 # If a category doesn't exist, only history will be updated for that transaction
-
+# @name batchUpdateTransactions
 PATCH {{baseUrl}}/api/transactions/batch
 Content-Type: application/json
 
@@ -109,16 +90,16 @@ Content-Type: application/json
 
 ###
 
-### 9. Export Transactions to CSV - All Transactions
 # Export all transactions to CSV format
 # File will be saved in the output/ directory
+# @name exportTransactionsToCSV
 GET {{baseUrl}}/api/transactions/export/csv
 Accept: application/json
 
 ###
 
-### 10. Import Transactions from CSV - Latest File
 # Import and update transactions from the most recent CSV file in output/ directory
 # Updates 'history' and 'category_name' fields based on unique_identifier
+# @name importTransactionsFromCSV
 POST {{baseUrl}}/api/transactions/import/csv
 Accept: application/json

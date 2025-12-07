@@ -5,19 +5,18 @@ Delegates to application layer use cases
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 from typing import Dict, Any, List, Optional
+from pathlib import Path
+
 import uuid
 import logging
-from pathlib import Path
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
 from src.Capplication.DTO.transaction_dto import DTOBatchUpdateItem, DTOExportFilter
-from src.Capplication.use_cases.transaction.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
 from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase
 from src.Capplication.use_cases.transaction.export_transactions import ExportTransactionsUseCase
 from src.Capplication.use_cases.transaction.import_transactions_from_csv import ImportTransactionsFromCsvUseCase
-from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.transaction import TransactionDbGateway
 from src.Binterface.gateway.db.category import CategoryDbGateway
 
@@ -60,65 +59,6 @@ def get_all_transactions(
         raise HTTPException(
             status_code=500,
             detail=f"Error retrieving transactions: {str(e)}"
-        )
-
-
-@router.post("/load-from-document/{document_id}", response_model=Dict[str, Any])
-def load_transactions_from_document(
-    document_id: uuid.UUID,
-    session: Session = Depends(get_db_session)
-) -> Dict[str, Any]:
-    """
-    Load transactions from a document's data column into the transactions table.
-    
-    This endpoint delegates to the application layer use case.
-    
-    Args:
-        document_id: The UUID of the document to load transactions from
-        session: Database session (injected)
-        
-    Returns:
-        Summary of loaded transactions
-        
-    Raises:
-        HTTPException: 404 if document not found, 400 for validation errors
-    """
-    try:
-        # Instantiate concrete gateways
-        document_gateway = DocumentDbGateway(session)
-        transaction_gateway = TransactionDbGateway(session)
-        
-        # Inject gateways into use case
-        use_case = LoadTransactionsFromDocumentUseCase(document_gateway, transaction_gateway)
-        
-        # Execute use case
-        result = use_case.execute(document_id)
-        
-        # Map domain result to HTTP response
-        return {
-            "document_id": str(document_id),
-            "total_records": result.total_records,
-            "loaded": result.loaded_count,
-            "skipped": result.skipped_count,
-            "errors": result.errors if result.errors else None,
-            "processed": True
-        }
-        
-    except ValueError as e:
-        # Business validation errors
-        error_msg = str(e)
-        
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=404, detail=error_msg)
-        else:
-            raise HTTPException(status_code=400, detail=error_msg)
-            
-    except Exception as e:
-        # Unexpected errors
-        logger.error(f"Unexpected error loading transactions: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Internal server error: {str(e)}"
         )
 
 
