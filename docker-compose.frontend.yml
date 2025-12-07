@@ -4,7 +4,3 @@ services:
     volumes:
       - .:/workspace
     command: sleep infinity
-
-  ui:
-    profiles:
-      - avoid

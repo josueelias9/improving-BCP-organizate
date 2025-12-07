@@ -1,14 +1,14 @@
 <mxfile host="65bd71144e">
     <diagram id="2vwq39nvkF-C-bEVSrWH" name="Page-1">
-        <mxGraphModel dx="1243" dy="814" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1413" dy="814" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="2" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;convert the column &quot;date&quot; from stringType to dateType&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="652" y="146" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;move to Next.js&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="223" y="351" width="106" height="63" as="geometry"/>
+                <mxCell id="4" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;move &quot;ui&quot; logic to &quot;frontend&quot; service using Next.js&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="683" y="493" width="105" height="67" as="geometry"/>
                 </mxCell>
                 <mxCell id="5" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;backend&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="50" y="272" width="96" height="43" as="geometry"/>
@@ -23,13 +23,13 @@
                     <mxGeometry x="486" y="57" width="92" height="45" as="geometry"/>
                 </mxCell>
                 <mxCell id="10" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;done&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-                    <mxGeometry x="670" y="56" width="95" height="51" as="geometry"/>
+                    <mxGeometry x="714" y="63" width="95" height="51" as="geometry"/>
                 </mxCell>
                 <mxCell id="12" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;some transactions are not displayed on frontend&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="225" y="422" width="104" height="69" as="geometry"/>
+                    <mxGeometry x="706" y="407" width="104" height="69" as="geometry"/>
                 </mxCell>
                 <mxCell id="15" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;enable login&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="347" y="387" width="104" height="69" as="geometry"/>
+                    <mxGeometry x="318" y="408" width="104" height="69" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;enable login&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="203" y="210" width="91" height="41" as="geometry"/>
@@ -64,20 +64,17 @@
                         <mxPoint x="834" y="338" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="22" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;create endpoint to retrieve all documents habilable and their actual state&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="313" y="242" width="123" height="84" as="geometry"/>
+                <mxCell id="22" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;create endpoint to retrieve all documents avaible and their actual state&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="792" y="194" width="123" height="84" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;pasar logica a ingles&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="202" y="273" width="91" height="41" as="geometry"/>
                 </mxCell>
                 <mxCell id="26" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;agrega &quot;order&quot; al csv generado&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="315" y="150" width="104" height="69" as="geometry"/>
+                    <mxGeometry x="319" y="211" width="104" height="69" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;fecha_consumo not being updated&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="660" y="240" width="104" height="69" as="geometry"/>
-                </mxCell>
-                <mxCell id="31" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;add get_all_documents endpoint&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;curveFitting=1;jiggle=2;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
-                    <mxGeometry x="477" y="201" width="115" height="66" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

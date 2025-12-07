@@ -32,18 +32,6 @@ services:
     depends_on:
       - postgres
 
-  ui:
-    container_name: ui-container
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
-    ports:
-      - "8501:8501"
-    env_file:
-      - .env
-    volumes:
-      - ./files:/shared_files
-
   frontend:
     container_name: frontend-container
     build:
