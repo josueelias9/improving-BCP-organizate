@@ -302,3 +302,68 @@ export async function processDocument(documentId: string) {
         }
     }
 }
+
+// Export transactions to CSV
+export async function exportTransactionsToCSV() {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const response = await fetch(`${baseUrl}/api/transactions/export/csv`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store'
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.detail || `Failed to export CSV: ${response.statusText}`)
+        }
+
+        const result = await response.json()
+        return { 
+            success: true,
+            message: result.message || 'CSV exported successfully!',
+            filename: result.filename || 'transactions.csv'
+        }
+    } catch (error) {
+        console.error('Export CSV Error:', error)
+        return { 
+            success: false,
+            message: error instanceof Error ? error.message : 'Failed to export CSV.' 
+        }
+    }
+}
+
+// Import transactions from CSV
+export async function importTransactionsFromCSV() {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const response = await fetch(`${baseUrl}/api/transactions/import/csv`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            cache: 'no-store'
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData.detail || `Failed to import CSV: ${response.statusText}`)
+        }
+
+        const result = await response.json()
+        revalidatePath('/dashboard/transactions')
+        return { 
+            success: true,
+            message: result.message || 'CSV imported successfully!',
+            updated_count: result.updated_count || 0
+        }
+    } catch (error) {
+        console.error('Import CSV Error:', error)
+        return { 
+            success: false,
+            message: error instanceof Error ? error.message : 'Failed to import CSV.' 
+        }
+    }
+}

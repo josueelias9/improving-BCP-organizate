@@ -5,6 +5,8 @@ import { formatCurrency } from '@/app/lib/utils'
 import { lusitana } from '@/app/ui/fonts'
 import EditTransactionModal from '../dashboard/edit-transaction-modal'
 import type { Category } from '@/app/lib/definitions'
+import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
+import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 function formatTransactionDate(dateString: string) {
     try {
@@ -34,6 +36,9 @@ export default function TransactionsTable({
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)
     const [filterUniqueId, setFilterUniqueId] = useState('')
+    const [isExporting, setIsExporting] = useState(false)
+    const [isImporting, setIsImporting] = useState(false)
+    const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
     // Filter transactions by unique_identifier if filter is set
     const filteredTransactions = filterUniqueId
@@ -73,6 +78,41 @@ export default function TransactionsTable({
         return !transaction.history || !transaction.category_name
     }
 
+    const handleExportCSV = async () => {
+        setIsExporting(true)
+        setMessage(null)
+        
+        const result = await exportTransactionsToCSV()
+        
+        setIsExporting(false)
+        setMessage({
+            text: result.message,
+            type: result.success ? 'success' : 'error'
+        })
+        
+        setTimeout(() => setMessage(null), 5000)
+    }
+
+    const handleImportCSV = async () => {
+        setIsImporting(true)
+        setMessage(null)
+        
+        const result = await importTransactionsFromCSV()
+        
+        setIsImporting(false)
+        setMessage({
+            text: result.message,
+            type: result.success ? 'success' : 'error'
+        })
+        
+        setTimeout(() => setMessage(null), 5000)
+        
+        // Reload page if successful to show updated data
+        if (result.success) {
+            setTimeout(() => window.location.reload(), 2000)
+        }
+    }
+
     const not_included_columns = [
         'unique_identifier',
         'created_at',
@@ -92,7 +132,53 @@ export default function TransactionsTable({
 
     return (
         <div className='flex w-full flex-col md:col-span-4'>
-            <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>All Transactions</h2>
+            <div className='flex items-center justify-between mb-4'>
+                <h2 className={`${lusitana.className} text-xl md:text-2xl`}>All Transactions</h2>
+                
+                {/* CSV Export/Import buttons */}
+                <div className='flex gap-2'>
+                    <button
+                        onClick={handleExportCSV}
+                        disabled={isExporting}
+                        className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                            isExporting
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                        title='Export transactions to CSV'
+                    >
+                        <ArrowDownTrayIcon className={`h-5 w-5 ${isExporting ? 'animate-bounce' : ''}`} />
+                        {isExporting ? 'Exporting...' : 'Export CSV'}
+                    </button>
+                    
+                    <button
+                        onClick={handleImportCSV}
+                        disabled={isImporting}
+                        className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                            isImporting
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                        title='Import transactions from CSV'
+                    >
+                        <ArrowUpTrayIcon className={`h-5 w-5 ${isImporting ? 'animate-bounce' : ''}`} />
+                        {isImporting ? 'Importing...' : 'Import CSV'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Success/Error message */}
+            {message && (
+                <div
+                    className={`mb-4 rounded-md px-4 py-3 text-sm ${
+                        message.type === 'success'
+                            ? 'bg-green-50 text-green-800'
+                            : 'bg-red-50 text-red-800'
+                    }`}
+                >
+                    {message.text}
+                </div>
+            )}
             
             {/* Filter by unique_identifier */}
             <div className='mb-4'>
