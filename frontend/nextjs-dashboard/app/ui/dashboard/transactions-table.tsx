@@ -21,6 +21,13 @@ function formatTransactionDate(dateString: string) {
 export default async function TransactionsTable() {
     const transactions = await fetchTransactions()
 
+    const not_included_columns = ["unique_identifier","created_at","updated_at","id"]
+    
+    // Get column names from the first transaction
+    const columns = transactions.length > 0 
+        ? Object.keys(transactions[0]).filter(col => !not_included_columns.includes(col))
+        : []
+
     return (
         <div className='flex w-full flex-col md:col-span-4'>
             <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -31,64 +38,53 @@ export default async function TransactionsTable() {
                     <table className='min-w-full text-gray-900'>
                         <thead className='rounded-lg text-left text-sm font-normal'>
                             <tr>
-                                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
-                                    ID
-                                </th>
-                                <th scope='col' className='px-3 py-5 font-medium'>
-                                    Description
-                                </th>
-                                <th scope='col' className='px-3 py-5 font-medium'>
-                                    Amount
-                                </th>
-                                <th scope='col' className='px-3 py-5 font-medium'>
-                                    Date
-                                </th>
-                                <th scope='col' className='px-3 py-5 font-medium'>
-                                    User ID
-                                </th>
-                                <th scope='col' className='px-3 py-5 font-medium'>
-                                    Category ID
-                                </th>
+                                {columns.map((column) => (
+                                    <th key={column} scope='col' className='px-3 py-5 font-medium'>
+                                        {column}
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody className='bg-white'>
-                            {transactions.map((transaction, i) => (
+                            {transactions.map((transaction) => (
                                 <tr
                                     key={transaction.id}
                                     className='w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg'
                                 >
-                                    <td className='whitespace-nowrap px-4 py-3 sm:pl-6'>
-                                        <div className='truncate max-w-[100px]' title={transaction.id || 'N/A'}>
-                                            {transaction.id ? `${transaction.id.substring(0, 8)}...` : 'N/A'}
-                                        </div>
-                                    </td>
-                                    <td className='whitespace-nowrap px-3 py-3'>
-                                        {transaction.description || 'N/A'}
-                                    </td>
-                                    <td className='whitespace-nowrap px-3 py-3'>
-                                        <span
-                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
-                                                transaction.amount >= 0
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-red-100 text-red-700'
-                                            }`}
-                                        >
-                                            {formatCurrency(transaction.amount || 0)}
-                                        </span>
-                                    </td>
-                                    <td className='whitespace-nowrap px-3 py-3'>
-                                        {formatTransactionDate(transaction.transaction_date)}
-                                    </td>
-                                    <td className='whitespace-nowrap px-3 py-3'>
-                                        <div className='truncate max-w-[100px]' title={transaction.user_id || 'N/A'}>
-                                            {transaction.user_id ? `${transaction.user_id.substring(0, 8)}...` : 'N/A'}
-                                        </div>
-                                    </td>
-                                    <td className='whitespace-nowrap px-3 py-3'>
-                                        <div className='truncate max-w-[100px]' title={transaction.category_id || 'N/A'}>
-                                            {transaction.category_id ? `${transaction.category_id.substring(0, 8)}...` : 'N/A'}
-                                        </div>
-                                    </td>
+                                    {columns.map((column) => {
+                                        const value = transaction[column as keyof typeof transaction]
+                                        let displayValue: React.ReactNode = value || 'N/A'
+
+                                        // Special formatting for specific columns
+                                        if (column === 'amount') {
+                                            displayValue = (
+                                                <span
+                                                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
+                                                        (value as number) >= 0
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-red-100 text-red-700'
+                                                    }`}
+                                                >
+                                                    {formatCurrency((value as number) || 0)}
+                                                </span>
+                                            )
+                                        } else if (column === 'transaction_date' || column === 'created_at') {
+                                            displayValue = formatTransactionDate(value as string)
+                                        } else if (typeof value === 'string' && value.length > 20) {
+                                            // Truncate long strings (like IDs)
+                                            displayValue = (
+                                                <div className='truncate max-w-[150px]' title={value}>
+                                                    {value.substring(0, 15)}...
+                                                </div>
+                                            )
+                                        }
+
+                                        return (
+                                            <td key={column} className='whitespace-nowrap px-3 py-3'>
+                                                {displayValue}
+                                            </td>
+                                        )
+                                    })}
                                 </tr>
                             ))}
                         </tbody>
