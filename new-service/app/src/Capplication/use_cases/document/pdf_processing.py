@@ -98,13 +98,18 @@ class PDFProcessingUseCase:
             if not doc_type:
                 raise ValueError(f"Document type '{doc_type_name}' not found in database")
             
+            # Structure data as nested JSON
+            document_data = {
+                "account_number": extraction_result.account_code or "UNKNOWN",
+                "previous_balance": extraction_result.saldo_anterior,
+                "initial_day": extraction_result.initial_day.isoformat() if extraction_result.initial_day else None,
+                "final_day": extraction_result.final_day.isoformat() if extraction_result.final_day else None,
+                "transactions": transactions_list
+            }
+            
             document = Document(
-                account_number=extraction_result.account_code or "UNKNOWN",
+                data=document_data,
                 currency=extraction_result.currency or "PEN",
-                previous_balance=extraction_result.saldo_anterior,
-                initial_day=extraction_result.initial_day,
-                final_day=extraction_result.final_day,
-                data=transactions_list,
                 unique_identifier=unique_id,
                 user_id=user.id,
                 document_type_id=doc_type.id

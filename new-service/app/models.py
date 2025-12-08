@@ -104,12 +104,8 @@ class Category(CategoryBase, table=True):
 # ============================================================================= Document
 
 class DocumentBase(SQLModel):
-    account_number: str = Field(max_length=255, index=True)
+    data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
     currency: str = Field(default="")
-    previous_balance: Optional[float] = Field(default=None)
-    initial_day: Optional[date] = Field(default=None)
-    final_day: Optional[date] = Field(default=None)
-    data: Optional[List[Dict[str, Any]]] = Field(default=None, sa_column=Column(JSON))  # List of transaction dicts from PDF
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
 
@@ -139,13 +135,9 @@ class DocumentCreate(DocumentBase):
 
 
 class DocumentUpdate(SQLModel):
-    account_number: Optional[str] = None
-    document_type_id: Optional[uuid.UUID] = None
+    data: Optional[Dict[str, Any]] = None
     currency: Optional[str] = None
-    previous_balance: Optional[float] = None
-    initial_day: Optional[date] = None
-    final_day: Optional[date] = None
-    data: Optional[List[Dict[str, Any]]] = None
+    document_type_id: Optional[uuid.UUID] = None
     processed: Optional[bool] = None
 
 

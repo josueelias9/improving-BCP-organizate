@@ -25,9 +25,14 @@ class DocumentDbGateway(IDocumentDbGateway):
         if not document:
             raise ValueError("Document not found")
         
+        # Extract transactions list from nested data structure
+        transactions_list = []
+        if document.data and isinstance(document.data, dict):
+            transactions_list = document.data.get("transactions", [])
+        
         return DTODocumentData(
             id=str(document.id),
-            data=document.data or [],
+            data=transactions_list,
             currency=document.currency,
             processed=document.processed
         )
@@ -61,18 +66,27 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Convert to dict with all properties
         result = []
         for doc in documents:
+            # Extract important data from nested JSON structure
+            data_summary = {}
+            
+            if doc.data and isinstance(doc.data, dict):
+                # Extract metadata but not the full transactions list
+                data_summary = {
+                    "account_number": doc.data.get("account_number"),
+                    "previous_balance": doc.data.get("previous_balance"),
+                    "initial_day": doc.data.get("initial_day"),
+                    "final_day": doc.data.get("final_day"),
+                    "transactions_count": len(doc.data.get("transactions", []))
+                }
+            
             doc_dict = {
                 "id": str(doc.id),
-                "account_number": doc.account_number,
-                "document_type": doc.document_type.name if doc.document_type else None,
+                "data": data_summary,
                 "currency": doc.currency,
-                "previous_balance": doc.previous_balance,
-                "initial_day": doc.initial_day,
-                "final_day": doc.final_day,
                 "unique_identifier": doc.unique_identifier,
                 "processed": doc.processed,
                 "user_id": str(doc.user_id),
-                "transactions_count": len(doc.data) if doc.data else 0
+                "document_type": doc.document_type.name if doc.document_type else None
             }
             result.append(doc_dict)
         
