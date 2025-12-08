@@ -50,25 +50,29 @@ class TransactionService:
         for idx, transaction_dict in enumerate(document_data.data):
             try:
                 # Parse date strings from JSON back to date objects
-                fecha_proceso = transaction_dict.get("fecha_proceso")
-                if fecha_proceso and isinstance(fecha_proceso, str):
-                    fecha_proceso = date.fromisoformat(fecha_proceso)
+                fecha_valor = transaction_dict.get("fecha_valor")
+                if fecha_valor and isinstance(fecha_valor, str):
+                    fecha_valor = date.fromisoformat(fecha_valor)
                 
-                fecha_consumo = transaction_dict.get("fecha_valor")
-                if fecha_consumo and isinstance(fecha_consumo, str):
-                    fecha_consumo = date.fromisoformat(fecha_consumo)
+                # Determine type and amount based on cargos/abonos
+                cargos = float(transaction_dict.get("cargos", 0.0))
+                abonos = float(transaction_dict.get("abonos", 0.0))
+                
+                if cargos == 0.0:
+                    transaction_type = "income"
+                    amount = abonos
+                else:
+                    transaction_type = "expense"
+                    amount = cargos
                 
                 transaction = DTOTransactionData(
-                    description=transaction_dict.get("description", ""),
-                    cargos=float(transaction_dict.get("cargos", 0.0)),
-                    abonos=float(transaction_dict.get("abonos", 0.0)),
-                    currency=document_data.currency,
-                    fecha_proceso=fecha_proceso,
-                    fecha_consumo=fecha_consumo,
-                    internal_transaction=transaction_dict.get("internal_transaction") == "*",
-                    type=transaction_dict.get("type", "unknown"),
                     order=idx + 1,
-                    history=transaction_dict.get("history")
+                    description=transaction_dict.get("description", ""),
+                    history=transaction_dict.get("history"),
+                    amount=amount,
+                    transaction_type=transaction_type,
+                    transaction_date=fecha_valor,
+                    unique_identifier=None  # Will be set by gateway
                 )
                 transactions.append(transaction)
                 

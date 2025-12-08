@@ -101,16 +101,13 @@ class UpdateTransactionUseCase:
             DTOTransactionData with updated history value
         """
         return DTOTransactionData(
-            description=existing.description,
-            cargos=existing.cargos,
-            abonos=existing.abonos,
-            currency=existing.currency,
-            fecha_proceso=existing.fecha_proceso,
-            fecha_consumo=existing.fecha_consumo,
-            internal_transaction=existing.internal_transaction,
-            type=existing.type,
             order=existing.order,
-            history=updates.get('history', existing.history)  # Only history can be updated
+            description=existing.description,
+            history=updates.get('history', existing.history),  # Only history can be updated
+            amount=existing.amount,
+            transaction_type=existing.transaction_type,
+            transaction_date=existing.transaction_date,
+            unique_identifier=existing.unique_identifier
         )
     
     def _validate_transaction_data(self, transaction: DTOTransactionData) -> None:
@@ -127,17 +124,13 @@ class UpdateTransactionUseCase:
         if not transaction.description or not transaction.description.strip():
             raise ValueError("Transaction description is required")
         
-        # Business rule: At least one of cargos or abonos must be non-zero
-        if transaction.cargos == 0.0 and transaction.abonos == 0.0:
-            raise ValueError("Transaction must have either cargos or abonos with non-zero value")
+        # Business rule: Amount must be non-zero
+        if transaction.amount == 0.0:
+            raise ValueError("Transaction amount must be non-zero")
         
-        # Business rule: Cargos and abonos cannot both be non-zero
-        if transaction.cargos != 0.0 and transaction.abonos != 0.0:
-            raise ValueError("Transaction cannot have both cargos and abonos with non-zero values")
-        
-        # Business rule: Currency is required
-        if not transaction.currency or not transaction.currency.strip():
-            raise ValueError("Transaction currency is required")
+        # Business rule: Type must be valid
+        if transaction.transaction_type not in ['income', 'expense']:
+            raise ValueError("Transaction type must be either 'income' or 'expense'")
         
         # Business rule: Order must be positive
         if transaction.order <= 0:

@@ -34,22 +34,19 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         for transaction_data in transactions:
             try:
-                # Generate unique_identifier: {order}__{fecha_proceso}__{cargos}__{abonos}__{description}
-                fecha_proceso_str = transaction_data.fecha_proceso.strftime("%Y-%m-%d") if transaction_data.fecha_proceso else ""
-                unique_id = f"{transaction_data.order}__{fecha_proceso_str}__{transaction_data.cargos}__{transaction_data.abonos}__{transaction_data.description}"
+                # Generate unique_identifier: {order}__{transaction_date}__{amount}__{transaction_type}__{description}
+                date_str = transaction_data.transaction_date.strftime("%Y-%m-%d") if transaction_data.transaction_date else ""
+                unique_id = f"{transaction_data.order}__{date_str}__{transaction_data.amount}__{transaction_data.transaction_type}__{transaction_data.description}"
                 
                 transaction = Transaction(
-                    description=transaction_data.description,
-                    cargos=transaction_data.cargos,
-                    abonos=transaction_data.abonos,
-                    currency=transaction_data.currency,
-                    fecha_proceso=transaction_data.fecha_proceso,
-                    fecha_consumo=transaction_data.fecha_consumo,
-                    internal_transaction=transaction_data.internal_transaction,
-                    document_id=document_id,
                     order=transaction_data.order,
+                    description=transaction_data.description,
                     history=transaction_data.history,
-                    unique_identifier=unique_id
+                    amount=transaction_data.amount,
+                    transaction_type=transaction_data.transaction_type,
+                    transaction_date=transaction_data.transaction_date,
+                    unique_identifier=unique_id,
+                    document_id=document_id
                 )
                 
                 self.session.add(transaction)
@@ -99,16 +96,13 @@ class TransactionDbGateway(ITransactionDbGateway):
             return None
             
         return DTOTransactionData(
-            description=transaction.description,
-            cargos=transaction.cargos,
-            abonos=transaction.abonos,
-            currency=transaction.currency,
-            fecha_proceso=transaction.fecha_proceso,
-            fecha_consumo=transaction.fecha_consumo,
-            internal_transaction=transaction.internal_transaction,
-            type='',  # Default empty string since type is not in Transaction model
             order=transaction.order,
-            history=transaction.history
+            description=transaction.description,
+            history=transaction.history,
+            amount=transaction.amount,
+            transaction_type=transaction.transaction_type,
+            transaction_date=transaction.transaction_date,
+            unique_identifier=transaction.unique_identifier
         )
     
     def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
@@ -152,11 +146,19 @@ class TransactionDbGateway(ITransactionDbGateway):
         if document_id:
             statement = statement.where(Transaction.document_id == document_id)
         
-        # Apply month filter if provided
+        # Apply month filter if provided (filters by date field)
         if month:
-            # Filter transactions where fecha_proceso contains the month
-            # This works for dates in formats like "DD/MM/YYYY" or "YYYY-MM-DD"
-            statement = statement.where(Transaction.fecha_proceso.contains(month))
+            # Extract year and month from the date field
+            year, month_num = month.split('-')
+            statement = statement.where(
+                Transaction.date.isnot(None),
+            )
+            # Filter using SQL extract for year and month
+            from sqlalchemy import extract
+            statement = statement.where(
+                extract('year', Transaction.date) == int(year),
+                extract('month', Transaction.date) == int(month_num)
+            )
         
         # Execute query
         transactions = self.session.exec(statement).all()

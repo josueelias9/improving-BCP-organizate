@@ -15,6 +15,11 @@ class CustomerType(str, Enum):
     BUSINESS = "business"
 
 
+class TransactionType(str, Enum):
+    INCOME = "income"
+    EXPENSE = "expense"
+
+
 
 # ============================================================================= DocumentType
 
@@ -145,15 +150,12 @@ class DocumentUpdate(SQLModel):
 
 
 class TransactionBase(SQLModel):
-    description: str = Field (max_length=255)  # ID único de transacción (ej: EECC102025_4280820000002148_1)
-    cargos: float
-    abonos: float
-    currency: str = Field(default="")
-    fecha_proceso: Optional[date] = Field(default=None)
-    fecha_consumo: Optional[date] = Field(default=None)
-    internal_transaction: bool = Field(default=False)  # True if "*", False otherwise
-    history: Optional[str] = Field(default=None)
     order: int
+    description: str = Field(max_length=255)
+    history: Optional[str] = Field(default=None)
+    amount: float
+    transaction_type: TransactionType
+    transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
 
 class Transaction(TransactionBase, table=True):

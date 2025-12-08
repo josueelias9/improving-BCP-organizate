@@ -11,16 +11,13 @@ from dataclasses import dataclass
 @dataclass
 class DTOTransactionData:
     """Data structure for transaction information"""
-    description: str
-    cargos: float
-    abonos: float
-    currency: str
-    fecha_proceso: Optional[date]
-    fecha_consumo: Optional[date]
-    internal_transaction: bool
-    type: Optional[str]
     order: int
-    history: Optional[str] = None
+    description: str
+    history: Optional[str]
+    amount: float
+    transaction_type: str  # 'income' or 'expense'
+    transaction_date: Optional[date]  # fecha_consumo
+    unique_identifier: Optional[str] = None
 
 
 @dataclass

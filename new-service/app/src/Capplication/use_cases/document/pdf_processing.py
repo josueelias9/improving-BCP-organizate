@@ -215,12 +215,18 @@ class PDFProcessingUseCase:
         # Convert transactions to dict list with date serialization
         transactions_list = []
         for t in extraction_result.transactions:
-            t_dict = t.__dict__.copy()
-            # Convert date objects to ISO format strings for JSON storage
-            if t_dict.get('fecha_proceso'):
-                t_dict['fecha_proceso'] = t_dict['fecha_proceso'].isoformat()
-            if t_dict.get('fecha_valor'):
-                t_dict['fecha_valor'] = t_dict['fecha_valor'].isoformat()
+            # Get transaction type and amount based on cargos/abonos
+            transaction_type, amount = t.to_transaction_type_and_amount()
+            
+            # Convert to dict with new structure
+            t_dict = {
+                'description': t.description,
+                'cargos': t.cargos,  # Keep original for reference
+                'abonos': t.abonos,  # Keep original for reference
+                'fecha_valor': t.fecha_valor.isoformat() if t.fecha_valor else None,
+                'transaction_type': transaction_type,
+                'amount': amount
+            }
             transactions_list.append(t_dict)
         
         # Generate unique identifier with date strings

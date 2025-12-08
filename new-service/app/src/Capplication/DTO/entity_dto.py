@@ -24,6 +24,13 @@ class DTOTransaction:
             self.cargos != 0.0 or
             self.abonos != 0.0
         )
+    
+    def to_transaction_type_and_amount(self) -> tuple[str, float]:
+        """Convert cargos/abonos to type and amount"""
+        if self.cargos == 0.0:
+            return ("income", self.abonos)
+        else:
+            return ("expense", self.cargos)
 
 
 @dataclass

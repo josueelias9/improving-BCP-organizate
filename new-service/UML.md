@@ -11,12 +11,13 @@ erDiagram
     }
 
     TRANSACTION {
+        _ order
         _ description
         _ history
-        _ income
-        _ outcome
-        _ currency
+        _ amount
+        _ type
         _ date
+        _ unique_identifier
     }
 
     CATEGORY {
@@ -34,6 +35,8 @@ erDiagram
     DOCUMENT {
         _ currency
         json data
+        _ unique_identifier
+        bool processed
     }
 
 
