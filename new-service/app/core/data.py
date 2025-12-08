@@ -51,3 +51,10 @@ default_categories = [
         "children": []
     }
 ]
+
+
+default_document_types = [
+    {"name": "bcp_debit"},
+    {"name": "bcp_credit"},
+    {"name": "pichincha"}
+]

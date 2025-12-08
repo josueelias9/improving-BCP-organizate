@@ -15,10 +15,25 @@ class CustomerType(str, Enum):
     BUSINESS = "business"
 
 
-class DocumentType(str, Enum):
-    BCP_STATEMENT = "bcp_statement"
-    DEBIT_STATEMENT = "debit_statement"
-    CREDIT_STATEMENT = "credit_statement"
+
+# ============================================================================= DocumentType
+
+class DocumentTypeBase(SQLModel):
+    name: str = Field(max_length=100, unique=True, index=True)
+
+
+class DocumentType(DocumentTypeBase, table=True):
+    __tablename__ = "document_types"
+    
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+        nullable=False
+    )
+    
+    # Relationships
+    documents: List["Document"] = Relationship(back_populates="document_type")
 
 
 # ============================================================================= User
@@ -90,7 +105,6 @@ class Category(CategoryBase, table=True):
 
 class DocumentBase(SQLModel):
     account_number: str = Field(max_length=255, index=True)
-    type: DocumentType
     currency: str = Field(default="")
     previous_balance: Optional[float] = Field(default=None)
     initial_day: Optional[date] = Field(default=None)
@@ -110,20 +124,23 @@ class Document(DocumentBase, table=True):
         nullable=False
     )
     user_id: uuid.UUID = Field(foreign_key="users.id")
+    document_type_id: uuid.UUID = Field(foreign_key="document_types.id")
     
     # Relationships
     user: User = Relationship(back_populates="documents")
+    document_type: "DocumentType" = Relationship(back_populates="documents")
     transactions: List["Transaction"] = Relationship(back_populates="document")
 
 
 class DocumentCreate(DocumentBase):
     user_id: uuid.UUID
+    document_type_id: uuid.UUID
 
 
 
 class DocumentUpdate(SQLModel):
     account_number: Optional[str] = None
-    type: Optional[DocumentType] = None
+    document_type_id: Optional[uuid.UUID] = None
     currency: Optional[str] = None
     previous_balance: Optional[float] = None
     initial_day: Optional[date] = None

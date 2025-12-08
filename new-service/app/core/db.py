@@ -1,9 +1,9 @@
 from sqlmodel import Session, create_engine, SQLModel, select
 from core.config import settings
 # Import all models so SQLModel can detect them and create all tables
-from models import User, Category, CustomerType
+from models import User, Category, CustomerType, DocumentType, Document, Transaction
 import logging
-from core.data import default_categories
+from core.data import default_categories, default_document_types
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,16 @@ def init_db(session: Session) -> None:
             return
         
         logger.info("🚀 Initializing database with default data...")
+        
+        # Create default document types
+        logger.info("📄 Creating default document types...")
+        created_doc_types_count = 0
+        for doc_type_data in default_document_types:
+            doc_type = DocumentType(name=doc_type_data["name"])
+            session.add(doc_type)
+            created_doc_types_count += 1
+        
+        session.flush()  # Flush to ensure document types are created before categories
         
         # Create default categories
         logger.info("📁 Creating default categories...")
@@ -73,6 +83,7 @@ def init_db(session: Session) -> None:
         
         session.commit()
         logger.info(f"✅ Database initialized successfully!")
+        logger.info(f"   📄 Created {created_doc_types_count} document types")
         logger.info(f"   📁 Created {created_categories_count} categories")
         logger.info(f"   👥 Created 2 users")
         

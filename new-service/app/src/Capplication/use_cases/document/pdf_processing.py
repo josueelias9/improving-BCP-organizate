@@ -4,12 +4,13 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
-from models import Document, DocumentType
+from models import Document
 
 from src.Capplication.DTO.entity_dto import DTOExtractionResult
 from src.Capplication.DTO.document_dto import DTOProcessPDFResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
+from src.Binterface.gateway.db.document_type import DocumentTypeDbGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
 logger = logging.getLogger(__name__)
@@ -22,11 +23,13 @@ class PDFProcessingUseCase:
         self, 
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        pdf_extractor_gateway: PDFExtractorGateway
+        pdf_extractor_gateway: PDFExtractorGateway,
+        document_type_gateway: DocumentTypeDbGateway
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
         self.pdf_extractor_gateway = pdf_extractor_gateway
+        self.document_type_gateway = document_type_gateway
     
     def execute(
         self,
@@ -82,10 +85,21 @@ class PDFProcessingUseCase:
                 )
             
             # Create new document
+            # Get document type by name
+            doc_type_name_map = {
+                "BCP_STATEMENT": "bcp_debit",
+                "DEBIT_STATEMENT": "bcp_debit", 
+                "CREDIT_STATEMENT": "bcp_credit"
+            }
+            
+            doc_type_name = doc_type_name_map.get(document_type, "bcp_debit")
+            doc_type = self.document_type_gateway.get_by_name(doc_type_name)
+            
+            if not doc_type:
+                raise ValueError(f"Document type '{doc_type_name}' not found in database")
             
             document = Document(
                 account_number=extraction_result.account_code or "UNKNOWN",
-                type=DocumentType.BCP_STATEMENT if document_type == "BCP_STATEMENT" else DocumentType.DEBIT_STATEMENT,
                 currency=extraction_result.currency or "PEN",
                 previous_balance=extraction_result.saldo_anterior,
                 initial_day=extraction_result.initial_day,
@@ -93,6 +107,7 @@ class PDFProcessingUseCase:
                 data=transactions_list,
                 unique_identifier=unique_id,
                 user_id=user.id,
+                document_type_id=doc_type.id
             )
             
             created_document = self.document_gateway.create(document)

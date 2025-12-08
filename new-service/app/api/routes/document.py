@@ -11,8 +11,8 @@ from api.deps import SessionDep, get_db_session
 from src.Binterface.pdf_processing_controller import PDFProcessingController
 from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.user import UserDbGateway
+from src.Binterface.gateway.db.document_type import DocumentTypeDbGateway
 from src.Binterface.gateway.pdf_extractor import PDFExtractorGateway
-from src.Binterface.gateway.db.document import DocumentDbGateway
 from src.Binterface.gateway.db.transaction import TransactionDbGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
@@ -105,13 +105,15 @@ async def pdf_processing(
         # Initialize gateways (dependency injection at composition root)
         document_gateway = DocumentDbGateway(session)
         user_gateway = UserDbGateway(session)
+        document_type_gateway = DocumentTypeDbGateway(session)
         pdf_extractor_gateway = PDFExtractorGateway()
         
         # Create controller with injected dependencies
         controller = PDFProcessingController(
             document_gateway=document_gateway,
             user_gateway=user_gateway,
-            pdf_extractor_gateway=pdf_extractor_gateway
+            pdf_extractor_gateway=pdf_extractor_gateway,
+            document_type_gateway=document_type_gateway
         )
         
         # Open file and pass binary content to controller

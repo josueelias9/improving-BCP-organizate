@@ -64,7 +64,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             doc_dict = {
                 "id": str(doc.id),
                 "account_number": doc.account_number,
-                "type": doc.type,
+                "document_type": doc.document_type.name if doc.document_type else None,
                 "currency": doc.currency,
                 "previous_balance": doc.previous_balance,
                 "initial_day": doc.initial_day,

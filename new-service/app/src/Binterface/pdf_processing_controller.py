@@ -9,6 +9,7 @@ from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseC
 from src.Capplication.DTO.document_dto import DTOProcessPDFResult
 from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
+from src.Binterface.gateway.db.document_type import DocumentTypeDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,8 @@ class PDFProcessingController:
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        pdf_extractor_gateway: PDFExtractorGateway
+        pdf_extractor_gateway: PDFExtractorGateway,
+        document_type_gateway: DocumentTypeDbGateway
     ):
         """
         Initialize controller with dependency injection
@@ -29,10 +31,12 @@ class PDFProcessingController:
             document_gateway: Gateway for document persistence
             user_gateway: Gateway for user persistence
             pdf_extractor_gateway: Gateway for PDF extraction
+            document_type_gateway: Gateway for document type persistence
         """
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
         self.pdf_extractor_gateway = pdf_extractor_gateway
+        self.document_type_gateway = document_type_gateway
     
     def process_and_save_document(
         self,
@@ -59,7 +63,8 @@ class PDFProcessingController:
         use_case = PDFProcessingUseCase(
             self.document_gateway,
             self.user_gateway,
-            self.pdf_extractor_gateway
+            self.pdf_extractor_gateway,
+            self.document_type_gateway
         )
         result = use_case.execute(
             pdf_file=pdf_file,
