@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 import logging
 
 from api.deps import get_db_session
-from src.Binterface.gateway.db.category import CategoryDbGateway
+from src.Aframework.gateway.db.category import CategoryDbGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

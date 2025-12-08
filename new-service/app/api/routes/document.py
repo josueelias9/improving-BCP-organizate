@@ -9,11 +9,11 @@ import logging
 
 from api.deps import SessionDep, get_db_session
 from src.Binterface.pdf_processing_controller import PDFProcessingController
-from src.Binterface.gateway.db.document import DocumentDbGateway
-from src.Binterface.gateway.db.user import UserDbGateway
-from src.Binterface.gateway.db.document_type import DocumentTypeDbGateway
-from src.Binterface.gateway.pdf_extractor import PDFExtractorGateway
-from src.Binterface.gateway.db.transaction import TransactionDbGateway
+from src.Aframework.gateway.db.document import DocumentDbGateway
+from src.Aframework.gateway.db.user import UserDbGateway
+from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
+from src.Aframework.gateway.pdf_extractor import PDFExtractorGateway
+from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 

@@ -1,7 +1,6 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
 @baseUrl = http://127.0.0.1:8000
-@fileName = EECC102025_07750301.PDF
 
 ### =================================================================== health.py
 
@@ -24,8 +23,21 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "/shared_files/examples/{{fileName}}",
+    "pdf_filename": "/shared_files/examples/EECC102025_07750301.PDF",
     "type": "debit",
+    "user_email": "admin@bcpextractor.com"
+}
+
+###
+
+# Extract data from PDF and save it as JSON in the Documents table
+# @name populateDocument
+POST {{baseUrl}}/api/pdf-processing
+Content-Type: application/json
+
+{
+    "pdf_filename": "/shared_files/examples/EECC102025_09745280.PDF",
+    "type": "credit",
     "user_email": "admin@bcpextractor.com"
 }
 

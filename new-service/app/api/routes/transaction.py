@@ -17,8 +17,8 @@ from src.Capplication.use_cases.transaction.update_transaction import UpdateTran
 from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase
 from src.Capplication.use_cases.transaction.export_transactions import ExportTransactionsUseCase
 from src.Capplication.use_cases.transaction.import_transactions_from_csv import ImportTransactionsFromCsvUseCase
-from src.Binterface.gateway.db.transaction import TransactionDbGateway
-from src.Binterface.gateway.db.category import CategoryDbGateway
+from src.Aframework.gateway.db.transaction import TransactionDbGateway
+from src.Aframework.gateway.db.category import CategoryDbGateway
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
