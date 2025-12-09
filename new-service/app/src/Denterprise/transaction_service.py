@@ -4,10 +4,10 @@ Contains core business rules and validations for transaction processing
 """
 import logging
 from datetime import date
-from typing import Dict, Any, List, Optional
+from typing import List
 
 from src.Capplication.DTO.document_dto import DTODocumentData
-from src.Capplication.DTO.transaction_dto import DTOTransactionData, DTOLoadTransactionsResult
+from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
 
