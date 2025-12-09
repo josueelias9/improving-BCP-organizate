@@ -9,8 +9,8 @@ from models import Document
 
 from src.Capplication.DTO.entity_dto import DTOExtractionResult
 from src.Capplication.DTO.document_dto import DTOProcessPDFResult
-from src.Capplication.interfaces.db import IDocumentDbGateway, IUserDbGateway
-from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
+from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
+from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 

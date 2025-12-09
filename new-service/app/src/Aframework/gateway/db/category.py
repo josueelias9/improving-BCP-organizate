@@ -9,7 +9,7 @@ from typing import Optional, List
 
 from models import Category as CategoryModel
 from src.Denterprise.entities import CategoryEntity
-from src.Capplication.interfaces.db import ICategoryDbGateway
+from src.Capplication.gateway.db import ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 

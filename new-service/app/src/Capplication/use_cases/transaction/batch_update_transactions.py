@@ -3,15 +3,14 @@ Batch Update Transactions Use Case - Application Layer
 Handles the business logic for updating multiple transactions simultaneously
 """
 
-import uuid
 import logging
-from typing import Dict, Any, List
+from typing import List
 
 from src.Capplication.DTO.transaction_dto import (
     DTOBatchUpdateItem,
     DTOBatchUpdateResult,
 )
-from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 

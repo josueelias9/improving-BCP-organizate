@@ -13,7 +13,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportFilter,
     DTOExportTransactionsResult,
 )
-from src.Capplication.interfaces.db import ITransactionDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
 

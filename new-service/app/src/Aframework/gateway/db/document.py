@@ -10,7 +10,7 @@ from typing import Optional
 
 from models import Document as DocumentModel
 from src.Denterprise.entities import DocumentEntity
-from src.Capplication.interfaces.db import IDocumentDbGateway
+from src.Capplication.gateway.db import IDocumentDbGateway
 
 logger = logging.getLogger(__name__)
 

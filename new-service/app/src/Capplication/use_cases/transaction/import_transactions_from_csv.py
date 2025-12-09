@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional, List
 
 from src.Capplication.DTO.transaction_dto import DTOImportTransactionsResult
-from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 

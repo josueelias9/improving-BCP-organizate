@@ -13,7 +13,7 @@ from sqlalchemy.orm import joinedload
 
 from models import Transaction as TransactionModel
 from src.Denterprise.entities import TransactionEntity
-from src.Capplication.interfaces.db import ITransactionDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
 

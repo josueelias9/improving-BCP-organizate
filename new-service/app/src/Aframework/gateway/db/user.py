@@ -9,7 +9,7 @@ from typing import Optional
 
 from models import User as UserModel, UserCreate
 from src.Denterprise.entities import UserEntity
-from src.Capplication.interfaces.db import IUserDbGateway
+from src.Capplication.gateway.db import IUserDbGateway
 
 logger = logging.getLogger(__name__)
 

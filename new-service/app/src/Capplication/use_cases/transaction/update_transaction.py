@@ -7,7 +7,7 @@ import uuid
 import logging
 from typing import Dict, Any
 
-from src.Capplication.interfaces.db import ITransactionDbGateway, ICategoryDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
