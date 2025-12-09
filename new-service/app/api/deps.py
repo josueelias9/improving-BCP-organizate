@@ -1,6 +1,7 @@
 """
 Database dependencies for FastAPI
 """
+
 from typing import Annotated, Generator
 from fastapi import Depends
 from sqlmodel import Session

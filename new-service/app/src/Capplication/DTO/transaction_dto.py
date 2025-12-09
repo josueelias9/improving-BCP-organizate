@@ -2,6 +2,7 @@
 Transaction DTOs - Data Transfer Objects
 Used for transferring transaction data between layers
 """
+
 import uuid
 from datetime import date
 from typing import Optional, List, Dict, Any
@@ -11,6 +12,7 @@ from dataclasses import dataclass
 @dataclass
 class DTOTransactionData:
     """Data structure for transaction information"""
+
     order: int
     description: str
     history: Optional[str]
@@ -23,6 +25,7 @@ class DTOTransactionData:
 @dataclass
 class DTOLoadTransactionsResult:
     """Result of loading transactions operation"""
+
     success: bool
     loaded_count: int
     skipped_count: int
@@ -33,6 +36,7 @@ class DTOLoadTransactionsResult:
 @dataclass
 class DTOBatchUpdateItem:
     """Single transaction update item"""
+
     transaction_id: uuid.UUID
     history: str
     category_name: str = None
@@ -41,6 +45,7 @@ class DTOBatchUpdateItem:
 @dataclass
 class DTOBatchUpdateResult:
     """Result of batch update operation"""
+
     total: int
     updated: int
     failed: int
@@ -50,6 +55,7 @@ class DTOBatchUpdateResult:
 @dataclass
 class DTOExportFilter:
     """Filter criteria for transaction export"""
+
     month: Optional[str] = None  # Format: YYYY-MM
     document_id: Optional[uuid.UUID] = None
 
@@ -57,6 +63,7 @@ class DTOExportFilter:
 @dataclass
 class DTOExportTransactionsResult:
     """Result of export transactions operation"""
+
     success: bool
     csv_content: str
     filename: str
@@ -67,6 +74,7 @@ class DTOExportTransactionsResult:
 @dataclass
 class DTOImportTransactionsResult:
     """Result of import transactions operation"""
+
     success: bool
     updated_count: int
     skipped_count: int

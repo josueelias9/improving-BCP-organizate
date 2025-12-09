@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         env_ignore_empty=True,
         extra="ignore",
     )
-    
+
     # Database configuration
     POSTGRES_SERVER: str
     POSTGRES_PORT: int = 5432
@@ -34,4 +34,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore
-

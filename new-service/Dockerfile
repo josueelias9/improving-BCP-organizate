@@ -17,6 +17,7 @@ pip install pydantic_settings
 pip install psycopg[binary]
 pip install pymupdf
 pip install tenacity
+pip install black
 EOF
 
 # Expose port
