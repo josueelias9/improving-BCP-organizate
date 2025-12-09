@@ -1,6 +1,7 @@
 """
 Transaction Gateway - Interface Adapter Layer
 Implements transaction persistence operations
+Maps between SQLModel Transaction and domain Transaction entity
 """
 import uuid
 import logging
@@ -9,9 +10,9 @@ from typing import List, Tuple, Optional, Dict, Any
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
-from models import Transaction
+from models import Transaction as TransactionModel
+from src.Denterprise.entities import TransactionEntity
 from src.Capplication.interfaces.db import ITransactionDbGateway
-from src.Capplication.DTO.transaction_dto import DTOTransactionData
 
 logger = logging.getLogger(__name__)
 
@@ -24,36 +25,37 @@ class TransactionDbGateway(ITransactionDbGateway):
     
     def save_batch(
         self,
-        transactions: List[DTOTransactionData],
+        transactions: List[TransactionEntity],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
-        """Save multiple transactions to database"""
+        """Save multiple transactions from domain entities to database"""
         loaded_count = 0
         skipped_count = 0
         errors = []
         
-        for transaction_data in transactions:
+        for transaction_entity in transactions:
             try:
                 # Generate unique_identifier: {order}__{transaction_date}__{amount}__{transaction_type}__{description}
-                date_str = transaction_data.transaction_date.strftime("%Y-%m-%d") if transaction_data.transaction_date else ""
-                unique_id = f"{transaction_data.order}__{date_str}__{transaction_data.amount}__{transaction_data.transaction_type}__{transaction_data.description}"
+                date_str = transaction_entity.transaction_date.strftime("%Y-%m-%d") if transaction_entity.transaction_date else ""
+                unique_id = f"{transaction_entity.order}__{date_str}__{transaction_entity.amount}__{transaction_entity.transaction_type}__{transaction_entity.description}"
                 
-                transaction = Transaction(
-                    order=transaction_data.order,
-                    description=transaction_data.description,
-                    history=transaction_data.history,
-                    amount=transaction_data.amount,
-                    transaction_type=transaction_data.transaction_type,
-                    transaction_date=transaction_data.transaction_date,
+                # Map domain entity to database model
+                db_transaction = TransactionModel(
+                    order=transaction_entity.order,
+                    description=transaction_entity.description,
+                    history=transaction_entity.history,
+                    amount=transaction_entity.amount,
+                    transaction_type=transaction_entity.transaction_type,
+                    transaction_date=transaction_entity.transaction_date,
                     unique_identifier=unique_id,
                     document_id=document_id
                 )
                 
-                self.session.add(transaction)
+                self.session.add(db_transaction)
                 loaded_count += 1
                 
             except Exception as e:
-                error_msg = f"Error saving transaction {transaction_data.order}: {str(e)}"
+                error_msg = f"Error saving transaction {transaction_entity.order}: {str(e)}"
                 logger.error(error_msg)
                 errors.append(error_msg)
                 skipped_count += 1
@@ -71,8 +73,8 @@ class TransactionDbGateway(ITransactionDbGateway):
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Get all transactions with pagination, including category name"""
         statement = (
-            select(Transaction)
-            .options(joinedload(Transaction.category))
+            select(TransactionModel)
+            .options(joinedload(TransactionModel.category))
             .offset(skip)
             .limit(limit)
         )
@@ -87,27 +89,29 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         return result
     
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
-        """Get transaction by ID"""
-        statement = select(Transaction).where(Transaction.id == transaction_id)
-        transaction = self.session.exec(statement).first()
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionEntity]:
+        """Get transaction by ID and map to domain entity"""
+        statement = select(TransactionModel).where(TransactionModel.id == transaction_id)
+        db_transaction = self.session.exec(statement).first()
         
-        if not transaction:
+        if not db_transaction:
             return None
-            
-        return DTOTransactionData(
-            order=transaction.order,
-            description=transaction.description,
-            history=transaction.history,
-            amount=transaction.amount,
-            transaction_type=transaction.transaction_type,
-            transaction_date=transaction.transaction_date,
-            unique_identifier=transaction.unique_identifier
-        )
+        
+        # Map to domain entity
+        transaction = TransactionEntity()
+        transaction.order = db_transaction.order
+        transaction.description = db_transaction.description
+        transaction.history = db_transaction.history
+        transaction.amount = db_transaction.amount
+        transaction.transaction_type = db_transaction.transaction_type
+        transaction.transaction_date = db_transaction.transaction_date
+        transaction.unique_identifier = db_transaction.unique_identifier
+        
+        return transaction
     
     def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
         """Update transaction by ID - only history and category_id fields can be updated"""
-        statement = select(Transaction).where(Transaction.id == transaction_id)
+        statement = select(TransactionModel).where(TransactionModel.id == transaction_id)
         transaction = self.session.exec(statement).first()
         
         if not transaction:
@@ -140,24 +144,24 @@ class TransactionDbGateway(ITransactionDbGateway):
     ) -> List[Dict[str, Any]]:
         """Get all transactions with optional filters, including category name"""
         # Build query
-        statement = select(Transaction).options(joinedload(Transaction.category))
+        statement = select(TransactionModel).options(joinedload(TransactionModel.category))
         
         # Apply document_id filter if provided
         if document_id:
-            statement = statement.where(Transaction.document_id == document_id)
+            statement = statement.where(TransactionModel.document_id == document_id)
         
         # Apply month filter if provided (filters by date field)
         if month:
             # Extract year and month from the date field
             year, month_num = month.split('-')
             statement = statement.where(
-                Transaction.date.isnot(None),
+                TransactionModel.date.isnot(None),
             )
             # Filter using SQL extract for year and month
             from sqlalchemy import extract
             statement = statement.where(
-                extract('year', Transaction.date) == int(year),
-                extract('month', Transaction.date) == int(month_num)
+                extract('year', TransactionModel.date) == int(year),
+                extract('month', TransactionModel.date) == int(month_num)
             )
         
         # Execute query
@@ -172,8 +176,22 @@ class TransactionDbGateway(ITransactionDbGateway):
         
         return result
     
-    def get_by_unique_identifier(self, unique_identifier: str):
-        """Get transaction by unique_identifier"""
-        statement = select(Transaction).where(Transaction.unique_identifier == unique_identifier)
-        transaction = self.session.exec(statement).first()
+    def get_by_unique_identifier(self, unique_identifier: str) -> Optional[TransactionEntity]:
+        """Get transaction by unique_identifier and map to domain entity"""
+        statement = select(TransactionModel).where(TransactionModel.unique_identifier == unique_identifier)
+        db_transaction = self.session.exec(statement).first()
+        
+        if not db_transaction:
+            return None
+        
+        # Map to domain entity
+        transaction = TransactionEntity()
+        transaction.order = db_transaction.order
+        transaction.description = db_transaction.description
+        transaction.history = db_transaction.history
+        transaction.amount = db_transaction.amount
+        transaction.transaction_type = db_transaction.transaction_type
+        transaction.transaction_date = db_transaction.transaction_date
+        transaction.unique_identifier = db_transaction.unique_identifier
+        
         return transaction

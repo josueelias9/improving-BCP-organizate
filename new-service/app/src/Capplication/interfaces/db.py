@@ -1,12 +1,11 @@
 """
-Gateway Interfaces - Enterprise Layer
-Defines contracts for data access without implementation details
+Gateway Interfaces - Application Layer
+Defines contracts for data access using domain entities
 """
 import uuid
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional, Dict, Any
-from src.Capplication.DTO.transaction_dto import DTOTransactionData
-from src.Capplication.DTO.document_dto import DTODocumentData
+from src.Denterprise.entities import TransactionEntity, DocumentEntity, UserEntity, CategoryEntity
 
 
 
@@ -14,9 +13,12 @@ class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
     
     @abstractmethod
-    def get_by_id(self, document_id: uuid.UUID) -> DTODocumentData:
+    def get_by_id(self, document_id: uuid.UUID) -> DocumentEntity:
         """
         Retrieve document by ID
+        
+        Returns:
+            Domain Document entity
         
         Raises:
             ValueError: If document not found
@@ -29,22 +31,27 @@ class IDocumentDbGateway(ABC):
         pass
     
     @abstractmethod
-    def get_by_unique_identifier(self, unique_identifier: str):
+    def get_by_unique_identifier(self, unique_identifier: str) -> Optional[DocumentEntity]:
         """
         Get document by unique identifier
         
         Returns:
-            Document if found, None otherwise
+            Domain Document entity if found, None otherwise
         """
         pass
     
     @abstractmethod
-    def create(self, document):
+    def create(self, document: DocumentEntity, user_id: uuid.UUID, document_type_id: uuid.UUID) -> DocumentEntity:
         """
-        Create a new document
+        Create a new document from domain entity
+        
+        Args:
+            document: Domain Document entity
+            user_id: UUID of the user
+            document_type_id: UUID of the document type
         
         Returns:
-            Created document
+            Created domain Document entity
         """
         pass
 
@@ -53,22 +60,22 @@ class IUserDbGateway(ABC):
     """Interface for user persistence operations"""
     
     @abstractmethod
-    def get_by_email(self, email: str):
+    def get_by_email(self, email: str) -> Optional[UserEntity]:
         """
         Get user by email
         
         Returns:
-            User if found, None otherwise
+            Domain User entity if found, None otherwise
         """
         pass
     
     @abstractmethod
-    def create(self, user_data):
+    def create(self, user_data) -> UserEntity:
         """
         Create a new user
         
         Returns:
-            Created user
+            Created domain User entity
         """
         pass
 
@@ -77,22 +84,22 @@ class ICategoryDbGateway(ABC):
     """Interface for category persistence operations"""
     
     @abstractmethod
-    def get_by_name(self, name: str):
+    def get_by_name(self, name: str) -> Optional[CategoryEntity]:
         """
         Get category by name
         
         Returns:
-            Category if found, None otherwise
+            Domain Category entity if found, None otherwise
         """
         pass
     
     @abstractmethod
-    def get_all(self):
+    def get_all(self) -> List[CategoryEntity]:
         """
         Get all categories
         
         Returns:
-            List of all categories
+            List of domain Category entities
         """
         pass
 
@@ -103,11 +110,15 @@ class ITransactionDbGateway(ABC):
     @abstractmethod
     def save_batch(
         self, 
-        transactions: List[DTOTransactionData],
+        transactions: List[TransactionEntity],
         document_id: uuid.UUID
     ) -> Tuple[int, int, List[str]]:
         """
-        Save multiple transactions
+        Save multiple transactions from domain entities
+        
+        Args:
+            transactions: List of domain Transaction entities
+            document_id: UUID of the document
         
         Returns:
             Tuple of (loaded_count, skipped_count, errors)
@@ -115,12 +126,12 @@ class ITransactionDbGateway(ABC):
         pass
     
     @abstractmethod
-    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[DTOTransactionData]:
+    def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionEntity]:
         """
         Get transaction by ID
         
         Returns:
-            TransactionData if found, None otherwise
+            Domain Transaction entity if found, None otherwise
         """
         pass
     
@@ -157,7 +168,7 @@ class ITransactionDbGateway(ABC):
         pass
     
     @abstractmethod
-    def get_by_unique_identifier(self, unique_identifier: str):
+    def get_by_unique_identifier(self, unique_identifier: str) -> Optional[TransactionEntity]:
         """
         Get transaction by unique_identifier
         
@@ -165,6 +176,6 @@ class ITransactionDbGateway(ABC):
             unique_identifier: Unique identifier string
         
         Returns:
-            Transaction if found, None otherwise
+            Domain Transaction entity if found, None otherwise
         """
         pass

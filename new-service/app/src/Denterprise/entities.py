@@ -1,7 +1,5 @@
 from datetime import date
 from typing import Optional, Dict, Any
-from sqlmodel import Field, SQLModel, Column, Text
-from sqlalchemy import JSON
 from enum import Enum
 
 
@@ -19,33 +17,32 @@ class TransactionType(str, Enum):
 # ==============================================
 
 
-class DocumentTypeBase(SQLModel):
-    name: str = Field(max_length=100, unique=True, index=True)
+class DocumentTypeEntity():
+    name: str
 
-class UserBase(SQLModel):
-    email: str = Field(unique=True, index=True, max_length=255)
-    name: str = Field(max_length=255)
-    is_active: bool = Field(default=True)
-    customer_type: CustomerType = Field(default=CustomerType.INDIVIDUAL)
+class UserEntity():
+    email: str
+    name: str
+    is_active: bool
+    customer_type: CustomerType
 
-class TransactionBase(SQLModel):
+class TransactionEntity():
     order: int
-    description: str = Field(max_length=255)
-    history: Optional[str] = Field(default=None)
+    description: str
+    history: Optional[str]
     amount: float
     transaction_type: TransactionType
-    transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
-    unique_identifier: Optional[str] = Field(default=None, max_length=500)
+    transaction_date: Optional[date]
+    unique_identifier: Optional[str]
 
 
-class CategoryBase(SQLModel):
-    name: str = Field(max_length=255, index=True)
-    description: Optional[str] = Field(default=None, sa_column=Column(Text))
+class CategoryEntity():
+    name: str
+    description: Optional[str]
 
 
-class DocumentBase(SQLModel):
-    data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
-    currency: str = Field(default="")
-    unique_identifier: Optional[str] = Field(default=None, max_length=500)
-    processed: bool = Field(default=False)
-
+class DocumentEntity():
+    data: Optional[Dict[str, Any]]  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
+    currency: str
+    unique_identifier: Optional[str]
+    processed: bool

@@ -1,5 +1,5 @@
-"""
-Gateway Interfaces - Enterprise Layer
+
+"""Gateway Interfaces - Enterprise Layer
 Defines contracts for data access without implementation details
 """
 from abc import ABC, abstractmethod
@@ -12,6 +12,6 @@ class PDFExtractorGateway(ABC):
     
     @abstractmethod
     def extract_transactions(self, pdf_file: BinaryIO, filename: str) -> DTOExtractionResult:
-        """Extract transactions from PDF file"""
+        """Extract transactions from PDF file and return DTO with extracted data"""
         pass
 

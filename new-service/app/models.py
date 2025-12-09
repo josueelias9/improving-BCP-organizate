@@ -2,13 +2,75 @@
 Database models based on UML diagram
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, Column, Text
+from sqlalchemy import JSON
+from enum import Enum
 
-from src.Denterprise.entities import CustomerType, DocumentBase, UserBase, TransactionBase, CategoryBase, DocumentTypeBase
+
+# Enums
+class CustomerType(str, Enum):
+    INDIVIDUAL = "individual"
+    BUSINESS = "business"
+
+
+class TransactionType(str, Enum):
+    INCOME = "income"
+    EXPENSE = "expense"
+
+
+
+# ============================================================================= entities
+
+class DocumentTypeBase(SQLModel):
+    name: str = Field(max_length=100, unique=True, index=True)
+
+
+
+class UserBase(SQLModel):
+    email: str = Field(unique=True, index=True, max_length=255)
+    name: str = Field(max_length=255)
+    is_active: bool = Field(default=True)
+    customer_type: CustomerType = Field(default=CustomerType.INDIVIDUAL)
+
+class CategoryBase(SQLModel):
+    name: str = Field(max_length=255, index=True)
+    description: Optional[str] = Field(default=None, sa_column=Column(Text))
+
+
+class DocumentBase(SQLModel):
+    data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
+    currency: str = Field(default="")
+    unique_identifier: Optional[str] = Field(default=None, max_length=500)
+    processed: bool = Field(default=False)
+
+class TransactionBase(SQLModel):
+    order: int
+    description: str = Field(max_length=255)
+    history: Optional[str] = Field(default=None)
+    amount: float
+    transaction_type: TransactionType
+    transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
+    unique_identifier: Optional[str] = Field(default=None, max_length=500)
+
 
 # ============================================================================= db
+
+
+class DocumentType(DocumentTypeBase, table=True):
+    __tablename__ = "document_types"
+    
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        index=True,
+        nullable=False
+    )
+    
+    # Relationships
+    documents: List["Document"] = Relationship(back_populates="document_type")
+
 
 class User(UserBase, table=True):
     __tablename__ = "users"
@@ -25,20 +87,6 @@ class User(UserBase, table=True):
 
 
 
-
-
-class DocumentType(DocumentTypeBase, table=True):
-    __tablename__ = "document_types"
-    
-    id: uuid.UUID = Field(
-        default_factory=uuid.uuid4,
-        primary_key=True,
-        index=True,
-        nullable=False
-    )
-    
-    # Relationships
-    documents: List["Document"] = Relationship(back_populates="document_type")
 
 class Category(CategoryBase, table=True):
     __tablename__ = "categories"
@@ -79,6 +127,8 @@ class Document(DocumentBase, table=True):
     transactions: List["Transaction"] = Relationship(back_populates="document")
 
 
+
+
 class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"
     
@@ -102,10 +152,20 @@ class Transaction(TransactionBase, table=True):
 
 # ============================================================================= DTO
 
+
+class UserCreate(UserBase):
+    pass
+
 class DocumentCreate(DocumentBase):
     user_id: uuid.UUID
     document_type_id: uuid.UUID
 
+
+class UserUpdate(SQLModel):
+    email: Optional[str] = None
+    name: Optional[str] = None
+    is_active: Optional[bool] = None
+    customer_type: Optional[CustomerType] = None
 
 
 class DocumentUpdate(SQLModel):
@@ -116,16 +176,6 @@ class DocumentUpdate(SQLModel):
 
 
 
-class UserCreate(UserBase):
-    pass
-
-
-
-class UserUpdate(SQLModel):
-    email: Optional[str] = None
-    name: Optional[str] = None
-    is_active: Optional[bool] = None
-    customer_type: Optional[CustomerType] = None
 
 
 

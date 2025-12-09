@@ -1,16 +1,17 @@
-"""
-PDF Extractor Gateway - Interface Adapter Layer
+
+"""PDF Extractor Gateway - Interface Adapter Layer
 Extracts transactions from BCP PDF bank statements
 Implements the PDFExtractorGateway interface
 """
 import fitz  # PyMuPDF
-from typing import BinaryIO
+from typing import BinaryIO, List, Optional, Tuple
+from datetime import date
 import logging
 import os
 from dotenv import load_dotenv
-from src.Capplication.DTO.entity_dto import DTOExtractionResult
 from src.Denterprise.bcp_parser import BCPStatementParser
 from src.Capplication.interfaces.pdf_extractor import PDFExtractorGateway
+from src.Capplication.DTO.entity_dto import DTOExtractionResult
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -23,7 +24,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
         self.parser = BCPStatementParser()
     
     def extract_transactions(self, pdf_file: BinaryIO, filename: str = "") -> DTOExtractionResult:
-        """Extract transactions from PDF file"""
+        """Extract transactions from PDF file and return DTO with extracted data"""
         try:
             password = os.getenv('PDF_PASSWORD')
             full_text = self._extract_text_from_pdf(pdf_file, password)
