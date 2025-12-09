@@ -18,31 +18,63 @@ class TransactionType(str, Enum):
 
 
 class DocumentTypeEntity():
-    name: str
+    def __init__(self,name):
+        self.name = name
 
 class UserEntity():
-    email: str
-    name: str
-    is_active: bool
-    customer_type: CustomerType
+    def __init__(self,
+                 
+
+email,
+name,
+is_active,
+customer_type,
+                 
+                 ):
+        self.email = email
+        self.name = name
+        self.is_active = is_active
+        self.customer_type = customer_type
 
 class TransactionEntity():
-    order: int
-    description: str
-    history: Optional[str]
-    amount: float
-    transaction_type: TransactionType
-    transaction_date: Optional[date]
-    unique_identifier: Optional[str]
+    def __init__(self,
+order,
+description,
+history,
+amount,
+transaction_type,
+transaction_date,
+unique_identifier,):
+
+        self.order = order
+        self.description = description
+        self.history = history
+        self.amount = amount
+        self.transaction_type = transaction_type
+        self.transaction_date = transaction_date
+        self.unique_identifier = unique_identifier
 
 
 class CategoryEntity():
-    name: str
-    description: Optional[str]
+    def __init__(self,name,
+                 description):
+        self.name = name
+        self.description = description
 
 
 class DocumentEntity():
-    data: Optional[Dict[str, Any]]  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
-    currency: str
-    unique_identifier: Optional[str]
-    processed: bool
+    def __init__(self,
+                 
+                 
+data,
+currency,
+unique_identifier,
+processed):
+                 
+                 
+                 
+        
+        self.data = data
+        self.currency = currency
+        self.unique_identifier = unique_identifier
+        self.processed = processed
