@@ -7,6 +7,7 @@ Used ONLY for transferring data between controllers and use cases (boundary laye
 These DTOs serve as request/response objects at the interface adapter layer.
 Internal domain logic uses entities from Denterprise layer.
 """
+import uuid
 
 from typing import List
 from dataclasses import dataclass
@@ -25,7 +26,7 @@ class DTOPdfProcessingResponse:
 
 
 @dataclass
-class DTOLoadTransactionsResponse:
+class DTOLoadTransactionsFromDocumentResponse:
     """Result DTO for loading transactions operation - returned from use case to controller"""
 
     success: bool
@@ -33,6 +34,7 @@ class DTOLoadTransactionsResponse:
     skipped_count: int
     errors: List[str]
     total_records: int
+    document_id: str
 
 
 
@@ -53,3 +55,9 @@ class GetAllDocumentsRequest:
 
     skip: int = 0
     limit: int = 100
+
+
+
+@dataclass
+class DTOLoadTransactionsFromDocumentRequest:
+    document_id: uuid.UUID

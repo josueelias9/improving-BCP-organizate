@@ -7,7 +7,7 @@ import logging
 import uuid
 
 from src.Denterprise.transaction_service import TransactionService
-from src.Capplication.DTO.document_dto import DTOLoadTransactionsResponse
+from src.Capplication.DTO.document_dto import DTOLoadTransactionsFromDocumentResponse
 from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,10 @@ class LoadTransactionsFromDocumentUseCase:
         self.document_gateway = document_gateway
         self.transaction_gateway = transaction_gateway
         self.service = TransactionService()
+    
+    from src.Capplication.DTO.document_dto import DTOLoadTransactionsFromDocumentRequest
 
-    def execute(self, document_id: uuid.UUID) -> DTOLoadTransactionsResponse:
+    def execute(self, request: DTOLoadTransactionsFromDocumentRequest) -> DTOLoadTransactionsFromDocumentResponse:
         """
         Execute the use case: load transactions from document
 
@@ -40,11 +42,12 @@ class LoadTransactionsFromDocumentUseCase:
             document_id: UUID of the document to process
 
         Returns:
-            DTOLoadTransactionsResponse (DTO for controller response)
+            DTOLoadTransactionsFromDocumentResponse (DTO for controller response)
 
         Raises:
             ValueError: If document not found or validation fails
         """
+        document_id = request.document_id
         # 1. Retrieve document entity (from gateway)
         document = self.document_gateway.get_by_id(document_id)
 
@@ -65,10 +68,11 @@ class LoadTransactionsFromDocumentUseCase:
         self.document_gateway.mark_as_processed(document_id)
 
         # 6. Return result DTO (for controller)
-        return DTOLoadTransactionsResponse(
+        return DTOLoadTransactionsFromDocumentResponse(
             success=True,
             loaded_count=loaded_count,
             skipped_count=skipped_count,
             errors=errors,
             total_records=len(document.data),
+            document_id=str(document_id),
         )
