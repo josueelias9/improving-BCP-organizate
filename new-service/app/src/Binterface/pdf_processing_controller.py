@@ -7,7 +7,7 @@ import logging
 from typing import BinaryIO
 
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
-from src.Capplication.DTO.document_dto import DTOProcessPDFResult
+from src.Capplication.DTO.document_dto import DTOProcessPDFResponse
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -41,7 +41,7 @@ class PDFProcessingController:
 
     def process_and_save_document(
         self, pdf_file: BinaryIO, user_email: str, document_type: str = "BCP_STATEMENT"
-    ) -> DTOProcessPDFResult:
+    ) -> DTOProcessPDFResponse:
         """
         Process PDF file and save document using application layer
 
@@ -54,7 +54,7 @@ class PDFProcessingController:
             document_type: Type of document (default: BCP_STATEMENT)
 
         Returns:
-            DTOProcessPDFResult (DTO for HTTP response)
+            DTOProcessPDFResponse (DTO for HTTP response)
 
         Raises:
             ValueError: If PDF processing fails

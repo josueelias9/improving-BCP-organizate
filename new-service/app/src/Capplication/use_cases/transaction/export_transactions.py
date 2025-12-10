@@ -10,8 +10,8 @@ from typing import List
 from datetime import datetime
 
 from src.Capplication.DTO.transaction_dto import (
-    DTOExportFilter,
-    DTOExportTransactionsResult,
+    DTOExportFilterRequest,
+    DTOExportTransactionsResponse,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway
 
@@ -30,7 +30,7 @@ class ExportTransactionsUseCase:
         """
         self.transaction_gateway = transaction_gateway
 
-    def execute(self, filters: DTOExportFilter) -> DTOExportTransactionsResult:
+    def execute(self, filters: DTOExportFilterRequest) -> DTOExportTransactionsResponse:
         """
         Execute the use case: export transactions to CSV
 
@@ -66,7 +66,7 @@ class ExportTransactionsUseCase:
                 f"Successfully exported {len(transactions)} transactions to CSV"
             )
 
-            return DTOExportTransactionsResult(
+            return DTOExportTransactionsResponse(
                 success=True,
                 csv_content=csv_content,
                 filename=filename,
@@ -75,7 +75,7 @@ class ExportTransactionsUseCase:
 
         except ValueError as e:
             logger.error(f"Export validation error: {str(e)}")
-            return DTOExportTransactionsResult(
+            return DTOExportTransactionsResponse(
                 success=False,
                 csv_content="",
                 filename="",
@@ -84,7 +84,7 @@ class ExportTransactionsUseCase:
             )
         except Exception as e:
             logger.error(f"Unexpected error during export: {str(e)}")
-            return DTOExportTransactionsResult(
+            return DTOExportTransactionsResponse(
                 success=False,
                 csv_content="",
                 filename="",
@@ -138,7 +138,7 @@ class ExportTransactionsUseCase:
 
         return output.getvalue()
 
-    def _generate_filename(self, filters: DTOExportFilter, count: int) -> str:
+    def _generate_filename(self, filters: DTOExportFilterRequest, count: int) -> str:
         """
         Generate descriptive filename for export
 

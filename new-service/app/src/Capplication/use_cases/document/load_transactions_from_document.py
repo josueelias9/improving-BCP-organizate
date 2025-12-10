@@ -7,7 +7,7 @@ import logging
 import uuid
 
 from src.Denterprise.transaction_service import TransactionService
-from src.Capplication.DTO.transaction_dto import DTOLoadTransactionsResult
+from src.Capplication.DTO.document_dto import DTOLoadTransactionsResponse
 from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class LoadTransactionsFromDocumentUseCase:
         self.transaction_gateway = transaction_gateway
         self.service = TransactionService()
 
-    def execute(self, document_id: uuid.UUID) -> DTOLoadTransactionsResult:
+    def execute(self, document_id: uuid.UUID) -> DTOLoadTransactionsResponse:
         """
         Execute the use case: load transactions from document
 
@@ -40,7 +40,7 @@ class LoadTransactionsFromDocumentUseCase:
             document_id: UUID of the document to process
 
         Returns:
-            DTOLoadTransactionsResult (DTO for controller response)
+            DTOLoadTransactionsResponse (DTO for controller response)
 
         Raises:
             ValueError: If document not found or validation fails
@@ -65,7 +65,7 @@ class LoadTransactionsFromDocumentUseCase:
         self.document_gateway.mark_as_processed(document_id)
 
         # 6. Return result DTO (for controller)
-        return DTOLoadTransactionsResult(
+        return DTOLoadTransactionsResponse(
             success=True,
             loaded_count=loaded_count,
             skipped_count=skipped_count,

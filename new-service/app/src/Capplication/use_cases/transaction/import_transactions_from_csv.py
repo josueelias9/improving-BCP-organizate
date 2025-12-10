@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 from typing import Optional, List
 
-from src.Capplication.DTO.transaction_dto import DTOImportTransactionsResult
+from src.Capplication.DTO.transaction_dto import DTOImportTransactionsResponse
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class ImportTransactionsFromCsvUseCase:
 
     def execute(
         self, csv_filename: Optional[str] = None
-    ) -> DTOImportTransactionsResult:
+    ) -> DTOImportTransactionsResponse:
         """
         Execute the use case: import and update transactions from CSV
 
@@ -49,7 +49,7 @@ class ImportTransactionsFromCsvUseCase:
             csv_path = self._find_csv_file(csv_filename)
 
             if not csv_path.exists():
-                return DTOImportTransactionsResult(
+                return DTOImportTransactionsResponse(
                     success=False,
                     updated_count=0,
                     skipped_count=0,
@@ -62,7 +62,7 @@ class ImportTransactionsFromCsvUseCase:
             rows = self._read_csv(csv_path)
 
             if not rows:
-                return DTOImportTransactionsResult(
+                return DTOImportTransactionsResponse(
                     success=False,
                     updated_count=0,
                     skipped_count=0,
@@ -99,7 +99,7 @@ class ImportTransactionsFromCsvUseCase:
 
             logger.info(message)
 
-            return DTOImportTransactionsResult(
+            return DTOImportTransactionsResponse(
                 success=success,
                 updated_count=updated_count,
                 skipped_count=skipped_count,
@@ -110,7 +110,7 @@ class ImportTransactionsFromCsvUseCase:
 
         except Exception as e:
             logger.error(f"Unexpected error during import: {str(e)}")
-            return DTOImportTransactionsResult(
+            return DTOImportTransactionsResponse(
                 success=False,
                 updated_count=0,
                 skipped_count=0,

@@ -6,12 +6,12 @@ These DTOs serve as request/response objects at the interface adapter layer.
 Internal domain logic uses entities from Denterprise layer.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List
 from dataclasses import dataclass
 
 
 @dataclass
-class DTOProcessPDFResult:
+class DTOProcessPDFResponse:
     """Result DTO for PDF processing - returned from use case to controller"""
 
     success: bool
@@ -20,3 +20,16 @@ class DTOProcessPDFResult:
     already_exists: bool
     transactions_count: int
     message: str
+
+
+
+@dataclass
+class DTOLoadTransactionsResponse:
+    """Result DTO for loading transactions operation - returned from use case to controller"""
+
+    success: bool
+    loaded_count: int
+    skipped_count: int
+    errors: List[str]
+    total_records: int
+

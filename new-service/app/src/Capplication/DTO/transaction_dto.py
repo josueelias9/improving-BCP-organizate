@@ -7,13 +7,12 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 import uuid
-from datetime import date
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 
 
 @dataclass
-class DTOBatchUpdateItem:
+class DTOBatchUpdateRequest:
     """Single transaction update item - DTO for batch update request"""
 
     transaction_id: uuid.UUID
@@ -22,7 +21,7 @@ class DTOBatchUpdateItem:
 
 
 @dataclass
-class DTOBatchUpdateResult:
+class DTOBatchUpdateResponse:
     """Result DTO for batch update operation - returned from use case to controller"""
 
     total: int
@@ -32,7 +31,7 @@ class DTOBatchUpdateResult:
 
 
 @dataclass
-class DTOExportFilter:
+class DTOExportFilterRequest:
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
     month: Optional[str] = None  # Format: YYYY-MM
@@ -40,7 +39,7 @@ class DTOExportFilter:
 
 
 @dataclass
-class DTOExportTransactionsResult:
+class DTOExportTransactionsResponse:
     """Result DTO for export transactions operation - returned from use case to controller"""
 
     success: bool
@@ -51,7 +50,7 @@ class DTOExportTransactionsResult:
 
 
 @dataclass
-class DTOImportTransactionsResult:
+class DTOImportTransactionsResponse:
     """Result DTO for import transactions operation - returned from use case to controller"""
 
     success: bool
@@ -61,13 +60,3 @@ class DTOImportTransactionsResult:
     total_rows: int
     message: str
 
-
-@dataclass
-class DTOLoadTransactionsResult:
-    """Result DTO for loading transactions operation - returned from use case to controller"""
-
-    success: bool
-    loaded_count: int
-    skipped_count: int
-    errors: List[str]
-    total_records: int

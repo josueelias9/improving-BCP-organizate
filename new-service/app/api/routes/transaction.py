@@ -13,7 +13,7 @@ import logging
 
 from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
-from src.Capplication.DTO.transaction_dto import DTOBatchUpdateItem, DTOExportFilter
+from src.Capplication.DTO.transaction_dto import DTOBatchUpdateRequest, DTOExportFilterRequest
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
 )
@@ -156,7 +156,7 @@ def batch_update_transactions(
 
         # Convert Pydantic models to domain objects
         updates = [
-            DTOBatchUpdateItem(
+            DTOBatchUpdateRequest(
                 transaction_id=item.transaction_id,
                 history=item.history,
                 category_name=item.category_name,
@@ -211,7 +211,7 @@ def export_transactions(
         use_case = ExportTransactionsUseCase(transaction_gateway)
 
         # Create filter object
-        filters = DTOExportFilter(month=month, document_id=document_id)
+        filters = DTOExportFilterRequest(month=month, document_id=document_id)
 
         # Execute use case
         result = use_case.execute(filters)
