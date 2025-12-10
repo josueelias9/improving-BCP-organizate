@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DTOProcessPDFResponse:
+class DTOPdfProcessingResponse:
     """Result DTO for PDF processing - returned from use case to controller"""
 
     success: bool

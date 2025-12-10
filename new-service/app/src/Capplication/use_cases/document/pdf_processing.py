@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
 
 from src.Denterprise.entities import DocumentEntity, ExtractionResultEntity
-from src.Capplication.DTO.document_dto import DTOProcessPDFResponse
+from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -37,7 +37,7 @@ class PDFProcessingUseCase:
         user_email: str,
         document_type: str = "BCP_STATEMENT",
         pdf_filename: str = "",
-    ) -> DTOProcessPDFResponse:
+    ) -> DTOPdfProcessingResponse:
         """
         Process PDF file: get/create user, extract transactions, and create document
 
@@ -48,7 +48,7 @@ class PDFProcessingUseCase:
             pdf_filename: Optional filename for logging purposes only
 
         Returns:
-            DTOProcessPDFResponse (DTO for controller response)
+            DTOPdfProcessingResponse (DTO for controller response)
 
         Raises:
             ValueError: If validation fails
@@ -78,7 +78,7 @@ class PDFProcessingUseCase:
 
             if existing_document:
                 logger.info(f"Document already exists with unique_id: {unique_id}")
-                return DTOProcessPDFResponse(
+                return DTOPdfProcessingResponse(
                     success=True,
                     document_id=str(existing_document.id),
                     unique_identifier=unique_id,
@@ -135,7 +135,7 @@ class PDFProcessingUseCase:
             logger.info(f"Created new document with ID: {created_document.id}")
 
             # Return DTO for controller
-            return DTOProcessPDFResponse(
+            return DTOPdfProcessingResponse(
                 success=True,
                 document_id=str(created_document.id),
                 unique_identifier=unique_id,
