@@ -60,6 +60,22 @@ class IDocumentDbGateway(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_all_as_entities(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[DocumentEntity]:
+        """
+        Get all documents with pagination, returning domain entities
+
+        Args:
+            skip: Number of records to skip
+            limit: Maximum number of records to return
+
+        Returns:
+            List of domain Document entities
+        """
+        pass
+
 
 class IUserDbGateway(ABC):
     """Interface for user persistence operations"""

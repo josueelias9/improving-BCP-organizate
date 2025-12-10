@@ -1,3 +1,5 @@
+from src.Capplication.DTO.other_dto import DTODocumentSummary
+
 """
 Document DTOs - Data Transfer Objects
 Used ONLY for transferring data between controllers and use cases (boundary layer)
@@ -22,7 +24,6 @@ class DTOProcessPDFResponse:
     message: str
 
 
-
 @dataclass
 class DTOLoadTransactionsResponse:
     """Result DTO for loading transactions operation - returned from use case to controller"""
@@ -33,3 +34,22 @@ class DTOLoadTransactionsResponse:
     errors: List[str]
     total_records: int
 
+
+
+
+@dataclass
+class DTOGetAllDocumentsResponse:
+    """Response DTO for get all documents operation - returned from use case to controller"""
+
+    documents: List[DTODocumentSummary]
+    total_returned: int
+    skip: int
+    limit: int
+
+
+@dataclass
+class GetAllDocumentsRequest:
+    """Request DTO for getting all documents - input from controller"""
+
+    skip: int = 0
+    limit: int = 100

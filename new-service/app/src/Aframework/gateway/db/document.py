@@ -71,40 +71,16 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         # Map back to domain entity with ID
         return self._map_to_entity(db_document)
-
-    def get_all(self, skip: int = 0, limit: int = 100) -> list[dict]:
-        """Get all documents with pagination"""
+    
+    def get_all_as_entities(
+        self, skip: int = 0, limit: int = 100
+    ) -> list[DocumentEntity]:
+        """Get all documents as domain entities with pagination"""
         statement = select(DocumentModel).offset(skip).limit(limit)
         documents = self.session.exec(statement).all()
 
-        # Convert to dict with all properties
-        result = []
-        for doc in documents:
-            # Extract important data from nested JSON structure
-            data_summary = {}
-
-            if doc.data and isinstance(doc.data, dict):
-                # Extract metadata but not the full transactions list
-                data_summary = {
-                    "account_number": doc.data.get("account_number"),
-                    "previous_balance": doc.data.get("previous_balance"),
-                    "initial_day": doc.data.get("initial_day"),
-                    "final_day": doc.data.get("final_day"),
-                    "transactions_count": len(doc.data.get("transactions", [])),
-                }
-
-            doc_dict = {
-                "id": str(doc.id),
-                "data": data_summary,
-                "currency": doc.currency,
-                "unique_identifier": doc.unique_identifier,
-                "processed": doc.processed,
-                "user_id": str(doc.user_id),
-                "document_type": doc.document_type.name if doc.document_type else None,
-            }
-            result.append(doc_dict)
-
-        return result
+        # Map all documents to domain entities
+        return [self._map_to_entity(doc) for doc in documents]
 
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""
