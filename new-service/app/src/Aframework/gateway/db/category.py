@@ -37,10 +37,12 @@ class CategoryDbGateway(ICategoryDbGateway):
             return None
 
         # Map to domain entity
-        category = CategoryEntity()
-        category.name = db_category.name
-        category.description = db_category.description
-        return category
+        return CategoryEntity(
+            id=db_category.id,
+            name=db_category.name,
+            description=db_category.description,
+            parent_id=db_category.parent_id,
+        )
 
     def get_all(self) -> List[CategoryEntity]:
         """
@@ -53,11 +55,12 @@ class CategoryDbGateway(ICategoryDbGateway):
         db_categories = self.session.exec(statement).all()
 
         # Map to domain entities
-        categories = []
-        for db_cat in db_categories:
-            category = CategoryEntity()
-            category.name = db_cat.name
-            category.description = db_cat.description
-            categories.append(category)
-
-        return categories
+        return [
+            CategoryEntity(
+                id=db_cat.id,
+                name=db_cat.name,
+                description=db_cat.description,
+                parent_id=db_cat.parent_id,
+            )
+            for db_cat in db_categories
+        ]

@@ -5,9 +5,8 @@ Orchestrates the flow of processing a PDF and creating a document
 
 import logging
 from typing import Dict, Any, List, Tuple, BinaryIO
-from models import Document
 
-from src.Capplication.DTO.entity_dto import DTOExtractionResult
+from src.Denterprise.entities import DocumentEntity, ExtractionResultEntity
 from src.Capplication.DTO.document_dto import DTOProcessPDFResult
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
@@ -49,7 +48,7 @@ class PDFProcessingUseCase:
             pdf_filename: Optional filename for logging purposes only
 
         Returns:
-            ProcessPDFResult with operation details
+            DTOProcessPDFResult (DTO for controller response)
 
         Raises:
             ValueError: If validation fails
@@ -59,10 +58,10 @@ class PDFProcessingUseCase:
             # Validate document type (business rule)
             self._validate_document_type(document_type)
 
-            # Get or create user
+            # Get or create user entity
             user = self._get_or_create_user(user_email)
 
-            # Extract transactions from PDF
+            # Extract transactions from PDF (returns entity)
             extraction_result = self.pdf_extractor_gateway.extract_transactions(
                 pdf_file, pdf_filename
             )
@@ -121,7 +120,8 @@ class PDFProcessingUseCase:
                 "transactions": transactions_list,
             }
 
-            document = Document(
+            # Create document entity
+            document = DocumentEntity(
                 data=document_data,
                 currency=extraction_result.currency or "PEN",
                 unique_identifier=unique_id,
@@ -129,10 +129,12 @@ class PDFProcessingUseCase:
                 document_type_id=doc_type.id,
             )
 
+            # Create document via gateway
             created_document = self.document_gateway.create(document)
 
             logger.info(f"Created new document with ID: {created_document.id}")
 
+            # Return DTO for controller
             return DTOProcessPDFResult(
                 success=True,
                 document_id=str(created_document.id),
@@ -172,13 +174,13 @@ class PDFProcessingUseCase:
 
     def _get_or_create_user(self, user_email: str):
         """
-        Get existing user or create new one
+        Get existing user entity or create new one
 
         Args:
             user_email: Email of the user
 
         Returns:
-            User object
+            UserEntity
         """
         user = self.user_gateway.get_by_email(user_email)
         if not user:
@@ -196,13 +198,13 @@ class PDFProcessingUseCase:
 
     @staticmethod
     def _process_extraction_result(
-        extraction_result: DTOExtractionResult,
+        extraction_result: ExtractionResultEntity,
     ) -> Tuple[str, List[Dict[str, Any]]]:
         """
-        Process extraction result and generate unique identifier and transactions list
+        Process extraction result entity and generate unique identifier and transactions list
 
         Args:
-            extraction_result: The result from PDF extraction
+            extraction_result: The entity from PDF extraction
 
         Returns:
             Tuple of (unique_id, transactions_list)
@@ -228,7 +230,7 @@ class PDFProcessingUseCase:
         if not extraction_result.currency:
             raise ValueError("Missing currency in extraction result")
 
-        # Convert transactions to dict list with date serialization
+        # Convert transaction entities to dict list with date serialization
         transactions_list = []
         for t in extraction_result.transactions:
             # Get transaction type and amount based on cargos/abonos

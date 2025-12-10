@@ -29,13 +29,13 @@ class UserDbGateway(IUserDbGateway):
             return None
 
         # Map to domain entity
-        user = UserEntity()
-        user.email = db_user.email
-        user.name = db_user.name
-        user.is_active = db_user.is_active
-        user.customer_type = db_user.customer_type
-
-        return user
+        return UserEntity(
+            id=db_user.id,
+            email=db_user.email,
+            name=db_user.name,
+            is_active=db_user.is_active,
+            customer_type=db_user.customer_type,
+        )
 
     def create(self, user_create: UserCreate) -> UserEntity:
         """Create a new user and map to domain entity"""
@@ -45,10 +45,10 @@ class UserDbGateway(IUserDbGateway):
         self.session.refresh(db_user)
 
         # Map to domain entity
-        user = UserEntity()
-        user.email = db_user.email
-        user.name = db_user.name
-        user.is_active = db_user.is_active
-        user.customer_type = db_user.customer_type
-
-        return user
+        return UserEntity(
+            id=db_user.id,
+            email=db_user.email,
+            name=db_user.name,
+            is_active=db_user.is_active,
+            customer_type=db_user.customer_type,
+        )

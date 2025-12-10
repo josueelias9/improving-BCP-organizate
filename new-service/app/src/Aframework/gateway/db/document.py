@@ -28,13 +28,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             raise ValueError("Document not found")
 
         # Map to domain entity
-        document = DocumentEntity()
-        document.data = db_document.data
-        document.currency = db_document.currency
-        document.unique_identifier = db_document.unique_identifier
-        document.processed = db_document.processed
-
-        return document
+        return self._map_to_entity(db_document)
 
     def mark_as_processed(self, document_id: uuid.UUID) -> None:
         """Mark document as processed"""
@@ -57,18 +51,9 @@ class DocumentDbGateway(IDocumentDbGateway):
         if not db_document:
             return None
 
-        # Map to domain entity
-        document = DocumentEntity()
-        document.data = db_document.data
-        document.currency = db_document.currency
-        document.unique_identifier = db_document.unique_identifier
-        document.processed = db_document.processed
+        return self._map_to_entity(db_document)
 
-        return document
-
-    def create(
-        self, document: DocumentEntity, user_id: uuid.UUID, document_type_id: uuid.UUID
-    ) -> DocumentEntity:
+    def create(self, document: DocumentEntity) -> DocumentEntity:
         """Create a new document from domain entity"""
         # Map domain entity to database model
         db_document = DocumentModel(
@@ -76,17 +61,16 @@ class DocumentDbGateway(IDocumentDbGateway):
             currency=document.currency,
             unique_identifier=document.unique_identifier,
             processed=document.processed,
-            user_id=user_id,
-            document_type_id=document_type_id,
+            user_id=document.user_id,
+            document_type_id=document.document_type_id,
         )
 
         self.session.add(db_document)
         self.session.commit()
         self.session.refresh(db_document)
 
-        # Map back to domain entity
-        document.unique_identifier = db_document.unique_identifier
-        return document
+        # Map back to domain entity with ID
+        return self._map_to_entity(db_document)
 
     def get_all(self, skip: int = 0, limit: int = 100) -> list[dict]:
         """Get all documents with pagination"""
@@ -121,3 +105,20 @@ class DocumentDbGateway(IDocumentDbGateway):
             result.append(doc_dict)
 
         return result
+
+    def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
+        """Map database model to domain entity"""
+        # Extract transactions from nested JSON structure
+        transactions_data = []
+        if db_document.data and isinstance(db_document.data, dict):
+            transactions_data = db_document.data.get("transactions", [])
+
+        return DocumentEntity(
+            id=db_document.id,
+            data=transactions_data,
+            currency=db_document.currency,
+            unique_identifier=db_document.unique_identifier,
+            processed=db_document.processed,
+            user_id=db_document.user_id,
+            document_type_id=db_document.document_type_id,
+        )

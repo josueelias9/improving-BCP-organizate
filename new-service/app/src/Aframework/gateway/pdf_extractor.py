@@ -11,7 +11,7 @@ import os
 from dotenv import load_dotenv
 from src.Denterprise.bcp_parser import BCPStatementParser
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
-from src.Capplication.DTO.entity_dto import DTOExtractionResult
+from src.Denterprise.entities import ExtractionResultEntity
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -25,8 +25,8 @@ class PDFExtractorGateway(PDFExtractorGateway):
 
     def extract_transactions(
         self, pdf_file: BinaryIO, filename: str = ""
-    ) -> DTOExtractionResult:
-        """Extract transactions from PDF file and return DTO with extracted data"""
+    ) -> ExtractionResultEntity:
+        """Extract transactions from PDF file and return entity with extracted data"""
         try:
             password = os.getenv("PDF_PASSWORD")
             full_text = self._extract_text_from_pdf(pdf_file, password)
@@ -37,7 +37,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
             initial_day, final_day = self.parser.extract_period(full_text)
             transactions = self.parser.parse_transactions(full_text)
 
-            return DTOExtractionResult(
+            return ExtractionResultEntity(
                 filename=filename or "uploaded_file.pdf",
                 transactions=transactions,
                 total_transactions=len(transactions),
@@ -52,7 +52,7 @@ class PDFExtractorGateway(PDFExtractorGateway):
 
         except Exception as e:
             logger.error(f"Error extracting transactions from PDF: {str(e)}")
-            return DTOExtractionResult(
+            return ExtractionResultEntity(
                 filename=filename or "uploaded_file.pdf",
                 transactions=[],
                 total_transactions=0,

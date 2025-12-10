@@ -105,16 +105,17 @@ class TransactionDbGateway(ITransactionDbGateway):
             return None
 
         # Map to domain entity
-        transaction = TransactionEntity()
-        transaction.order = db_transaction.order
-        transaction.description = db_transaction.description
-        transaction.history = db_transaction.history
-        transaction.amount = db_transaction.amount
-        transaction.transaction_type = db_transaction.transaction_type
-        transaction.transaction_date = db_transaction.transaction_date
-        transaction.unique_identifier = db_transaction.unique_identifier
-
-        return transaction
+        return TransactionEntity(
+            id=db_transaction.id,
+            order=db_transaction.order,
+            description=db_transaction.description,
+            history=db_transaction.history,
+            amount=db_transaction.amount,
+            transaction_type=db_transaction.transaction_type,
+            transaction_date=db_transaction.transaction_date,
+            unique_identifier=db_transaction.unique_identifier,
+            category_id=db_transaction.category_id,
+        )
 
     def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
         """Update transaction by ID - only history and category_id fields can be updated"""
@@ -199,13 +200,14 @@ class TransactionDbGateway(ITransactionDbGateway):
             return None
 
         # Map to domain entity
-        transaction = TransactionEntity()
-        transaction.order = db_transaction.order
-        transaction.description = db_transaction.description
-        transaction.history = db_transaction.history
-        transaction.amount = db_transaction.amount
-        transaction.transaction_type = db_transaction.transaction_type
-        transaction.transaction_date = db_transaction.transaction_date
-        transaction.unique_identifier = db_transaction.unique_identifier
-
-        return transaction
+        return TransactionEntity(
+            id=db_transaction.id,
+            order=db_transaction.order,
+            description=db_transaction.description,
+            history=db_transaction.history,
+            amount=db_transaction.amount,
+            transaction_type=db_transaction.transaction_type,
+            transaction_date=db_transaction.transaction_date,
+            unique_identifier=db_transaction.unique_identifier,
+            category_id=db_transaction.category_id,
+        )

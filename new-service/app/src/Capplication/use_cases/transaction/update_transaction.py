@@ -8,7 +8,7 @@ import logging
 from typing import Dict, Any
 
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
-from src.Capplication.DTO.transaction_dto import DTOTransactionData
+from src.Denterprise.entities import TransactionEntity
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +32,16 @@ class UpdateTransactionUseCase:
 
         Args:
             transaction_id: UUID of the transaction to update
-            update_data: Dictionary containing fields to update
+            update_data: Dictionary containing fields to update (from DTO)
 
         Returns:
-            Dictionary with update result
+            Dictionary with update result (for DTO response)
 
         Raises:
             ValueError: If transaction not found or validation fails
         """
         try:
-            # Get existing transaction
+            # Get existing transaction entity
             existing_transaction = self.transaction_gateway.get_by_id(transaction_id)
 
             if not existing_transaction:
@@ -73,7 +73,7 @@ class UpdateTransactionUseCase:
                         f"Category '{update_data['category_name']}' not found, skipping category update"
                     )
 
-            # Update transaction
+            # Update transaction via gateway
             success = self.transaction_gateway.update(transaction_id, update_dict)
 
             if not success:
@@ -96,19 +96,20 @@ class UpdateTransactionUseCase:
             raise ValueError(f"Internal error updating transaction: {str(e)}")
 
     def _prepare_updated_transaction(
-        self, existing: DTOTransactionData, updates: Dict[str, Any]
-    ) -> DTOTransactionData:
+        self, existing: TransactionEntity, updates: Dict[str, Any]
+    ) -> TransactionEntity:
         """
-        Prepare updated transaction data - only history can be updated
+        Prepare updated transaction entity - only history can be updated
 
         Args:
-            existing: Current transaction data
+            existing: Current transaction entity
             updates: Fields to update (only 'history' is allowed)
 
         Returns:
-            DTOTransactionData with updated history value
+            TransactionEntity with updated history value
         """
-        return DTOTransactionData(
+        return TransactionEntity(
+            id=existing.id,
             order=existing.order,
             description=existing.description,
             history=updates.get(
@@ -118,14 +119,15 @@ class UpdateTransactionUseCase:
             transaction_type=existing.transaction_type,
             transaction_date=existing.transaction_date,
             unique_identifier=existing.unique_identifier,
+            category_id=existing.category_id,
         )
 
-    def _validate_transaction_data(self, transaction: DTOTransactionData) -> None:
+    def _validate_transaction_data(self, transaction: TransactionEntity) -> None:
         """
         Validate transaction data according to business rules
 
         Args:
-            transaction: Transaction data to validate
+            transaction: Transaction entity to validate
 
         Raises:
             ValueError: If validation fails

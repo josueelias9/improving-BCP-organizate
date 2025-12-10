@@ -48,19 +48,15 @@ class IDocumentDbGateway(ABC):
         pass
 
     @abstractmethod
-    def create(
-        self, document: DocumentEntity, user_id: uuid.UUID, document_type_id: uuid.UUID
-    ) -> DocumentEntity:
+    def create(self, document: DocumentEntity) -> DocumentEntity:
         """
         Create a new document from domain entity
 
         Args:
             document: Domain Document entity
-            user_id: UUID of the user
-            document_type_id: UUID of the document type
 
         Returns:
-            Created domain Document entity
+            Created domain Document entity with ID
         """
         pass
 

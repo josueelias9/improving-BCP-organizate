@@ -1,6 +1,9 @@
 """
 Transaction DTOs - Data Transfer Objects
-Used for transferring transaction data between layers
+Used ONLY for transferring data between controllers and use cases (boundary layer)
+
+These DTOs serve as request/response objects at the interface adapter layer.
+Internal domain logic uses entities from Denterprise layer.
 """
 
 import uuid
@@ -10,32 +13,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DTOTransactionData:
-    """Data structure for transaction information"""
-
-    order: int
-    description: str
-    history: Optional[str]
-    amount: float
-    transaction_type: str  # 'income' or 'expense'
-    transaction_date: Optional[date]  # fecha_consumo
-    unique_identifier: Optional[str] = None
-
-
-@dataclass
-class DTOLoadTransactionsResult:
-    """Result of loading transactions operation"""
-
-    success: bool
-    loaded_count: int
-    skipped_count: int
-    errors: List[str]
-    total_records: int
-
-
-@dataclass
 class DTOBatchUpdateItem:
-    """Single transaction update item"""
+    """Single transaction update item - DTO for batch update request"""
 
     transaction_id: uuid.UUID
     history: str
@@ -44,7 +23,7 @@ class DTOBatchUpdateItem:
 
 @dataclass
 class DTOBatchUpdateResult:
-    """Result of batch update operation"""
+    """Result DTO for batch update operation - returned from use case to controller"""
 
     total: int
     updated: int
@@ -54,7 +33,7 @@ class DTOBatchUpdateResult:
 
 @dataclass
 class DTOExportFilter:
-    """Filter criteria for transaction export"""
+    """Filter criteria DTO for transaction export - request from controller to use case"""
 
     month: Optional[str] = None  # Format: YYYY-MM
     document_id: Optional[uuid.UUID] = None
@@ -62,7 +41,7 @@ class DTOExportFilter:
 
 @dataclass
 class DTOExportTransactionsResult:
-    """Result of export transactions operation"""
+    """Result DTO for export transactions operation - returned from use case to controller"""
 
     success: bool
     csv_content: str
@@ -73,7 +52,7 @@ class DTOExportTransactionsResult:
 
 @dataclass
 class DTOImportTransactionsResult:
-    """Result of import transactions operation"""
+    """Result DTO for import transactions operation - returned from use case to controller"""
 
     success: bool
     updated_count: int
@@ -81,3 +60,14 @@ class DTOImportTransactionsResult:
     errors: List[str]
     total_rows: int
     message: str
+
+
+@dataclass
+class DTOLoadTransactionsResult:
+    """Result DTO for loading transactions operation - returned from use case to controller"""
+
+    success: bool
+    loaded_count: int
+    skipped_count: int
+    errors: List[str]
+    total_records: int

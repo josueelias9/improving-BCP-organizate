@@ -7,8 +7,7 @@ import logging
 from datetime import date
 from typing import List
 
-from src.Capplication.DTO.document_dto import DTODocumentData
-from src.Capplication.DTO.transaction_dto import DTOTransactionData
+from src.Denterprise.entities import DocumentEntity, TransactionEntity
 
 logger = logging.getLogger(__name__)
 
@@ -17,40 +16,40 @@ class TransactionService:
     """Service containing business logic for transaction operations"""
 
     @staticmethod
-    def validate_document_for_processing(document_data: DTODocumentData) -> None:
+    def validate_document_for_processing(document: DocumentEntity) -> None:
         """
         Validate that a document can be processed
 
         Args:
-            document_data: Document information to validate
+            document: Document entity to validate
 
         Raises:
             ValueError: If document is invalid or already processed
         """
-        if document_data.processed:
+        if document.processed:
             raise ValueError(
                 "Document has already been processed. Transactions already loaded."
             )
 
-        if not document_data.data or len(document_data.data) == 0:
+        if not document.data or len(document.data) == 0:
             raise ValueError("Document has no transaction data to load")
 
     @staticmethod
     def transform_document_data_to_transactions(
-        document_data: DTODocumentData,
-    ) -> List[DTOTransactionData]:
+        document: DocumentEntity,
+    ) -> List[TransactionEntity]:
         """
         Transform document data into transaction entities
 
         Args:
-            document_data: Document containing transaction data
+            document: Document entity containing transaction data
 
         Returns:
-            List of TransactionData objects
+            List of TransactionEntity objects
         """
         transactions = []
 
-        for idx, transaction_dict in enumerate(document_data.data):
+        for idx, transaction_dict in enumerate(document.data):
             try:
                 # Parse date strings from JSON back to date objects
                 fecha_valor = transaction_dict.get("fecha_valor")
@@ -68,7 +67,7 @@ class TransactionService:
                     transaction_type = "expense"
                     amount = cargos
 
-                transaction = DTOTransactionData(
+                transaction = TransactionEntity(
                     order=idx + 1,
                     description=transaction_dict.get("description", ""),
                     history=transaction_dict.get("history"),

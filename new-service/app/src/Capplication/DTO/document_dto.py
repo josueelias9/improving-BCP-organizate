@@ -1,6 +1,9 @@
 """
 Document DTOs - Data Transfer Objects
-Used for transferring document data between layers
+Used ONLY for transferring data between controllers and use cases (boundary layer)
+
+These DTOs serve as request/response objects at the interface adapter layer.
+Internal domain logic uses entities from Denterprise layer.
 """
 
 from typing import List, Dict, Any, Optional
@@ -8,18 +11,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DTODocumentData:
-    """Data structure for document information"""
-
-    id: str
-    data: List[Dict[str, Any]]
-    currency: str
-    processed: bool
-
-
-@dataclass
 class DTOProcessPDFResult:
-    """Result of processing a PDF"""
+    """Result DTO for PDF processing - returned from use case to controller"""
 
     success: bool
     document_id: str

@@ -27,9 +27,7 @@ class DocumentTypeDbGateway:
             return None
 
         # Map to domain entity
-        doc_type = DocumentTypeEntity()
-        doc_type.name = db_doc_type.name
-        return doc_type
+        return DocumentTypeEntity(id=db_doc_type.id, name=db_doc_type.name)
 
     def get_all(self) -> list[DocumentTypeEntity]:
         """Get all document types as domain entities"""
@@ -37,10 +35,6 @@ class DocumentTypeDbGateway:
         db_doc_types = self.session.exec(statement).all()
 
         # Map to domain entities
-        doc_types = []
-        for db_dt in db_doc_types:
-            doc_type = DocumentTypeEntity()
-            doc_type.name = db_dt.name
-            doc_types.append(doc_type)
-
-        return doc_types
+        return [
+            DocumentTypeEntity(id=db_dt.id, name=db_dt.name) for db_dt in db_doc_types
+        ]

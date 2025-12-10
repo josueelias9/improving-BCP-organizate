@@ -45,13 +45,16 @@ class PDFProcessingController:
         """
         Process PDF file and save document using application layer
 
+        This controller method receives infrastructure inputs (BinaryIO)
+        and returns a DTO for the HTTP response layer.
+
         Args:
             pdf_file: Binary PDF file content (file stream)
             user_email: Email of the user
             document_type: Type of document (default: BCP_STATEMENT)
 
         Returns:
-            DTOProcessPDFResult with operation details
+            DTOProcessPDFResult (DTO for HTTP response)
 
         Raises:
             ValueError: If PDF processing fails
@@ -64,6 +67,7 @@ class PDFProcessingController:
             self.pdf_extractor_gateway,
             self.document_type_gateway,
         )
+        # Use case returns DTO for controller response
         result = use_case.execute(
             pdf_file=pdf_file,
             pdf_filename="",  # No longer needed by use case
