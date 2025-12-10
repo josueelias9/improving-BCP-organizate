@@ -1,6 +1,12 @@
 """
-BCP Bank Statement Parser - Domain Layer
-Contains business logic for parsing BCP PDF statements
+BCP Statement Parser - Framework/Adapter Layer
+Parses BCP PDF format and creates domain entities
+
+This is an INPUT ADAPTER that:
+- Depends on external format (BCP PDF structure)
+- Contains parsing logic specific to BCP
+- Creates clean domain entities (BCPTransactionEntity)
+- Belongs in the Interface Adapters layer, NOT the domain layer
 """
 
 import re
@@ -13,9 +19,14 @@ logger = logging.getLogger(__name__)
 
 
 class BCPStatementParser:
-    """Parser for BCP bank statement business logic"""
+    """
+    Parser for BCP bank statements - Interface Adapter
 
-    # Mapeo de meses en español
+    This class adapts the external BCP PDF format into domain entities.
+    It knows about the BCP-specific format but the domain doesn't know about it.
+    """
+
+    # BCP-specific month mapping (Spanish to numeric)
     MONTHS_MAP = {
         "ENE": "01",
         "FEB": "02",
@@ -35,9 +46,12 @@ class BCPStatementParser:
     @staticmethod
     def parse_transactions(text: str) -> List[BCPTransactionEntity]:
         """
-        Extrae y parsea las transacciones del texto del PDF BCP usando posiciones fijas
+        Parse transactions from BCP PDF text using fixed positions
 
-        Formato BCP (posicional):
+        This method knows about BCP's specific format and creates domain entities.
+        The domain entities don't know they came from BCP format.
+
+        BCP Format (positional):
 
                   111111111122222222223333333333444444444455555555556666666666777
         0123456789012345678901234567890123456789012345678901234567890123456789012
@@ -45,58 +59,58 @@ class BCPStatementParser:
           a     b            c            d             e                 f
 
 
-        a (0-5):   Fecha procesamiento (5 chars)
-        b (6-11):  Fecha valor (5 chars)
-        c (12-30): Descripción (18 chars)
-        d (30-31): Transacción interna (1 char)
-        e (31-43): Egreso/Cargo (12 chars)
-        f (43-55): Ingreso/Abono (12 chars)
+        a (0-5):   Processing date (5 chars)
+        b (6-11):  Value date (5 chars)
+        c (12-30): Description (18 chars)
+        d (30-31): Internal transaction (1 char)
+        e (31-43): Debit/Charge (12 chars)
+        f (43-55): Credit/Deposit (12 chars)
         """
-        logger.info("Parseando transacciones del texto extraído...")
-        logger.info(f"Texto extraído (primeros 1000 caracteres): {text[:1000]}")
+        logger.info("Parsing transactions from extracted text...")
+        logger.info(f"Extracted text (first 1000 chars): {text[:1000]}")
 
         transactions = []
         lines = text.split("\n")
 
-        # Patrón para detectar líneas que empiezan con fecha (DDMMM)
+        # Pattern to detect lines starting with date (DDMMM)
         date_pattern = r"^\d{2}[A-Z]{3}\s"
 
         for line_num, line in enumerate(lines):
-            # NO hacer strip() para preservar las posiciones
+            # DON'T strip() to preserve positions
             if not line or len(line) < 12:
                 continue
 
-            # Verificar si la línea empieza con un patrón de fecha
+            # Check if line starts with date pattern
             if not re.match(date_pattern, line):
                 continue
 
-            logger.debug(f"Línea de transacción encontrada {line_num}: [{line}]")
+            logger.debug(f"Transaction line found {line_num}: [{line}]")
 
             try:
-                # Extraer por posiciones fijas
-                fecha_proceso = line[0:5].strip()  # Posición 0-5
-                fecha_valor = line[6:11].strip()  # Posición 6-11
-                description = line[12:30].strip()  # Posición 12-30
+                # Extract by fixed positions (BCP-specific format)
+                fecha_proceso = line[0:5].strip()  # Position 0-5
+                fecha_valor = line[6:11].strip()  # Position 6-11
+                description = line[12:30].strip()  # Position 12-30
                 internal_transaction = line[
                     34:35
-                ].strip()  # Posición 30-31 (*, opcional)
-                egreso_str = line[42:54].strip()  # Posición 31-43
+                ].strip()  # Position 30-31 (*, optional)
+                egreso_str = line[42:54].strip()  # Position 31-43
                 ingreso_str = line[61:].strip()
 
-                # Validar que las fechas tengan el formato correcto
+                # Validate dates have correct format
                 if not (len(fecha_proceso) == 5 and len(fecha_valor) == 5):
                     logger.debug(
-                        f"Fechas inválidas en línea {line_num}: {fecha_proceso} | {fecha_valor}"
+                        f"Invalid dates in line {line_num}: {fecha_proceso} | {fecha_valor}"
                     )
                     continue
 
-                # Convertir fechas
+                # Convert dates
                 fecha_proceso_formatted = BCPStatementParser.convert_bcp_date(
                     fecha_proceso
                 )
                 fecha_valor_formatted = BCPStatementParser.convert_bcp_date(fecha_valor)
 
-                # Parsear montos
+                # Parse amounts
                 egreso = 0.0
                 ingreso = 0.0
 
@@ -112,7 +126,7 @@ class BCPStatementParser:
                     except ValueError:
                         pass
 
-                # Crear transacción
+                # Create domain entity (pure business object)
                 transaction = BCPTransactionEntity(
                     fecha_proceso=fecha_proceso_formatted,
                     fecha_valor=fecha_valor_formatted,
@@ -124,139 +138,135 @@ class BCPStatementParser:
 
                 if transaction.is_valid():
                     transactions.append(transaction)
-                    logger.debug(f"Transacción válida: {transaction}")
+                    logger.debug(f"Valid transaction: {transaction}")
                 else:
-                    logger.debug(f"Transacción inválida (sin montos): {transaction}")
+                    logger.debug(f"Invalid transaction (no amounts): {transaction}")
 
             except Exception as e:
-                logger.debug(f"Error parseando línea {line_num}: {line} - {str(e)}")
+                logger.debug(f"Error parsing line {line_num}: {line} - {str(e)}")
                 continue
 
-        logger.info(f"Total de transacciones encontradas: {len(transactions)}")
+        logger.info(f"Total transactions found: {len(transactions)}")
         return transactions
 
     @staticmethod
     def convert_bcp_date(date_str: str) -> Optional[date]:
-        """Convierte fecha BCP de DDMMM a objeto date de Python"""
+        """Convert BCP date format DDMMM to Python date object"""
         if not date_str or len(date_str) < 5:
             return None
 
         try:
-            # Extraer día y mes
+            # Extract day and month
             day = int(date_str[:2])
             month_abbr = date_str[2:5].upper()
 
             if month_abbr in BCPStatementParser.MONTHS_MAP:
                 month = int(BCPStatementParser.MONTHS_MAP[month_abbr])
-                # Asumir año actual (2025 basado en el ejemplo)
+                # Assume current year (2025 based on example)
                 year = 2025
                 return date(year, month, day)
             else:
-                logger.warning(f"Mes no reconocido: {month_abbr}")
+                logger.warning(f"Unrecognized month: {month_abbr}")
                 return None
 
         except Exception as e:
-            logger.error(f"Error convirtiendo fecha {date_str}: {str(e)}")
+            logger.error(f"Error converting date {date_str}: {str(e)}")
             return None
 
     @staticmethod
     def extract_account_code(text: str) -> Optional[tuple[str, str]]:
         """
-        # description
-        Extrae el código de cuenta y la moneda del texto del PDF
+        Extract account code and currency from BCP PDF text
 
-        # Format
-        _NNN-NNNNNNNN-N-NN__CCCCC
+        Format: _NNN-NNNNNNNN-N-NN__CCCCC
 
         where:
         - _: space
         - N: digit
         - C: letters (SOLES or DOLARES)
 
-        # example
-        191-04106279-0-55  SOLES
+        Example: 191-04106279-0-55  SOLES
 
-        # Returns:
-        Tuple[str, str]: (account_code, currency) where currency is 'PEN' or 'USD'
-        None if not found
+        Returns:
+            Tuple[str, str]: (account_code, currency) where currency is 'SOLES' or 'DOLARES'
+            None if not found
         """
         try:
             lines = text.split("\n")
 
-            # Patrón específico BCP: NNN-NNNNNNNN-N-NN  CURRENCY
-            # Ejemplo: 191-04106279-0-55  SOLES
+            # BCP-specific pattern: NNN-NNNNNNNN-N-NN  CURRENCY
+            # Example: 191-04106279-0-55  SOLES
             account_pattern = r"\b(\d{3}-\d{8}-\d{1}-\d{2})\s+(SOLES|DOLARES)"
 
             for line in lines:
-                # Buscar el patrón de cuenta BCP con moneda
+                # Search for BCP account pattern with currency
                 match = re.search(account_pattern, line)
                 if match:
                     account_code = match.group(1)
                     currency_text = match.group(2)
-                    # Convertir SOLES/DOLARES a PEN/USD
                     logger.info(
-                        f"Código de cuenta BCP encontrado: {account_code}, Moneda: {currency_text}"
+                        f"BCP account code found: {account_code}, Currency: {currency_text}"
                     )
                     return (account_code, currency_text)
 
             logger.warning(
-                "No se pudo encontrar el código de cuenta en formato NNN-NNNNNNNN-N-NN con moneda"
+                "Could not find account code in format NNN-NNNNNNNN-N-NN with currency"
             )
             return None
 
         except Exception as e:
-            logger.error(f"Error extrayendo código de cuenta: {str(e)}")
+            logger.error(f"Error extracting account code: {str(e)}")
             return None
 
     @staticmethod
     def extract_saldo_anterior(text: str) -> Optional[float]:
         """
-        Extrae el saldo anterior del texto del PDF
+        Extract previous balance from BCP PDF text
 
-        Formato: SALDO ANTERIOR seguido del monto en posición fija (columna 58-68)
-        Ejemplo: ------------SALDO ANTERIOR---------------------------------    NNNNNNN.NN
+        Format: SALDO ANTERIOR followed by amount at fixed position (column 58-68)
+        Example: ------------SALDO ANTERIOR---------------------------------    NNNNNNN.NN
         """
         try:
             lines = text.split("\n")
 
             for line in lines:
-                # Buscar línea que contenga "SALDO ANTERIOR"
+                # Search for line containing "SALDO ANTERIOR"
                 if "SALDO ANTERIOR" in line:
-                    # Extraer monto desde posición 58 en adelante
+                    # Extract amount from position 58 onwards
                     saldo_str = line[58:].strip()
 
                     if saldo_str:
                         try:
                             saldo = float(saldo_str.replace(",", ""))
-                            logger.info(f"Saldo anterior encontrado: {saldo}")
+                            logger.info(f"Previous balance found: {saldo}")
                             return saldo
                         except ValueError:
                             logger.warning(
-                                f"No se pudo convertir saldo anterior a número: {saldo_str}"
+                                f"Could not convert previous balance to number: {saldo_str}"
                             )
 
-            logger.warning("No se encontró línea con SALDO ANTERIOR")
+            logger.warning("No line with SALDO ANTERIOR found")
             return None
 
         except Exception as e:
-            logger.error(f"Error extrayendo saldo anterior: {str(e)}")
+            logger.error(f"Error extracting previous balance: {str(e)}")
             return None
 
     @staticmethod
     def extract_period(text: str) -> Tuple[Optional[date], Optional[date]]:
         """
-        Extrae el período del estado de cuenta del PDF
+        Extract statement period from BCP PDF text
 
-        Formato: DEL  NN/NN/NN  AL  NN/NN/NN
-        Ejemplo: DEL  01/10/25  AL  31/10/25
+        Format: DEL  NN/NN/NN  AL  NN/NN/NN
+        Example: DEL  01/10/25  AL  31/10/25
 
         Returns:
-            tuple: (initial_day, final_day) como objetos date o (None, None) si no se encuentra
+            tuple: (initial_day, final_day) as date objects or (None, None) if not found
         """
         try:
             lines = text.split("\n")
 
-            # Patrón: DEL  NN/NN/NN  AL  NN/NN/NN
+            # Pattern: DEL  NN/NN/NN  AL  NN/NN/NN
             period_pattern = (
                 r"DEL\s+(\d{2})/(\d{2})/(\d{2})\s+AL\s+(\d{2})/(\d{2})/(\d{2})"
             )
@@ -264,7 +274,7 @@ class BCPStatementParser:
             for line in lines:
                 match = re.search(period_pattern, line.upper())
                 if match:
-                    # Convertir fechas de DD/MM/YY a objetos date
+                    # Convert dates from DD/MM/YY to date objects
                     day1, month1, year1 = (
                         int(match.group(1)),
                         int(match.group(2)),
@@ -276,19 +286,19 @@ class BCPStatementParser:
                         int(match.group(6)),
                     )
 
-                    # Asumir año 2000+ si es < 50, sino 1900+
+                    # Assume 2000+ if year < 50, else 1900+
                     year1 = 2000 + year1 if year1 < 50 else 1900 + year1
                     year2 = 2000 + year2 if year2 < 50 else 1900 + year2
 
                     initial_day = date(year1, month1, day1)
                     final_day = date(year2, month2, day2)
 
-                    logger.info(f"Período encontrado: DEL {initial_day} AL {final_day}")
+                    logger.info(f"Period found: FROM {initial_day} TO {final_day}")
                     return (initial_day, final_day)
 
-            logger.warning("No se encontró línea con patrón DEL NN/NN/NN AL NN/NN/NN")
+            logger.warning("No line with pattern DEL NN/NN/NN AL NN/NN/NN found")
             return (None, None)
 
         except Exception as e:
-            logger.error(f"Error extrayendo período: {str(e)}")
+            logger.error(f"Error extracting period: {str(e)}")
             return (None, None)

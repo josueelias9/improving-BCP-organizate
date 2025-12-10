@@ -9,7 +9,7 @@ from datetime import date
 import logging
 import os
 from dotenv import load_dotenv
-from src.Denterprise.bcp_parser import BCPStatementParser
+from src.Aframework.parser.bcp_statement_parser import BCPStatementParser
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
 from src.Denterprise.entities import ExtractionResultEntity
 
