@@ -19,9 +19,6 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-
-
-
 @router.get("/", response_model=Dict[str, Any])
 def get_all_categories(
     session: Session = Depends(get_db_session),
@@ -41,6 +38,7 @@ def get_all_categories(
             status_code=500, detail=f"Error retrieving categories: {str(e)}"
         )
 
+
 def controller(session: Session):
 
     category_gateway = CategoryDbGateway(session)
@@ -53,7 +51,7 @@ def controller(session: Session):
     return presenter(result)
 
 
-def presenter(result:DTOGetAllCategoriesResponse):
+def presenter(result: DTOGetAllCategoriesResponse):
     # Map domain result to HTTP response
     return {
         "categories": [
@@ -67,4 +65,3 @@ def presenter(result:DTOGetAllCategoriesResponse):
         ],
         "total_count": result.total_count,
     }
-

@@ -6,7 +6,11 @@ from fastapi import APIRouter
 
 from api.routes import health, transaction, category
 
-from api.routes.documents import pdf_processing,get_all_documents,load_transactions_from_document
+from api.routes.documents import (
+    pdf_processing,
+    get_all_documents,
+    load_transactions_from_document,
+)
 
 api_router = APIRouter()
 

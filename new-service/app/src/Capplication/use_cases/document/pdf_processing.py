@@ -4,14 +4,14 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 
 import logging
-from typing import Dict, Any, List, Tuple, BinaryIO
+from typing import Dict, Any, List, Tuple
 
 from src.Denterprise.entities import DocumentEntity, ExtractionResultEntity
-from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
+from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse, DTOPdfProcessingRequest
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import PDFExtractorGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +31,8 @@ class PDFProcessingUseCase:
         self.pdf_extractor_gateway = pdf_extractor_gateway
         self.document_type_gateway = document_type_gateway
 
-    def execute(
-        self,
-        pdf_file: BinaryIO,
-        user_email: str,
-        document_type: str = "BCP_STATEMENT",
-        pdf_filename: str = "",
-    ) -> DTOPdfProcessingResponse:
+
+    def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
         """
         Process PDF file: get/create user, extract transactions, and create document
 
@@ -54,6 +49,11 @@ class PDFProcessingUseCase:
             ValueError: If validation fails
             UnsupportedDocumentTypeException: If document type is not supported
         """
+
+        pdf_file = request.pdf_file
+        pdf_filename = request.pdf_filename
+        user_email = request.user_email
+        document_type = request.document_type
         try:
             # Validate document type (business rule)
             self._validate_document_type(document_type)

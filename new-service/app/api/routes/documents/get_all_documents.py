@@ -19,9 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["PDF Processing"])
 
 
-
-
-def presenter(result:DTOGetAllDocumentsResponse):
+def presenter(result: DTOGetAllDocumentsResponse):
     return {
         "documents": [
             {
@@ -41,7 +39,7 @@ def presenter(result:DTOGetAllDocumentsResponse):
     }
 
 
-def controller(session,skip,limit):
+def controller(session, skip, limit):
     document_gateway = DocumentDbGateway(session)
 
     # Create request DTO
@@ -74,7 +72,7 @@ async def get_all_documents(
     - transactions count
     """
     try:
-        return controller(session,skip,limit)
+        return controller(session, skip, limit)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -82,4 +80,3 @@ async def get_all_documents(
         raise HTTPException(
             status_code=500, detail=f"Error retrieving documents: {str(e)}"
         )
-

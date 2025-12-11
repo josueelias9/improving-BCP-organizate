@@ -71,7 +71,7 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         # Map back to domain entity with ID
         return self._map_to_entity(db_document)
-    
+
     def get_all_as_entities(
         self, skip: int = 0, limit: int = 100
     ) -> list[DocumentEntity]:

@@ -4,10 +4,12 @@ Orchestrates the flow of loading transactions from a document
 """
 
 import logging
-import uuid
 
 from src.Denterprise.transaction_service import TransactionService
-from src.Capplication.DTO.document_dto import DTOLoadTransactionsFromDocumentResponse
+from src.Capplication.DTO.document_dto import (
+    DTOLoadTransactionsFromDocumentResponse,
+    DTOLoadTransactionsFromDocumentRequest,
+)
 from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGateway
 
 logger = logging.getLogger(__name__)
@@ -31,10 +33,10 @@ class LoadTransactionsFromDocumentUseCase:
         self.document_gateway = document_gateway
         self.transaction_gateway = transaction_gateway
         self.service = TransactionService()
-    
-    from src.Capplication.DTO.document_dto import DTOLoadTransactionsFromDocumentRequest
 
-    def execute(self, request: DTOLoadTransactionsFromDocumentRequest) -> DTOLoadTransactionsFromDocumentResponse:
+    def execute(
+        self, request: DTOLoadTransactionsFromDocumentRequest
+    ) -> DTOLoadTransactionsFromDocumentResponse:
         """
         Execute the use case: load transactions from document
 

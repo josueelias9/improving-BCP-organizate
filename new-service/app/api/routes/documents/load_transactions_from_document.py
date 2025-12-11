@@ -9,8 +9,13 @@ import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
-from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
-from src.Capplication.DTO.document_dto import DTOLoadTransactionsFromDocumentResponse, DTOLoadTransactionsFromDocumentRequest
+from src.Capplication.use_cases.document.load_transactions_from_document import (
+    LoadTransactionsFromDocumentUseCase,
+)
+from src.Capplication.DTO.document_dto import (
+    DTOLoadTransactionsFromDocumentResponse,
+    DTOLoadTransactionsFromDocumentRequest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,19 +41,16 @@ class PDFProcessRequest(BaseModel):
 
 def presenter(result: DTOLoadTransactionsFromDocumentResponse):
     return {
-            "document_id": result.document_id,
-            "total_records": result.total_records,
-            "loaded": result.loaded_count,
-            "skipped": result.skipped_count,
-            "errors": result.errors if result.errors else None,
-            "processed": True,
-        }
+        "document_id": result.document_id,
+        "total_records": result.total_records,
+        "loaded": result.loaded_count,
+        "skipped": result.skipped_count,
+        "errors": result.errors if result.errors else None,
+        "processed": True,
+    }
 
 
-
-
-
-def controller(session,document_id):
+def controller(session, document_id):
 
     # Instantiate concrete gateways
     document_gateway = DocumentDbGateway(session)
@@ -64,8 +66,6 @@ def controller(session,document_id):
     dto_response = use_case.execute(dto_request)
 
     return presenter(dto_response)
-
-
 
 
 @router.post("/load-from-document/{document_id}", response_model=Dict[str, Any])
@@ -89,7 +89,7 @@ def load_transactions_from_document(
     """
     try:
 
-        return controller(session,document_id)
+        return controller(session, document_id)
 
     except ValueError as e:
         # Business validation errors

@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
@@ -15,13 +14,17 @@ from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.pdf_extractor import PDFExtractorGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
-from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse
+from src.Capplication.DTO.document_dto import (
+    DTOPdfProcessingResponse,
+    DTOPdfProcessingRequest,
+)
 
 
 logger = logging.getLogger(__name__)
 
 # Crear router para rutas de procesamiento de PDF
 router = APIRouter(prefix="/api", tags=["PDF Processing"])
+
 
 class PDFProcessRequest(BaseModel):
     pdf_filename: str
@@ -38,11 +41,7 @@ class PDFProcessRequest(BaseModel):
         }
 
 
-
-
-
-
-def presenter(result:DTOPdfProcessingResponse):
+def presenter(result: DTOPdfProcessingResponse):
     # Return response based on result
     if result.already_exists:
         return {
@@ -59,10 +58,11 @@ def presenter(result:DTOPdfProcessingResponse):
     }
 
 
-
-
 def controller(
-    pdf_file: BinaryIO, user_email: str, session: Session, document_type: str = "BCP_STATEMENT"
+    pdf_file: BinaryIO,
+    user_email: str,
+    session: Session,
+    document_type: str = "BCP_STATEMENT",
 ):
     """
     Process PDF file and save document using application layer
@@ -88,7 +88,6 @@ def controller(
     document_type_gateway = DocumentTypeDbGateway(session)
     pdf_extractor_gateway = PDFExtractorGateway()
 
-
     # Delegate all processing to application layer use case
     use_case = PDFProcessingUseCase(
         document_gateway,
@@ -96,17 +95,17 @@ def controller(
         pdf_extractor_gateway,
         document_type_gateway,
     )
-    # Use case returns DTO for controller response
-    result = use_case.execute(
+
+    dto_request = DTOPdfProcessingRequest(
         pdf_file=pdf_file,
         pdf_filename="",  # No longer needed by use case
         user_email=user_email,
         document_type=document_type,
     )
+    # Use case returns DTO for controller response
+    dto_response = use_case.execute(dto_request)
 
-    return presenter(result)
-
-
+    return presenter(dto_response)
 
 
 @router.post("/pdf-processing")
@@ -136,7 +135,6 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
                 detail=f"Invalid PDF type '{request.type}'. Use 'debit' or 'credit'.",
             )
 
-
         # Open file and pass binary content to controller
         with open(request.pdf_filename, "rb") as pdf_file:
             result = controller(
@@ -147,7 +145,7 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
             )
 
         return result
-    
+
     except UnsupportedDocumentTypeException as e:
         # Adapt business exception to HTTP response
         raise HTTPException(status_code=501, detail=str(e))

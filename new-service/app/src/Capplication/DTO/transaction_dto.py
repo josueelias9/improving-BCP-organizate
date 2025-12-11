@@ -59,4 +59,3 @@ class DTOImportTransactionsResponse:
     errors: List[str]
     total_rows: int
     message: str
-

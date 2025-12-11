@@ -12,14 +12,12 @@ from dataclasses import dataclass
 from src.Capplication.gateway.db import IDocumentDbGateway
 from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsResponse,
-    GetAllDocumentsRequest
+    GetAllDocumentsRequest,
 )
 from src.Capplication.DTO.other_dto import DTODocumentSummary
 
 
 logger = logging.getLogger(__name__)
-
-
 
 
 class GetAllDocumentsUseCase:
@@ -59,7 +57,6 @@ class GetAllDocumentsUseCase:
         documents = self.document_gateway.get_all_as_entities(
             skip=request.skip, limit=request.limit
         )
-
 
         # Convert entities to DTOs for presentation
         document_summaries: List[DTODocumentSummary] = []
