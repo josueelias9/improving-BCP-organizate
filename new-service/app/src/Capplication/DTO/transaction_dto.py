@@ -59,3 +59,11 @@ class DTOImportTransactionsResponse:
     errors: List[str]
     total_rows: int
     message: str
+
+
+@dataclass
+class DTOGetAllTransactionsResponse:
+    """DTO for get all transactions response"""
+
+    transactions: List[Dict[str, Any]]
+

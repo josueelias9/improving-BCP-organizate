@@ -41,20 +41,20 @@ class PDFProcessRequest(BaseModel):
         }
 
 
-def presenter(result: DTOPdfProcessingResponse):
+def presenter(dto_response: DTOPdfProcessingResponse):
     # Return response based on result
-    if result.already_exists:
+    if dto_response.already_exists:
         return {
-            "detail": result.message,
-            "unique_identifier": result.unique_identifier,
-            "document_id": result.document_id,
+            "detail": dto_response.message,
+            "unique_identifier": dto_response.unique_identifier,
+            "document_id": dto_response.document_id,
         }
 
     return {
         "success": True,
-        "message": result.message,
-        "document_id": result.document_id,
-        "transactions_count": result.transactions_count,
+        "message": dto_response.message,
+        "document_id": dto_response.document_id,
+        "transactions_count": dto_response.transactions_count,
     }
 
 

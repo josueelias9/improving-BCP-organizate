@@ -36,40 +36,6 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=List[Dict[str, Any]])
-def get_all_transactions(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_db_session)
-) -> List[Dict[str, Any]]:
-    """
-    Get all transactions with pagination
-
-    Includes category_name field with the name of the associated category.
-
-    Args:
-        skip: Number of records to skip (default: 0)
-        limit: Maximum number of records to return (default: 100, max: 1000)
-        session: Database session (injected)
-
-    Returns:
-        List of transactions with category_name included
-    """
-    try:
-        # Validate limit
-        if limit > 1000:
-            limit = 1000
-
-        # Get transactions via gateway (includes category_name)
-        transaction_gateway = TransactionDbGateway(session)
-        transactions = transaction_gateway.get_all(skip=skip, limit=limit)
-
-        return transactions
-
-    except Exception as e:
-        logger.error(f"Error retrieving transactions: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving transactions: {str(e)}"
-        )
-
 
 @router.put("/{transaction_id}", response_model=Dict[str, Any])
 def update_transaction(

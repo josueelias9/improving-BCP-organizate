@@ -146,6 +146,20 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[TransactionEntity]:
+        """
+        Get all transactions with pagination
+
+        Args:
+            skip: Number of records to skip
+            limit: Maximum number of records to return
+
+        Returns:
+            List of TransactionEntity
+        """
+        pass
+
+    @abstractmethod
     def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionEntity]:
         """
         Get transaction by ID

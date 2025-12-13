@@ -18,7 +18,7 @@ Accept: application/json
 ###
 
 # Extract data from PDF and save it as JSON in the Documents table
-# @name populateDocument
+# @name pdfProcessing
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
@@ -31,7 +31,7 @@ Content-Type: application/json
 ###
 
 # Extract data from PDF and save it as JSON in the Documents table
-# @name populateDocument
+# @name pdfProcessing
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
@@ -44,8 +44,8 @@ Content-Type: application/json
 ###
 
 # Migrate data from the 'data' column of the document to the transactions table
-# @name processDocument
-POST {{baseUrl}}/api/load-from-document/{{populateDocument.response.body.$.document_id}}
+# @name loadTransactionsFromDocument
+POST {{baseUrl}}/api/load-from-document/{{pdfProcessing.response.body.$.document_id}}
 Accept: application/json
 
 ### =================================================================== category.py

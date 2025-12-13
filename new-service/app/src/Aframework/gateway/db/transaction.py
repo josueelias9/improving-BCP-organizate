@@ -75,24 +75,37 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         return loaded_count, skipped_count, errors
 
-    def get_all(self, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get all transactions with pagination, including category name"""
+    def get_all(self, skip: int = 0, limit: int = 100) -> List[TransactionEntity]:
+        """Get all transactions with pagination
+        
+        Returns:
+            List of TransactionEntity
+        """
         statement = (
             select(TransactionModel)
-            .options(joinedload(TransactionModel.category))
             .offset(skip)
             .limit(limit)
         )
         transactions = self.session.exec(statement).all()
 
-        # Convert to dict and add category_name
-        result = []
-        for t in transactions:
-            t_dict = t.model_dump()
-            t_dict["category_name"] = t.category.name if t.category else None
-            result.append(t_dict)
+        # Map to domain entities
+        entities = []
+        
+        for db_transaction in transactions:
+            entity = TransactionEntity(
+                id=db_transaction.id,
+                order=db_transaction.order,
+                description=db_transaction.description,
+                history=db_transaction.history,
+                amount=db_transaction.amount,
+                transaction_type=db_transaction.transaction_type,
+                transaction_date=db_transaction.transaction_date,
+                unique_identifier=db_transaction.unique_identifier,
+                category_id=db_transaction.category_id,
+            )
+            entities.append(entity)
 
-        return result
+        return entities
 
     def get_by_id(self, transaction_id: uuid.UUID) -> Optional[TransactionEntity]:
         """Get transaction by ID and map to domain entity"""

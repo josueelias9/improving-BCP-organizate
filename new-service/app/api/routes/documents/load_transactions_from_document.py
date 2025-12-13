@@ -39,13 +39,13 @@ class PDFProcessRequest(BaseModel):
         }
 
 
-def presenter(result: DTOLoadTransactionsFromDocumentResponse):
+def presenter(dto_response: DTOLoadTransactionsFromDocumentResponse):
     return {
-        "document_id": result.document_id,
-        "total_records": result.total_records,
-        "loaded": result.loaded_count,
-        "skipped": result.skipped_count,
-        "errors": result.errors if result.errors else None,
+        "document_id": dto_response.document_id,
+        "total_records": dto_response.total_records,
+        "loaded": dto_response.loaded_count,
+        "skipped": dto_response.skipped_count,
+        "errors": dto_response.errors if dto_response.errors else None,
         "processed": True,
     }
 

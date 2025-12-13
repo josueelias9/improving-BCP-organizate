@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["PDF Processing"])
 
 
-def presenter(result: DTOGetAllDocumentsResponse):
+def presenter(dto_response: DTOGetAllDocumentsResponse):
     return {
         "documents": [
             {
@@ -31,11 +31,11 @@ def presenter(result: DTOGetAllDocumentsResponse):
                 "document_type_id": doc.document_type_id,
                 "transactions_count": doc.transactions_count,
             }
-            for doc in result.documents
+            for doc in dto_response.documents
         ],
-        "total_returned": result.total_returned,
-        "skip": result.skip,
-        "limit": result.limit,
+        "total_returned": dto_response.total_returned,
+        "skip": dto_response.skip,
+        "limit": dto_response.limit,
     }
 
 
@@ -43,17 +43,16 @@ def controller(session, skip, limit):
     document_gateway = DocumentDbGateway(session)
 
     # Create request DTO
-    request = GetAllDocumentsRequest(skip=skip, limit=limit)
+    dto_request = GetAllDocumentsRequest(skip=skip, limit=limit)
 
     # Inject gateway into use case
     use_case = GetAllDocumentsUseCase(document_gateway)
 
     # Execute use case
-    result = use_case.execute(request)
+    dto_response = use_case.execute(dto_request)
 
     # Map domain result to HTTP response
-    return presenter(result)
-
+    return presenter(dto_response)
 
 @router.get("/documents/")
 async def get_all_documents(

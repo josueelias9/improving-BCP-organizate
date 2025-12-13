@@ -12,12 +12,15 @@ from api.routes.documents import (
     load_transactions_from_document,
 )
 
+from api.routes.transactions import get_all_transactions
+
 api_router = APIRouter()
 
 # Include all route modules
 api_router.include_router(pdf_processing.router)
 api_router.include_router(get_all_documents.router)
 api_router.include_router(load_transactions_from_document.router)
+api_router.include_router(get_all_transactions.router, prefix="/api/transactions", tags=["transactions"])
 
 api_router.include_router(health.router)
 api_router.include_router(

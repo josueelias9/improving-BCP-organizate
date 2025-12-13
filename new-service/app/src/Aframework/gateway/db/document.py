@@ -85,13 +85,10 @@ class DocumentDbGateway(IDocumentDbGateway):
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""
         # Extract transactions from nested JSON structure
-        transactions_data = []
-        if db_document.data and isinstance(db_document.data, dict):
-            transactions_data = db_document.data.get("transactions", [])
 
         return DocumentEntity(
             id=db_document.id,
-            data=transactions_data,
+            data=db_document.data,
             currency=db_document.currency,
             unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
