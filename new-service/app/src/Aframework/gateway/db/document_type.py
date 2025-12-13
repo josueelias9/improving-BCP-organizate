@@ -9,10 +9,12 @@ from sqlmodel import Session, select
 from models import DocumentType as DocumentTypeModel
 from src.Denterprise.entities import DocumentTypeEntity
 
+from src.Capplication.gateway.db import IDocumentTypeDbGateway
+
 logger = logging.getLogger(__name__)
 
 
-class DocumentTypeDbGateway:
+class DocumentTypeDbGateway(IDocumentTypeDbGateway):
     """SQLModel implementation of document type gateway"""
 
     def __init__(self, session: Session):

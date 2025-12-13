@@ -3,16 +3,16 @@ Defines contracts for data access without implementation details
 """
 
 from abc import ABC, abstractmethod
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 from src.Denterprise.entities import ExtractionResultEntity
 
 
-class PDFExtractorGateway(ABC):
+class IPDFExtractorGateway(ABC):
     """Abstract gateway for PDF extraction operations"""
 
     @abstractmethod
-    def extract_transactions(
-        self, pdf_file: BinaryIO, filename: str
+    def extract_document(
+        self, pdf_file: BinaryIO, filename: str = "", document_type_id: Optional[str] = None
     ) -> ExtractionResultEntity:
         """Extract transactions from PDF file and return entity with extracted data"""
         pass
