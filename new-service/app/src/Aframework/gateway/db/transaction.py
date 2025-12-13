@@ -77,20 +77,16 @@ class TransactionDbGateway(ITransactionDbGateway):
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[TransactionEntity]:
         """Get all transactions with pagination
-        
+
         Returns:
             List of TransactionEntity
         """
-        statement = (
-            select(TransactionModel)
-            .offset(skip)
-            .limit(limit)
-        )
+        statement = select(TransactionModel).offset(skip).limit(limit)
         transactions = self.session.exec(statement).all()
 
         # Map to domain entities
         entities = []
-        
+
         for db_transaction in transactions:
             entity = TransactionEntity(
                 id=db_transaction.id,

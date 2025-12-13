@@ -43,7 +43,6 @@ class BCPDebitParser:
         "SET": "09",  # Setiembre
     }
 
-
     def get_data(self, full_text):
         # Use parser from Denterprise layer for business logic
         account_code, currency = self.extract_account_code(full_text)
@@ -58,19 +57,28 @@ class BCPDebitParser:
             "saldo_anterior": saldo_anterior,
             "initial_day": initial_day.isoformat() if initial_day else None,
             "final_day": final_day.isoformat() if final_day else None,
-            "transactions": []
+            "transactions": [],
         }
         for transaction in transactions:
-            data["transactions"].append({
-                "fecha_proceso": transaction.fecha_proceso.isoformat() if transaction.fecha_proceso else None,
-                "fecha_valor": transaction.fecha_valor.isoformat() if transaction.fecha_valor else None,
-                "description": transaction.description,
-                "cargos": transaction.cargos,
-                "abonos": transaction.abonos,
-                "internal_transaction": transaction.internal_transaction,
-            })
+            data["transactions"].append(
+                {
+                    "fecha_proceso": (
+                        transaction.fecha_proceso.isoformat()
+                        if transaction.fecha_proceso
+                        else None
+                    ),
+                    "fecha_valor": (
+                        transaction.fecha_valor.isoformat()
+                        if transaction.fecha_valor
+                        else None
+                    ),
+                    "description": transaction.description,
+                    "cargos": transaction.cargos,
+                    "abonos": transaction.abonos,
+                    "internal_transaction": transaction.internal_transaction,
+                }
+            )
         return data
-    
 
     @staticmethod
     def parse_transactions(text: str) -> List[BCPTransactionEntity]:
@@ -134,9 +142,7 @@ class BCPDebitParser:
                     continue
 
                 # Convert dates
-                fecha_proceso_formatted = BCPDebitParser.convert_bcp_date(
-                    fecha_proceso
-                )
+                fecha_proceso_formatted = BCPDebitParser.convert_bcp_date(fecha_proceso)
                 fecha_valor_formatted = BCPDebitParser.convert_bcp_date(fecha_valor)
 
                 # Parse amounts

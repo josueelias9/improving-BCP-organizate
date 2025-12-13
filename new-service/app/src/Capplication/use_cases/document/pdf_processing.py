@@ -8,7 +8,10 @@ from typing import Dict, Any, List, Tuple
 
 from src.Denterprise.entities import DocumentEntity
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
-from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse, DTOPdfProcessingRequest
+from src.Capplication.DTO.document_dto import (
+    DTOPdfProcessingResponse,
+    DTOPdfProcessingRequest,
+)
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -30,7 +33,6 @@ class PDFProcessingUseCase:
         self.user_gateway = user_gateway
         self.pdf_extractor_gateway = pdf_extractor_gateway
         self.document_type_gateway = document_type_gateway
-
 
     def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
         """
@@ -60,8 +62,6 @@ class PDFProcessingUseCase:
             # Get or create user entity
             user = self._get_or_create_user(user_email)
 
-   
-
             doc_type = self.document_type_gateway.get_by_name(document_type)
 
             if not doc_type:
@@ -71,8 +71,7 @@ class PDFProcessingUseCase:
 
             # Extract document from PDF (returns DocumentEntity with data)
             document = self.pdf_extractor_gateway.extract_document(
-                pdf_file, document_type_id=str(doc_type.id),
-                document_type=doc_type.name
+                pdf_file, document_type_id=str(doc_type.id), document_type=doc_type.name
             )
 
             # Validate document has data
@@ -85,7 +84,9 @@ class PDFProcessingUseCase:
             )
 
             if existing_document:
-                logger.info(f"Document already exists with unique_id: {document.unique_identifier}")
+                logger.info(
+                    f"Document already exists with unique_id: {document.unique_identifier}"
+                )
                 return DTOPdfProcessingResponse(
                     success=True,
                     document_id=str(existing_document.id),
@@ -131,7 +132,7 @@ class PDFProcessingUseCase:
         # Get all document types from database
         all_doc_types = self.document_type_gateway.get_all()
         supported_types = [dt.name for dt in all_doc_types]
-                
+
         # Validate against database types
         if document_type not in supported_types:
             raise UnsupportedDocumentTypeException(

@@ -36,7 +36,6 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-
 @router.put("/{transaction_id}", response_model=Dict[str, Any])
 def update_transaction(
     transaction_id: uuid.UUID,

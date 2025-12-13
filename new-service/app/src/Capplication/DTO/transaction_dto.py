@@ -66,4 +66,3 @@ class DTOGetAllTransactionsResponse:
     """DTO for get all transactions response"""
 
     transactions: List[Dict[str, Any]]
-

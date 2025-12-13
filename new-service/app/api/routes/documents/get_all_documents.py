@@ -54,6 +54,7 @@ def controller(session, skip, limit):
     # Map domain result to HTTP response
     return presenter(dto_response)
 
+
 @router.get("/documents/")
 async def get_all_documents(
     session: SessionDep,

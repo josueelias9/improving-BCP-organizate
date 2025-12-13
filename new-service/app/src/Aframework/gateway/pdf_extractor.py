@@ -20,23 +20,23 @@ load_dotenv()
 class PDFExtractorGateway(IPDFExtractorGateway):
     """Gateway implementation for BCP PDF bank statements extraction"""
 
-
-
     def __init__(self):
         self.parser = BCPDebitParser()
         self.parser_credit = BCPCreditParser()
 
     def extract_document(
-        self, pdf_file: BinaryIO, document_type_id: Optional[str] = None,
-        document_type: Optional[str] = None
+        self,
+        pdf_file: BinaryIO,
+        document_type_id: Optional[str] = None,
+        document_type: Optional[str] = None,
     ) -> DocumentEntity:
         """Extract document from PDF file and return DocumentEntity with data
-        
+
         Args:
             pdf_file: Binary PDF file content
             filename: Filename for unique identifier
             document_type_id: UUID of the document type
-            
+
         Returns:
             DocumentEntity with extracted transaction data
         """

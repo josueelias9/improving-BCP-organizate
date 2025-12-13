@@ -91,8 +91,8 @@ class LoadTransactionsFromDocumentUseCase:
                 document_id=str(request.document_id),
             )
 
-
-    def transform_document_data_to_transactions(self,
+    def transform_document_data_to_transactions(
+        self,
         document: DocumentEntity,
     ) -> List[TransactionEntity]:
         """
@@ -141,8 +141,7 @@ class LoadTransactionsFromDocumentUseCase:
 
         return transactions
 
-
-    def validate_document_for_processing(self,document: DocumentEntity) -> None:
+    def validate_document_for_processing(self, document: DocumentEntity) -> None:
         """
         Validate that a document can be processed
 

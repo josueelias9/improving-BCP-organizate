@@ -11,7 +11,7 @@ from src.Denterprise.entities import (
     DocumentEntity,
     UserEntity,
     CategoryEntity,
-    DocumentTypeEntity
+    DocumentTypeEntity,
 )
 
 
@@ -215,14 +215,12 @@ class ITransactionDbGateway(ABC):
         pass
 
 
-
-
 class IDocumentTypeDbGateway(ABC):
 
     @abstractmethod
     def get_by_name(self, name: str) -> DocumentTypeEntity | None:
         pass
-    
+
     @abstractmethod
     def get_all(self) -> list[DocumentTypeEntity]:
         pass

@@ -12,7 +12,10 @@ class IPDFExtractorGateway(ABC):
 
     @abstractmethod
     def extract_document(
-        self, pdf_file: BinaryIO, filename: str = "", document_type_id: Optional[str] = None
+        self,
+        pdf_file: BinaryIO,
+        filename: str = "",
+        document_type_id: Optional[str] = None,
     ) -> ExtractionResultEntity:
         """Extract transactions from PDF file and return entity with extracted data"""
         pass

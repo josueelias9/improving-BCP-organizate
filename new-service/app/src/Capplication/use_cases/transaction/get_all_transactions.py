@@ -1,10 +1,14 @@
-
 from src.Capplication.DTO.transaction_dto import DTOGetAllTransactionsResponse
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
+
 class GetAllTransactionsUseCase:
 
-    def __init__(self, transaction_gateway: ITransactionDbGateway, category_gateway: ICategoryDbGateway):
+    def __init__(
+        self,
+        transaction_gateway: ITransactionDbGateway,
+        category_gateway: ICategoryDbGateway,
+    ):
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway
 
@@ -33,8 +37,10 @@ class GetAllTransactionsUseCase:
         transaction_dicts = []
         for entity in entities:
             # Get category name from the map
-            category_name = categories_map.get(entity.category_id) if entity.category_id else None
-            
+            category_name = (
+                categories_map.get(entity.category_id) if entity.category_id else None
+            )
+
             transaction_dict = {
                 "id": str(entity.id),
                 "order": entity.order,
@@ -42,10 +48,14 @@ class GetAllTransactionsUseCase:
                 "history": entity.history,
                 "amount": entity.amount,
                 "transaction_type": entity.transaction_type,
-                "transaction_date": entity.transaction_date.isoformat() if entity.transaction_date else None,
+                "transaction_date": (
+                    entity.transaction_date.isoformat()
+                    if entity.transaction_date
+                    else None
+                ),
                 "unique_identifier": entity.unique_identifier,
                 "category_id": str(entity.category_id) if entity.category_id else None,
-                "category_name": category_name
+                "category_name": category_name,
             }
             transaction_dicts.append(transaction_dict)
 
