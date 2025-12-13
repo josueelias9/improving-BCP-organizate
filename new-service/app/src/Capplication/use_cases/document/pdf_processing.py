@@ -51,7 +51,6 @@ class PDFProcessingUseCase:
         """
 
         pdf_file = request.pdf_file
-        pdf_filename = request.pdf_filename
         user_email = request.user_email
         document_type = request.document_type
         try:
@@ -61,24 +60,19 @@ class PDFProcessingUseCase:
             # Get or create user entity
             user = self._get_or_create_user(user_email)
 
-            # Get document type by name
-            doc_type_name_map = {
-                "BCP_STATEMENT": "bcp_debit",
-                "DEBIT_STATEMENT": "bcp_debit",
-                "CREDIT_STATEMENT": "bcp_credit",
-            }
+   
 
-            doc_type_name = doc_type_name_map.get(document_type, "bcp_debit")
-            doc_type = self.document_type_gateway.get_by_name(doc_type_name)
+            doc_type = self.document_type_gateway.get_by_name(document_type)
 
             if not doc_type:
                 raise ValueError(
-                    f"Document type '{doc_type_name}' not found in database"
+                    f"Document type '{document_type}' not found in database"
                 )
 
             # Extract document from PDF (returns DocumentEntity with data)
             document = self.pdf_extractor_gateway.extract_document(
-                pdf_file, pdf_filename, document_type_id=str(doc_type.id)
+                pdf_file, document_type_id=str(doc_type.id),
+                document_type=doc_type.name
             )
 
             # Validate document has data
@@ -134,18 +128,14 @@ class PDFProcessingUseCase:
         Raises:
             UnsupportedDocumentTypeException: If document type is not supported
         """
-        supported_types = ["BCP_STATEMENT", "DEBIT_STATEMENT"]
-
-        # For now, only debit statements are fully implemented
+        # Get all document types from database
+        all_doc_types = self.document_type_gateway.get_all()
+        supported_types = [dt.name for dt in all_doc_types]
+                
+        # Validate against database types
         if document_type not in supported_types:
             raise UnsupportedDocumentTypeException(
                 document_type=document_type, supported_types=supported_types
-            )
-
-        # Credit card processing not implemented yet
-        if document_type == "CREDIT_STATEMENT":
-            raise UnsupportedDocumentTypeException(
-                document_type="credit", supported_types=["debit"]
             )
 
     def _get_or_create_user(self, user_email: str):

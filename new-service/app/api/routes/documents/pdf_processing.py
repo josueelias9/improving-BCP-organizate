@@ -62,7 +62,7 @@ def controller(
     pdf_file: BinaryIO,
     user_email: str,
     session: Session,
-    document_type: str = "BCP_STATEMENT",
+    document_type: str,
 ):
     """
     Process PDF file and save document using application layer
@@ -98,7 +98,6 @@ def controller(
 
     dto_request = DTOPdfProcessingRequest(
         pdf_file=pdf_file,
-        pdf_filename="",  # No longer needed by use case
         user_email=user_email,
         document_type=document_type,
     )
@@ -125,23 +124,13 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
                 status_code=404, detail=f"File '{request.pdf_filename}' not found"
             )
 
-        # Map request type to document type
-        document_type_map = {"debit": "BCP_STATEMENT", "credit": "CREDIT_STATEMENT"}
-
-        document_type = document_type_map.get(request.type.lower())
-        if not document_type:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid PDF type '{request.type}'. Use 'debit' or 'credit'.",
-            )
-
         # Open file and pass binary content to controller
         with open(request.pdf_filename, "rb") as pdf_file:
             result = controller(
                 pdf_file=pdf_file,
                 user_email=request.user_email,
                 session=session,
-                document_type=document_type,
+                document_type=request.type,
             )
 
         return result

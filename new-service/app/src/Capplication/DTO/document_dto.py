@@ -17,9 +17,8 @@ Internal domain logic uses entities from Denterprise layer.
 @dataclass
 class DTOPdfProcessingRequest:
     pdf_file: BinaryIO
-    pdf_filename: str
     user_email: str
-    document_type: str = "BCP_STATEMENT"
+    document_type: str
 
 
 @dataclass

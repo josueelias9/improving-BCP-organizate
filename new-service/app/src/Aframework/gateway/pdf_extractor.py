@@ -25,7 +25,8 @@ class PDFExtractorGateway(IPDFExtractorGateway):
         self.parser = BCPStatementParser()
 
     def extract_document(
-        self, pdf_file: BinaryIO, filename: str = "", document_type_id: Optional[str] = None
+        self, pdf_file: BinaryIO, document_type_id: Optional[str] = None,
+        document_type: Optional[str] = None
     ) -> DocumentEntity:
         """Extract document from PDF file and return DocumentEntity with data
         
@@ -48,9 +49,16 @@ class PDFExtractorGateway(IPDFExtractorGateway):
             transactions = self.parser.parse_transactions(full_text)
 
             # Convert transactions to data list
-            data = []
+            data = {
+                "account_code": account_code,
+                "currency": currency,
+                "saldo_anterior": saldo_anterior,
+                "initial_day": initial_day.isoformat() if initial_day else None,
+                "final_day": final_day.isoformat() if final_day else None,
+                "transactions": []
+            }
             for transaction in transactions:
-                data.append({
+                data["transactions"].append({
                     "fecha_proceso": transaction.fecha_proceso.isoformat() if transaction.fecha_proceso else None,
                     "fecha_valor": transaction.fecha_valor.isoformat() if transaction.fecha_valor else None,
                     "description": transaction.description,
@@ -63,7 +71,7 @@ class PDFExtractorGateway(IPDFExtractorGateway):
             return DocumentEntity(
                 data=data,
                 currency=currency or "",
-                unique_identifier=f"{account_code}_{initial_day}_{final_day}" if account_code and initial_day and final_day else filename,
+                unique_identifier=f"{account_code}__{initial_day}__{final_day}",
                 processed=False,
                 document_type_id=document_type_id,
             )
@@ -74,7 +82,7 @@ class PDFExtractorGateway(IPDFExtractorGateway):
             return DocumentEntity(
                 data=[],
                 currency="",
-                unique_identifier=filename or "error_document",
+                unique_identifier="error_document",
                 processed=False,
             )
 
