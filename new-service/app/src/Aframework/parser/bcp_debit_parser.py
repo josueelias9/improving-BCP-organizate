@@ -18,7 +18,7 @@ from src.Denterprise.entities import BCPTransactionEntity
 logger = logging.getLogger(__name__)
 
 
-class BCPStatementParser:
+class BCPDebitParser:
     """
     Parser for BCP bank statements - Interface Adapter
 
@@ -42,6 +42,35 @@ class BCPStatementParser:
         "DIC": "12",
         "SET": "09",  # Setiembre
     }
+
+
+    def get_data(self, full_text):
+        # Use parser from Denterprise layer for business logic
+        account_code, currency = self.extract_account_code(full_text)
+        saldo_anterior = self.extract_saldo_anterior(full_text)
+        initial_day, final_day = self.extract_period(full_text)
+        transactions = self.parse_transactions(full_text)
+
+        # Convert transactions to data list
+        data = {
+            "account_code": account_code,
+            "currency": currency,
+            "saldo_anterior": saldo_anterior,
+            "initial_day": initial_day.isoformat() if initial_day else None,
+            "final_day": final_day.isoformat() if final_day else None,
+            "transactions": []
+        }
+        for transaction in transactions:
+            data["transactions"].append({
+                "fecha_proceso": transaction.fecha_proceso.isoformat() if transaction.fecha_proceso else None,
+                "fecha_valor": transaction.fecha_valor.isoformat() if transaction.fecha_valor else None,
+                "description": transaction.description,
+                "cargos": transaction.cargos,
+                "abonos": transaction.abonos,
+                "internal_transaction": transaction.internal_transaction,
+            })
+        return data
+    
 
     @staticmethod
     def parse_transactions(text: str) -> List[BCPTransactionEntity]:
@@ -105,10 +134,10 @@ class BCPStatementParser:
                     continue
 
                 # Convert dates
-                fecha_proceso_formatted = BCPStatementParser.convert_bcp_date(
+                fecha_proceso_formatted = BCPDebitParser.convert_bcp_date(
                     fecha_proceso
                 )
-                fecha_valor_formatted = BCPStatementParser.convert_bcp_date(fecha_valor)
+                fecha_valor_formatted = BCPDebitParser.convert_bcp_date(fecha_valor)
 
                 # Parse amounts
                 egreso = 0.0
@@ -160,8 +189,8 @@ class BCPStatementParser:
             day = int(date_str[:2])
             month_abbr = date_str[2:5].upper()
 
-            if month_abbr in BCPStatementParser.MONTHS_MAP:
-                month = int(BCPStatementParser.MONTHS_MAP[month_abbr])
+            if month_abbr in BCPDebitParser.MONTHS_MAP:
+                month = int(BCPDebitParser.MONTHS_MAP[month_abbr])
                 # Assume current year (2025 based on example)
                 year = 2025
                 return date(year, month, day)

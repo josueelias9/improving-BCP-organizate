@@ -4,13 +4,12 @@ Implements the PDFExtractorGateway interface
 """
 
 import fitz  # PyMuPDF
-from typing import BinaryIO, List, Optional, Tuple
-from datetime import date
+from typing import BinaryIO, Optional
 import logging
 import os
-import uuid
 from dotenv import load_dotenv
-from src.Aframework.parser.bcp_statement_parser import BCPStatementParser
+from src.Aframework.parser.bcp_debit_parser import BCPDebitParser
+from src.Aframework.parser.bcp_credit_parser import BCPCreditParser
 from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
 from src.Denterprise.entities import DocumentEntity
 
@@ -21,8 +20,11 @@ load_dotenv()
 class PDFExtractorGateway(IPDFExtractorGateway):
     """Gateway implementation for BCP PDF bank statements extraction"""
 
+
+
     def __init__(self):
-        self.parser = BCPStatementParser()
+        self.parser = BCPDebitParser()
+        self.parser_credit = BCPCreditParser()
 
     def extract_document(
         self, pdf_file: BinaryIO, document_type_id: Optional[str] = None,
@@ -42,36 +44,17 @@ class PDFExtractorGateway(IPDFExtractorGateway):
             password = os.getenv("PDF_PASSWORD")
             full_text = self._extract_text_from_pdf(pdf_file, password)
 
-            # Use parser from Denterprise layer for business logic
-            account_code, currency = self.parser.extract_account_code(full_text)
-            saldo_anterior = self.parser.extract_saldo_anterior(full_text)
-            initial_day, final_day = self.parser.extract_period(full_text)
-            transactions = self.parser.parse_transactions(full_text)
+            if document_type == "bcp_credit":
+                data = self.parser_credit.get_data(full_text)
 
-            # Convert transactions to data list
-            data = {
-                "account_code": account_code,
-                "currency": currency,
-                "saldo_anterior": saldo_anterior,
-                "initial_day": initial_day.isoformat() if initial_day else None,
-                "final_day": final_day.isoformat() if final_day else None,
-                "transactions": []
-            }
-            for transaction in transactions:
-                data["transactions"].append({
-                    "fecha_proceso": transaction.fecha_proceso.isoformat() if transaction.fecha_proceso else None,
-                    "fecha_valor": transaction.fecha_valor.isoformat() if transaction.fecha_valor else None,
-                    "description": transaction.description,
-                    "cargos": transaction.cargos,
-                    "abonos": transaction.abonos,
-                    "internal_transaction": transaction.internal_transaction,
-                })
+            else:
+                data = self.parser.get_data(full_text)
 
             # Return DocumentEntity with the extracted data
             return DocumentEntity(
                 data=data,
-                currency=currency or "",
-                unique_identifier=f"{account_code}__{initial_day}__{final_day}",
+                currency=data["currency"] or "",
+                unique_identifier=f"{data['account_code']}__{data['initial_day']}__{data['final_day']}",
                 processed=False,
                 document_type_id=document_type_id,
             )
