@@ -4,7 +4,7 @@ API Router - Central routing configuration
 
 from fastapi import APIRouter
 
-from api.routes import health, transaction, category
+from api.routes import health, transaction, category, document_type
 
 from api.routes.documents import (
     pdf_processing,
@@ -30,4 +30,7 @@ api_router.include_router(
 )
 api_router.include_router(
     category.router, prefix="/api/categories", tags=["categories"]
+)
+api_router.include_router(
+    document_type.router, prefix="/api/document-types", tags=["document-types"]
 )

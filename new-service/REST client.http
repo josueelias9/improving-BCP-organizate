@@ -55,6 +55,13 @@ Accept: application/json
 GET {{baseUrl}}/api/categories/
 Accept: application/json
 
+### =================================================================== document_type.py
+
+# Get all document types from the database
+# @name getAllDocumentTypes
+GET {{baseUrl}}/api/document-types/
+Accept: application/json
+
 ### =================================================================== transaction.py
 
 # Get all transactions with pagination
