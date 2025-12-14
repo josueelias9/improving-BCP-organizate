@@ -45,7 +45,7 @@ def presenter(dto_response: DTOPdfProcessingResponse):
     # Return response based on result
     if dto_response.already_exists:
         return {
-            "detail": dto_response.message,
+            "message": dto_response.message,
             "unique_identifier": dto_response.unique_identifier,
             "document_id": dto_response.document_id,
         }

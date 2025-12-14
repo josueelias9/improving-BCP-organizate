@@ -4,9 +4,7 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 
 import logging
-from typing import Dict, Any, List, Tuple
 
-from src.Denterprise.entities import DocumentEntity
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.DTO.document_dto import (
     DTOPdfProcessingResponse,
@@ -71,7 +69,7 @@ class PDFProcessingUseCase:
 
             # Extract document from PDF (returns DocumentEntity with data)
             document = self.pdf_extractor_gateway.extract_document(
-                pdf_file, document_type_id=str(doc_type.id), document_type=doc_type.name
+                pdf_file, document_type=doc_type.name
             )
 
             # Validate document has data

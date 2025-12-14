@@ -41,7 +41,7 @@ class BCPCreditParser:
         "DIC": "12",
     }
 
-    def get_data(self, full_text: str) -> dict:
+    def get_data(self, full_text: str) -> tuple[dict[str, Any], str, str]:
         """Parse BCP credit card PDF text and extract transaction data"""
         try:
             # Extract account code
@@ -67,7 +67,7 @@ class BCPCreditParser:
             # Extract transactions
             transactions = self.parse_transactions(full_text)
 
-            return {
+            data = {
                 "account_code": account_code,
                 "initial_day": initial_day,
                 "final_day": final_day,
@@ -76,6 +76,13 @@ class BCPCreditParser:
                 "saldo_anterior_dolares": saldo_anterior_dolares,
                 "transactions": transactions,
             }
+
+            return (
+                data,
+                currency,
+                f"{account_code}__{initial_day}__{final_day}__{saldo_anterior_soles}",
+            )
+
         except Exception as e:
             logger.error(f"Error parsing BCP credit PDF: {e}")
             raise

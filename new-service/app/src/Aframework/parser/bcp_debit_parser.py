@@ -5,7 +5,6 @@ Parses BCP PDF format and creates domain entities
 This is an INPUT ADAPTER that:
 - Depends on external format (BCP PDF structure)
 - Contains parsing logic specific to BCP
-- Creates clean domain entities (BCPTransactionEntity)
 - Belongs in the Interface Adapters layer, NOT the domain layer
 """
 
@@ -13,7 +12,6 @@ import re
 import logging
 from datetime import date
 from typing import List, Optional, Tuple
-from src.Denterprise.entities import BCPTransactionEntity
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ class BCPDebitParser:
         "SET": "09",  # Setiembre
     }
 
-    def get_data(self, full_text):
+    def get_data(self, full_text) -> Tuple[dict[str, any], str, str]:
         # Use parser from Denterprise layer for business logic
         account_code, currency = self.extract_account_code(full_text)
         saldo_anterior = self.extract_saldo_anterior(full_text)
@@ -63,25 +61,25 @@ class BCPDebitParser:
             data["transactions"].append(
                 {
                     "fecha_proceso": (
-                        transaction.fecha_proceso.isoformat()
-                        if transaction.fecha_proceso
+                        transaction["fecha_proceso"].isoformat()
+                        if transaction["fecha_proceso"]
                         else None
                     ),
                     "fecha_valor": (
-                        transaction.fecha_valor.isoformat()
-                        if transaction.fecha_valor
+                        transaction["fecha_valor"].isoformat()
+                        if transaction["fecha_valor"]
                         else None
                     ),
-                    "description": transaction.description,
-                    "cargos": transaction.cargos,
-                    "abonos": transaction.abonos,
-                    "internal_transaction": transaction.internal_transaction,
+                    "description": transaction["description"],
+                    "cargos": transaction["cargos"],
+                    "abonos": transaction["abonos"],
+                    "internal_transaction": transaction["internal_transaction"],
                 }
             )
-        return data
+        return data, currency, f"{account_code}__{initial_day}__{final_day}"
 
     @staticmethod
-    def parse_transactions(text: str) -> List[BCPTransactionEntity]:
+    def parse_transactions(text: str) -> List[dict[str, any]]:
         """
         Parse transactions from BCP PDF text using fixed positions
 
@@ -162,20 +160,16 @@ class BCPDebitParser:
                         pass
 
                 # Create domain entity (pure business object)
-                transaction = BCPTransactionEntity(
-                    fecha_proceso=fecha_proceso_formatted,
-                    fecha_valor=fecha_valor_formatted,
-                    description=description,
-                    cargos=egreso,
-                    abonos=ingreso,
-                    internal_transaction=internal_transaction,
-                )
+                transaction = {
+                    "fecha_proceso": fecha_proceso_formatted,
+                    "fecha_valor": fecha_valor_formatted,
+                    "description": description,
+                    "cargos": egreso,
+                    "abonos": ingreso,
+                    "internal_transaction": internal_transaction,
+                }
 
-                if transaction.is_valid():
-                    transactions.append(transaction)
-                    logger.debug(f"Valid transaction: {transaction}")
-                else:
-                    logger.debug(f"Invalid transaction (no amounts): {transaction}")
+                transactions.append(transaction)
 
             except Exception as e:
                 logger.debug(f"Error parsing line {line_num}: {line} - {str(e)}")
