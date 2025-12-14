@@ -185,8 +185,8 @@ export async function updateTransaction(
 }
 
 const ProcessPDFSchema = z.object({
-    type: z.enum(['debit', 'credit'], {
-        invalid_type_error: 'Please select a document type.'
+    type: z.string().min(1, {
+        message: 'Please select a document type.'
     }),
     user_email: z.string().email({ message: 'Please enter a valid email.' })
 })

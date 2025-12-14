@@ -6,6 +6,7 @@ import { fetchDocuments } from '@/app/lib/data'
 
 export default async function DocumentsPage() {
     const documents = await fetchDocuments()
+    console.log('Fetched documents:', documents)
 
     return (
         <main>
@@ -16,7 +17,7 @@ export default async function DocumentsPage() {
                 </div>
                 <div className='md:col-span-2'>
                     <Suspense fallback={<div>Loading documents...</div>}>
-                        <DocumentsTable documents={documents} />
+                        <DocumentsTable documents={documents.documents} />
                     </Suspense>
                 </div>
             </div>

@@ -8,7 +8,8 @@ import {
     Revenue,
     TransactionTable,
     Category,
-    DocumentTable
+    DocumentTable,
+    DocumentType
 } from './definitions'
 import { formatCurrency } from './utils'
 
@@ -295,6 +296,34 @@ export async function fetchDocuments(skip: number = 0, limit: number = 100) {
 
         const data: DocumentTable[] = await response.json()
         return data
+    } catch (error) {
+        console.error('API Error:', error)
+        return []
+    }
+}
+
+export async function fetchDocumentTypes() {
+    try {
+        const baseUrl = process.env.API_URL || 'http://new-service:8000'
+        const url = `${baseUrl}/api/document-types/`
+
+        console.log('Fetching document types from:', url)
+
+        const response = await fetch(url, {
+            headers: {
+                Accept: 'application/json'
+            },
+            cache: 'no-store',
+            next: { revalidate: 0 }
+        })
+
+        if (!response.ok) {
+            console.error(`Failed to fetch document types: ${response.status} ${response.statusText}`)
+            return []
+        }
+
+        const data: { document_types: DocumentType[]; total_count: number } = await response.json()
+        return data.document_types
     } catch (error) {
         console.error('API Error:', error)
         return []

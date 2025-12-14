@@ -1,7 +1,8 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useState, useEffect } from 'react'
 import { processPDF, ProcessPDFState } from '@/app/lib/actions'
+import { DocumentType } from '@/app/lib/definitions'
 import { DocumentPlusIcon } from '@heroicons/react/24/outline'
 import { lusitana } from '@/app/ui/fonts'
 
@@ -9,6 +10,35 @@ export default function UploadPDFForm() {
     const initialState: ProcessPDFState = { message: null, errors: {} }
     const [state, dispatch] = useActionState(processPDF, initialState)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([])
+    const [loadingTypes, setLoadingTypes] = useState(true)
+
+    useEffect(() => {
+        const loadDocumentTypes = async () => {
+            try {
+                // Use relative path for client-side fetch to avoid CORS issues
+                const response = await fetch('/api/document-types-proxy', {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })
+                
+                if (!response.ok) {
+                    console.error('Failed to fetch document types:', response.status, response.statusText)
+                    return
+                }
+                
+                const data: { document_types: DocumentType[]; total_count: number } = await response.json()
+                setDocumentTypes(data.document_types)
+            } catch (error) {
+                console.error('Error fetching document types:', error)
+            } finally {
+                setLoadingTypes(false)
+            }
+        }
+
+        loadDocumentTypes()
+    }, [])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -63,14 +93,18 @@ export default function UploadPDFForm() {
                         id='type'
                         name='type'
                         defaultValue=''
-                        className='block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                        disabled={loadingTypes}
+                        className='block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed'
                         aria-describedby='type-error'
                     >
                         <option value='' disabled>
-                            Select type
+                            {loadingTypes ? 'Loading types...' : 'Select type'}
                         </option>
-                        <option value='debit'>Debit</option>
-                        <option value='credit'>Credit</option>
+                        {documentTypes.map((docType) => (
+                            <option key={docType.id} value={docType.name}>
+                                {docType.name}
+                            </option>
+                        ))}
                     </select>
                     {state.errors?.type && (
                         <div id='type-error' className='mt-2 text-sm text-red-500'>

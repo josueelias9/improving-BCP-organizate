@@ -131,3 +131,8 @@ export type DocumentTable = {
     user_email: string
     created_at: string
 }
+
+export type DocumentType = {
+    id: string
+    name: string
+}
