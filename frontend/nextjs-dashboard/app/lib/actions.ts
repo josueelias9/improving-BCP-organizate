@@ -236,7 +236,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         // Save file to /shared_files/only_one_file
         const fileBuffer = await file.arrayBuffer()
         const fileName = file.name
-        const filePath = `/shared_files/only_one_file/${fileName}`
+        const filePath = `${process.env.PATH_TO_SHARED_FILES}${fileName}`
 
         // Send to API for processing
         const response = await fetch(`${baseUrl}/api/pdf-processing`, {

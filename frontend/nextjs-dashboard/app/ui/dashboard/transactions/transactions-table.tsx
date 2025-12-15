@@ -35,17 +35,39 @@ export default function TransactionsTable({
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)
-    const [filterUniqueId, setFilterUniqueId] = useState('')
+    const [filterDocumentType, setFilterDocumentType] = useState('')
+    const [filterTransactionType, setFilterTransactionType] = useState('')
+    const [filterCategoryName, setFilterCategoryName] = useState('')
     const [isExporting, setIsExporting] = useState(false)
     const [isImporting, setIsImporting] = useState(false)
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
-    // Filter transactions by unique_identifier if filter is set
-    const filteredTransactions = filterUniqueId
-        ? transactions.filter(t =>
-              t.unique_identifier?.toLowerCase().includes(filterUniqueId.toLowerCase())
-          )
-        : transactions
+    // Get unique values for combo boxes
+    const uniqueDocumentTypes = Array.from(
+        new Set(
+            transactions.map(t => t.document_type_name).filter(name => name) // Remove null/undefined values
+        )
+    ).sort()
+
+    const uniqueTransactionTypes = Array.from(
+        new Set(
+            transactions.map(t => t.transaction_type).filter(type => type) // Remove null/undefined values
+        )
+    ).sort()
+
+    const uniqueCategoryNames = Array.from(
+        new Set(
+            transactions.map(t => t.category_name).filter(name => name) // Remove null/undefined values
+        )
+    ).sort()
+
+    // Filter transactions by all active filters
+    const filteredTransactions = transactions.filter(t => {
+        if (filterDocumentType && t.document_type_name !== filterDocumentType) return false
+        if (filterTransactionType && t.transaction_type !== filterTransactionType) return false
+        if (filterCategoryName && t.category_name !== filterCategoryName) return false
+        return true
+    })
 
     // Sort transactions by 'order' column if it exists
     const sortedTransactions = [...filteredTransactions].sort((a, b) => {
@@ -115,13 +137,12 @@ export default function TransactionsTable({
 
     const not_included_columns = [
         'unique_identifier',
-        'created_at',
-        'updated_at',
         'id',
         'document_id',
         'category_id',
         'user_id',
-        'fecha_proceso'
+        'document_type_name',
+        'transaction_type'
     ]
 
     // Get column names from the first transaction
@@ -184,22 +205,76 @@ export default function TransactionsTable({
                 </div>
             )}
 
-            {/* Filter by unique_identifier */}
-            <div className='mb-4'>
-                <label
-                    htmlFor='filter-unique-id'
-                    className='block text-sm font-medium text-gray-700 mb-2'
-                >
-                    Filter by Unique Identifier
-                </label>
-                <input
-                    id='filter-unique-id'
-                    type='text'
-                    value={filterUniqueId}
-                    onChange={e => setFilterUniqueId(e.target.value)}
-                    placeholder='Search by unique identifier...'
-                    className='w-full md:w-96 rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-                />
+            {/* Filters */}
+            <div className='mb-4 grid grid-cols-1 md:grid-cols-3 gap-4'>
+                {/* Filter by document_type_name */}
+                <div>
+                    <label
+                        htmlFor='filter-document-type'
+                        className='block text-sm font-medium text-gray-700 mb-2'
+                    >
+                        Filter by Document Type
+                    </label>
+                    <select
+                        id='filter-document-type'
+                        value={filterDocumentType}
+                        onChange={e => setFilterDocumentType(e.target.value)}
+                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                    >
+                        <option value=''>All Document Types</option>
+                        {uniqueDocumentTypes.map(docType => (
+                            <option key={docType} value={docType}>
+                                {docType}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Filter by transaction_type */}
+                <div>
+                    <label
+                        htmlFor='filter-transaction-type'
+                        className='block text-sm font-medium text-gray-700 mb-2'
+                    >
+                        Filter by Transaction Type
+                    </label>
+                    <select
+                        id='filter-transaction-type'
+                        value={filterTransactionType}
+                        onChange={e => setFilterTransactionType(e.target.value)}
+                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                    >
+                        <option value=''>All Transaction Types</option>
+                        {uniqueTransactionTypes.map(type => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Filter by category_name */}
+                <div>
+                    <label
+                        htmlFor='filter-category-name'
+                        className='block text-sm font-medium text-gray-700 mb-2'
+                    >
+                        Filter by Category
+                    </label>
+                    <select
+                        id='filter-category-name'
+                        value={filterCategoryName}
+                        onChange={e => setFilterCategoryName(e.target.value)}
+                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+                    >
+                        <option value=''>All Categories</option>
+                        {uniqueCategoryNames.map(category => (
+                            <option key={category} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             <div className='flex grow flex-col justify-between rounded-xl bg-gray-50 p-4'>

@@ -44,13 +44,7 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
         setTimeout(() => setMessage(null), 5000)
     }
 
-    const not_included_columns = [
-        'account_number',
-        'unique_identifier',
-        'user_id',
-        'id',
-        'previous_balance'
-    ]
+    const not_included_columns = ['user_id', 'id', 'document_type_id']
 
     // Get column names from the first document
     const columns =
