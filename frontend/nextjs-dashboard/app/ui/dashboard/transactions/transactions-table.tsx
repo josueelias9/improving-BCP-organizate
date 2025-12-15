@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { formatCurrency } from '@/app/lib/utils'
 import { lusitana } from '@/app/ui/fonts'
 import EditTransactionModal from '@/app/ui/dashboard/transactions/edit-transaction-modal'
+import FilterSelect from '@/app/ui/dashboard/transactions/filter-select'
 import type { Category } from '@/app/lib/definitions'
 import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
 import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
@@ -207,74 +208,32 @@ export default function TransactionsTable({
 
             {/* Filters */}
             <div className='mb-4 grid grid-cols-1 md:grid-cols-3 gap-4'>
-                {/* Filter by document_type_name */}
-                <div>
-                    <label
-                        htmlFor='filter-document-type'
-                        className='block text-sm font-medium text-gray-700 mb-2'
-                    >
-                        Filter by Document Type
-                    </label>
-                    <select
-                        id='filter-document-type'
-                        value={filterDocumentType}
-                        onChange={e => setFilterDocumentType(e.target.value)}
-                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-                    >
-                        <option value=''>All Document Types</option>
-                        {uniqueDocumentTypes.map(docType => (
-                            <option key={docType} value={docType}>
-                                {docType}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <FilterSelect
+                    id='filter-document-type'
+                    label='Filter by Document Type'
+                    value={filterDocumentType}
+                    options={uniqueDocumentTypes}
+                    onChange={setFilterDocumentType}
+                    placeholder='All Document Types'
+                />
 
-                {/* Filter by transaction_type */}
-                <div>
-                    <label
-                        htmlFor='filter-transaction-type'
-                        className='block text-sm font-medium text-gray-700 mb-2'
-                    >
-                        Filter by Transaction Type
-                    </label>
-                    <select
-                        id='filter-transaction-type'
-                        value={filterTransactionType}
-                        onChange={e => setFilterTransactionType(e.target.value)}
-                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-                    >
-                        <option value=''>All Transaction Types</option>
-                        {uniqueTransactionTypes.map(type => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <FilterSelect
+                    id='filter-transaction-type'
+                    label='Filter by Transaction Type'
+                    value={filterTransactionType}
+                    options={uniqueTransactionTypes}
+                    onChange={setFilterTransactionType}
+                    placeholder='All Transaction Types'
+                />
 
-                {/* Filter by category_name */}
-                <div>
-                    <label
-                        htmlFor='filter-category-name'
-                        className='block text-sm font-medium text-gray-700 mb-2'
-                    >
-                        Filter by Category
-                    </label>
-                    <select
-                        id='filter-category-name'
-                        value={filterCategoryName}
-                        onChange={e => setFilterCategoryName(e.target.value)}
-                        className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-                    >
-                        <option value=''>All Categories</option>
-                        {uniqueCategoryNames.map(category => (
-                            <option key={category} value={category}>
-                                {category}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <FilterSelect
+                    id='filter-category-name'
+                    label='Filter by Category'
+                    value={filterCategoryName}
+                    options={uniqueCategoryNames}
+                    onChange={setFilterCategoryName}
+                    placeholder='All Categories'
+                />
             </div>
 
             <div className='flex grow flex-col justify-between rounded-xl bg-gray-50 p-4'>
