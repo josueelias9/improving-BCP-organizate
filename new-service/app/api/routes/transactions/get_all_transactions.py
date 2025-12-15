@@ -12,6 +12,8 @@ import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
+from src.Aframework.gateway.db.document import DocumentDbGateway
+from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.use_cases.transaction.get_all_transactions import (
     GetAllTransactionsUseCase,
 )
@@ -29,7 +31,11 @@ def presenter(dto_response: DTOGetAllTransactionsResponse) -> List[Dict[str, Any
 def controller(session, skip, limit):
     transaction_gateway = TransactionDbGateway(session)
     category_gateway = CategoryDbGateway(session)
-    use_case = GetAllTransactionsUseCase(transaction_gateway, category_gateway)
+    document_gateway = DocumentDbGateway(session)
+    document_type_gateway = DocumentTypeDbGateway(session)
+    use_case = GetAllTransactionsUseCase(
+        transaction_gateway, category_gateway, document_gateway, document_type_gateway
+    )
     dto_response = use_case.execute(skip=skip, limit=limit)
     return presenter(dto_response)
 
@@ -41,7 +47,7 @@ def get_all_transactions(
     """
     Get all transactions with pagination
 
-    Includes category_name field with the name of the associated category.
+    Includes category_name and document_type_name fields.
 
     Args:
         skip: Number of records to skip (default: 0)
