@@ -225,7 +225,7 @@ class BCPDebitParser:
 
             # BCP-specific pattern: NNN-NNNNNNNN-N-NN  CURRENCY
             # Example: 191-04106279-0-55  SOLES
-            account_pattern = r"\b(\d{3}-\d{8}-\d{1}-\d{2})\s+(SOLES|DOLARES)"
+            account_pattern = r"\b(\d{3}-\d{8}-\d{1}-\d{2})\s+(SOLES|US DOLARES)"
 
             for line in lines:
                 # Search for BCP account pattern with currency

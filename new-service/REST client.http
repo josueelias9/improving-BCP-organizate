@@ -23,7 +23,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "/shared_files/examples/EECC102025_07750301.PDF",
+    "pdf_filename": "/downloads/EECC102025_07750301.PDF",
     "type": "bcp_debit",
     "user_email": "admin@bcpextractor.com"
 }
@@ -36,7 +36,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "/shared_files/examples/EECC102025_09745280.PDF",
+    "pdf_filename": "/downloads/EECC102025_09745280.PDF",
     "type": "bcp_credit",
     "user_email": "admin@bcpextractor.com"
 }

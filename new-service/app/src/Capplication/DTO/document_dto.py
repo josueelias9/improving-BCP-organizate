@@ -1,4 +1,3 @@
-from src.Capplication.DTO.other_dto import DTODocumentSummary
 from typing import BinaryIO
 import uuid
 from typing import List
@@ -62,7 +61,7 @@ class GetAllDocumentsRequest:
 class DTOGetAllDocumentsResponse:
     """Response DTO for get all documents operation - returned from use case to controller"""
 
-    documents: List[DTODocumentSummary]
+    documents: List[dict]
     total_returned: int
     skip: int
     limit: int

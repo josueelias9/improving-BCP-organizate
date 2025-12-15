@@ -121,7 +121,7 @@ class ImportTransactionsFromCsvUseCase:
 
     def _find_csv_file(self, filename: Optional[str] = None) -> Path:
         """
-        Find the CSV file in the /shared_files/output directory
+        Find the CSV file in the /downloads/output directory
 
         Args:
             filename: Optional specific filename, otherwise uses latest
@@ -129,7 +129,7 @@ class ImportTransactionsFromCsvUseCase:
         Returns:
             Path to the CSV file
         """
-        output_dir = Path("/shared_files/output")
+        output_dir = Path("/downloads/output")
 
         if filename:
             return output_dir / filename
@@ -139,7 +139,7 @@ class ImportTransactionsFromCsvUseCase:
 
         if not csv_files:
             raise ValueError(
-                "No transaction CSV files found in /shared_files/output directory"
+                "No transaction CSV files found in /downloads/output directory"
             )
 
         # Sort by modification time, newest first
