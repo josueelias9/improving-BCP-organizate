@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
-    title="BCP PDF Extractor", 
+    title="BCP PDF Extractor",
     version="2.0.0",
-    description="Servicio para extraer transacciones de PDFs del BCP usando Clean Architecture"
+    description="Servicio para extraer transacciones de PDFs del BCP usando Clean Architecture",
 )
 
 # Include API router

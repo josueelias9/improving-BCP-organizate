@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def init() -> None:
-    
+
     # Then initialize with data
     logger.info("Initializing database with default data...")
     with Session(engine) as session:

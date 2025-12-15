@@ -1,0 +1,3 @@
+"""
+Document Type use cases
+"""

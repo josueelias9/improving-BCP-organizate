@@ -1,0 +1,9 @@
+diagram.dio
+Dockerfile
+README.md
+REST client.http
+.dockerignore
+UML.md
+.github
+image.png
+.vscode/

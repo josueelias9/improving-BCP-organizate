@@ -18,3 +18,7 @@ Nothing in an inner circle can know anything at all about something in an outer 
 Typically the data that crosses the boundaries consists of simple data structures. You can use basic structs or simple data transfer objects if you like. Or the data can simply be arguments in function calls. Or you can pack it into a hashmap, or construct it into an object. The important thing is that isolated, simple data structures are passed across the boundaries. We don’t want to cheat and pass Entity objects or database rows. We don’t want the data structures to have any kind of dependency that violates the Dependency Rule.
 
 https://www.youtube.com/watch?v=C7MRkqP5NRI
+
+# codestyle
+
+use English for all code, comments and documentation.

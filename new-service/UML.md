@@ -11,12 +11,13 @@ erDiagram
     }
 
     TRANSACTION {
-        _ name
-        _ amount
-        _ currency
+        _ order
         _ description
-        _ category
-        _ subcategory
+        _ history
+        _ amount
+        _ type
+        _ date
+        _ unique_identifier
     }
 
     CATEGORY {
@@ -25,14 +26,17 @@ erDiagram
         _ subcategory
     }
 
+    DOCUMENT_TYPE {
+        _ name
+    }
+
 
 
     DOCUMENT {
-        _ account
-        _ type
         _ currency
-        _ account_number
-        _ data
+        json data
+        _ unique_identifier
+        bool processed
     }
 
 
@@ -42,4 +46,5 @@ erDiagram
     USER ||--o{ TRANSACTION : "realiza"
     TRANSACTION }o--|| CATEGORY : "pertenece a"
     CATEGORY ||--o| CATEGORY : "may have"
+    DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"
 ```

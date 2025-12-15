@@ -1,60 +1,69 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
 @baseUrl = http://127.0.0.1:8000
-@fileName = EECC102025_07750301.PDF
 
-### === HEALTH CHECK ===
+### =================================================================== health.py
 
-### 1. Health Check - Get API Info
+# @name getApiInfo
 GET {{baseUrl}}/api
+Accept: application/json
+
+### =================================================================== document.py
+
+# Get all documents from the database with their properties
+# @name getAllDocuments
+GET {{baseUrl}}/api/documents/?skip=0&limit=100
 Accept: application/json
 
 ###
 
-
-
-### === PDF PROCESSING WITH DATABASE ===
-
-### 2. Process PDF and Save to Database
 # Extract data from PDF and save it as JSON in the Documents table
-
-# @name populateDocument
+# @name pdfProcessing
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "files/{{fileName}}",
-    "type": "debit",
+    "pdf_filename": "/shared_files/examples/EECC102025_07750301.PDF",
+    "type": "bcp_debit",
     "user_email": "admin@bcpextractor.com"
 }
 
 ###
 
+# Extract data from PDF and save it as JSON in the Documents table
+# @name pdfProcessing
+POST {{baseUrl}}/api/pdf-processing
+Content-Type: application/json
 
+{
+    "pdf_filename": "/shared_files/examples/EECC102025_09745280.PDF",
+    "type": "bcp_credit",
+    "user_email": "admin@bcpextractor.com"
+}
 
-### === CATEGORIES ===
+###
 
-### 3. Get All Categories
+# Migrate data from the 'data' column of the document to the transactions table
+# @name loadTransactionsFromDocument
+POST {{baseUrl}}/api/load-from-document/{{pdfProcessing.response.body.$.document_id}}
+Accept: application/json
+
+### =================================================================== category.py
+
 # Get all categories from the database
+# @name getAllCategories
 GET {{baseUrl}}/api/categories/
 Accept: application/json
 
-###
+### =================================================================== document_type.py
 
-
-
-### === TRANSACTIONS ===
-
-### 4. Load Transactions from Document
-# Migrate data from the 'data' column of the document to the transactions table
-
-# @name populateTransaction
-POST {{baseUrl}}/api/transactions/load-from-document/{{populateDocument.response.body.$.document_id}}
+# Get all document types from the database
+# @name getAllDocumentTypes
+GET {{baseUrl}}/api/document-types/
 Accept: application/json
 
-###
+### =================================================================== transaction.py
 
-### 5. Get All Transactions
 # Get all transactions with pagination
 # @name getAllTransactions
 GET {{baseUrl}}/api/transactions/?skip=0&limit=1000
@@ -62,26 +71,24 @@ Accept: application/json
 
 ###
 
-### 6. Update Transaction by ID
 # Update 'history' and/or 'category_name' fields of a specific transaction
 # Only 'history' and 'category_name' fields can be edited
 # If the category doesn't exist, only history will be updated
-
+# @name updateTransactionById
 PUT {{baseUrl}}/api/transactions/{{getAllTransactions.response.body.$[0].id}}
 Content-Type: application/json
 
 {
-    "history": "Lo gaste cuando fui al supermercado",
+    "history": "This is a test history",
     "category_name": "Groceries"
 }
 
 ###
 
-### 7. Batch Update Transactions
 # Update multiple transactions simultaneously
 # Only 'history' and 'category_name' fields can be edited for each transaction
 # If a category doesn't exist, only history will be updated for that transaction
-
+# @name batchUpdateTransactions
 PATCH {{baseUrl}}/api/transactions/batch
 Content-Type: application/json
 
@@ -89,34 +96,29 @@ Content-Type: application/json
     "updates": [
         {
             "transaction_id": "{{getAllTransactions.response.body.$[0].id}}",
-            "history": "Lo gaste cuando fui al supermercado",
+            "history": "This is the first test history",
             "category_name": "Food"
         },
         {
             "transaction_id": "{{getAllTransactions.response.body.$[1].id}}",
-            "history": "Pago de la luz que me pidio mi madre",
+            "history": "This is the second test history",
             "category_name": "Utilities"
-        },
-        {
-            "transaction_id": "{{getAllTransactions.response.body.$[2].id}}",
-            "history": "Dinero que guarde para emergencias",
-            "category_name": "Savings"
         }
     ]
 }
 
 ###
 
-### 8. Export Transactions to CSV - All Transactions
 # Export all transactions to CSV format
 # File will be saved in the output/ directory
+# @name exportTransactionsToCSV
 GET {{baseUrl}}/api/transactions/export/csv
 Accept: application/json
 
 ###
 
-### 9. Import Transactions from CSV - Latest File
 # Import and update transactions from the most recent CSV file in output/ directory
 # Updates 'history' and 'category_name' fields based on unique_identifier
+# @name importTransactionsFromCSV
 POST {{baseUrl}}/api/transactions/import/csv
 Accept: application/json

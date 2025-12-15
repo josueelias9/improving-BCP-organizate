@@ -1,6 +1,19 @@
 services:
 
   ui:
+    container_name: ui-container
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
     volumes:
+      - ./files:/shared_files
       - .:/workspace
     command: sleep infinity
+
+  frontend:
+    profiles:
+      - avoid
