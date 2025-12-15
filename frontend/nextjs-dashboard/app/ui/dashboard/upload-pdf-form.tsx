@@ -19,16 +19,21 @@ export default function UploadPDFForm() {
                 // Use relative path for client-side fetch to avoid CORS issues
                 const response = await fetch('/api/document-types-proxy', {
                     headers: {
-                        'Accept': 'application/json',
-                    },
+                        Accept: 'application/json'
+                    }
                 })
-                
+
                 if (!response.ok) {
-                    console.error('Failed to fetch document types:', response.status, response.statusText)
+                    console.error(
+                        'Failed to fetch document types:',
+                        response.status,
+                        response.statusText
+                    )
                     return
                 }
-                
-                const data: { document_types: DocumentType[]; total_count: number } = await response.json()
+
+                const data: { document_types: DocumentType[]; total_count: number } =
+                    await response.json()
                 setDocumentTypes(data.document_types)
             } catch (error) {
                 console.error('Error fetching document types:', error)
@@ -100,7 +105,7 @@ export default function UploadPDFForm() {
                         <option value='' disabled>
                             {loadingTypes ? 'Loading types...' : 'Select type'}
                         </option>
-                        {documentTypes.map((docType) => (
+                        {documentTypes.map(docType => (
                             <option key={docType.id} value={docType.name}>
                                 {docType.name}
                             </option>

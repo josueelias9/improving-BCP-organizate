@@ -318,7 +318,9 @@ export async function fetchDocumentTypes() {
         })
 
         if (!response.ok) {
-            console.error(`Failed to fetch document types: ${response.status} ${response.statusText}`)
+            console.error(
+                `Failed to fetch document types: ${response.status} ${response.statusText}`
+            )
             return []
         }
 

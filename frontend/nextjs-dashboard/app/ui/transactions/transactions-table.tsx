@@ -42,8 +42,8 @@ export default function TransactionsTable({
 
     // Filter transactions by unique_identifier if filter is set
     const filteredTransactions = filterUniqueId
-        ? transactions.filter(t => 
-            t.unique_identifier?.toLowerCase().includes(filterUniqueId.toLowerCase())
+        ? transactions.filter(t =>
+              t.unique_identifier?.toLowerCase().includes(filterUniqueId.toLowerCase())
           )
         : transactions
 
@@ -81,32 +81,32 @@ export default function TransactionsTable({
     const handleExportCSV = async () => {
         setIsExporting(true)
         setMessage(null)
-        
+
         const result = await exportTransactionsToCSV()
-        
+
         setIsExporting(false)
         setMessage({
             text: result.message,
             type: result.success ? 'success' : 'error'
         })
-        
+
         setTimeout(() => setMessage(null), 5000)
     }
 
     const handleImportCSV = async () => {
         setIsImporting(true)
         setMessage(null)
-        
+
         const result = await importTransactionsFromCSV()
-        
+
         setIsImporting(false)
         setMessage({
             text: result.message,
             type: result.success ? 'success' : 'error'
         })
-        
+
         setTimeout(() => setMessage(null), 5000)
-        
+
         // Reload page if successful to show updated data
         if (result.success) {
             setTimeout(() => window.location.reload(), 2000)
@@ -134,7 +134,7 @@ export default function TransactionsTable({
         <div className='flex w-full flex-col md:col-span-4'>
             <div className='flex items-center justify-between mb-4'>
                 <h2 className={`${lusitana.className} text-xl md:text-2xl`}>All Transactions</h2>
-                
+
                 {/* CSV Export/Import buttons */}
                 <div className='flex gap-2'>
                     <button
@@ -147,10 +147,12 @@ export default function TransactionsTable({
                         }`}
                         title='Export transactions to CSV'
                     >
-                        <ArrowDownTrayIcon className={`h-5 w-5 ${isExporting ? 'animate-bounce' : ''}`} />
+                        <ArrowDownTrayIcon
+                            className={`h-5 w-5 ${isExporting ? 'animate-bounce' : ''}`}
+                        />
                         {isExporting ? 'Exporting...' : 'Export CSV'}
                     </button>
-                    
+
                     <button
                         onClick={handleImportCSV}
                         disabled={isImporting}
@@ -161,7 +163,9 @@ export default function TransactionsTable({
                         }`}
                         title='Import transactions from CSV'
                     >
-                        <ArrowUpTrayIcon className={`h-5 w-5 ${isImporting ? 'animate-bounce' : ''}`} />
+                        <ArrowUpTrayIcon
+                            className={`h-5 w-5 ${isImporting ? 'animate-bounce' : ''}`}
+                        />
                         {isImporting ? 'Importing...' : 'Import CSV'}
                     </button>
                 </div>
@@ -179,17 +183,20 @@ export default function TransactionsTable({
                     {message.text}
                 </div>
             )}
-            
+
             {/* Filter by unique_identifier */}
             <div className='mb-4'>
-                <label htmlFor='filter-unique-id' className='block text-sm font-medium text-gray-700 mb-2'>
+                <label
+                    htmlFor='filter-unique-id'
+                    className='block text-sm font-medium text-gray-700 mb-2'
+                >
                     Filter by Unique Identifier
                 </label>
                 <input
                     id='filter-unique-id'
                     type='text'
                     value={filterUniqueId}
-                    onChange={(e) => setFilterUniqueId(e.target.value)}
+                    onChange={e => setFilterUniqueId(e.target.value)}
                     placeholder='Search by unique identifier...'
                     className='w-full md:w-96 rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                 />
@@ -211,81 +218,96 @@ export default function TransactionsTable({
                             {sortedTransactions.map(transaction => {
                                 const incomplete = isIncomplete(transaction)
                                 const bgColor = incomplete ? 'bg-yellow-50' : 'bg-green-50'
-                                const hoverColor = incomplete ? 'hover:bg-yellow-100' : 'hover:bg-green-100'
-                                
-                                return (
-                                <tr
-                                    key={transaction.id}
-                                    onClick={() => handleRowClick(transaction)}
-                                    onMouseEnter={() => handleMouseEnter(transaction.id)}
-                                    onMouseLeave={handleMouseLeave}
-                                    className={`w-full border-b py-3 text-sm last-of-type:border-none cursor-pointer transition-colors ${
-                                        hoveredRow === transaction.id
-                                            ? (incomplete ? 'bg-yellow-100' : 'bg-green-100')
-                                            : bgColor
-                                    } ${hoverColor} [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg`}
-                                >
-                                    {columns.map((column, index) => {
-                                        const value =
-                                            transaction[column as keyof typeof transaction]
-                                        let displayValue: React.ReactNode = value ?? ''
-                                        const isEditableColumn = column === 'history' || column === 'category_name'
+                                const hoverColor = incomplete
+                                    ? 'hover:bg-yellow-100'
+                                    : 'hover:bg-green-100'
 
-                                        // Special formatting for specific columns
-                                        if (column === 'amount') {
-                                            displayValue = (
-                                                <span
-                                                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
-                                                        (value as number) >= 0
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-red-100 text-red-700'
+                                return (
+                                    <tr
+                                        key={transaction.id}
+                                        onClick={() => handleRowClick(transaction)}
+                                        onMouseEnter={() => handleMouseEnter(transaction.id)}
+                                        onMouseLeave={handleMouseLeave}
+                                        className={`w-full border-b py-3 text-sm last-of-type:border-none cursor-pointer transition-colors ${
+                                            hoveredRow === transaction.id
+                                                ? incomplete
+                                                    ? 'bg-yellow-100'
+                                                    : 'bg-green-100'
+                                                : bgColor
+                                        } ${hoverColor} [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg`}
+                                    >
+                                        {columns.map((column, index) => {
+                                            const value =
+                                                transaction[column as keyof typeof transaction]
+                                            let displayValue: React.ReactNode = value ?? ''
+                                            const isEditableColumn =
+                                                column === 'history' || column === 'category_name'
+
+                                            // Special formatting for specific columns
+                                            if (column === 'amount') {
+                                                displayValue = (
+                                                    <span
+                                                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
+                                                            (value as number) >= 0
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-red-100 text-red-700'
+                                                        }`}
+                                                    >
+                                                        {formatCurrency((value as number) || 0)}
+                                                    </span>
+                                                )
+                                            } else if (
+                                                column === 'transaction_date' ||
+                                                column === 'created_at'
+                                            ) {
+                                                displayValue = formatTransactionDate(
+                                                    value as string
+                                                )
+                                            } else if (
+                                                typeof value === 'string' &&
+                                                value.length > 20
+                                            ) {
+                                                // Truncate long strings (like IDs)
+                                                displayValue = (
+                                                    <div
+                                                        className='truncate max-w-[150px]'
+                                                        title={value}
+                                                    >
+                                                        {value.substring(0, 15)}...
+                                                    </div>
+                                                )
+                                            }
+
+                                            const isLastColumn = index === columns.length - 1
+
+                                            return (
+                                                <td
+                                                    key={column}
+                                                    className={`whitespace-nowrap px-3 py-3 ${isLastColumn ? 'relative' : ''} ${
+                                                        isEditableColumn
+                                                            ? 'font-semibold border-l-2 border-blue-400'
+                                                            : ''
                                                     }`}
                                                 >
-                                                    {formatCurrency((value as number) || 0)}
-                                                </span>
-                                            )
-                                        } else if (
-                                            column === 'transaction_date' ||
-                                            column === 'created_at'
-                                        ) {
-                                            displayValue = formatTransactionDate(value as string)
-                                        } else if (typeof value === 'string' && value.length > 20) {
-                                            // Truncate long strings (like IDs)
-                                            displayValue = (
-                                                <div
-                                                    className='truncate max-w-[150px]'
-                                                    title={value}
-                                                >
-                                                    {value.substring(0, 15)}...
-                                                </div>
-                                            )
-                                        }
-
-                                        const isLastColumn = index === columns.length - 1
-
-                                        return (
-                                            <td
-                                                key={column}
-                                                className={`whitespace-nowrap px-3 py-3 ${isLastColumn ? 'relative' : ''} ${
-                                                    isEditableColumn ? 'font-semibold border-l-2 border-blue-400' : ''
-                                                }`}
-                                            >
-                                                {isEditableColumn && !value && (
-                                                    <span className='text-gray-400 italic text-xs'>Click to edit</span>
-                                                )}
-                                                {value && displayValue}
-                                                {isLastColumn &&
-                                                    hoveredRow === transaction.id &&
-                                                    showEditTooltip && (
-                                                        <span className='absolute right-4 top-1/2 -translate-y-1/2 rounded bg-blue-600 px-3 py-1.5 text-xs text-white shadow-lg pointer-events-none'>
-                                                            ✏️ Click to edit History & Category
+                                                    {isEditableColumn && !value && (
+                                                        <span className='text-gray-400 italic text-xs'>
+                                                            Click to edit
                                                         </span>
                                                     )}
-                                            </td>
-                                        )
-                                    })}
-                                </tr>
-                            )})}
+                                                    {value && displayValue}
+                                                    {isLastColumn &&
+                                                        hoveredRow === transaction.id &&
+                                                        showEditTooltip && (
+                                                            <span className='absolute right-4 top-1/2 -translate-y-1/2 rounded bg-blue-600 px-3 py-1.5 text-xs text-white shadow-lg pointer-events-none'>
+                                                                ✏️ Click to edit History & Category
+                                                            </span>
+                                                        )}
+                                                </td>
+                                            )
+                                        })}
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                     {sortedTransactions.length === 0 && (
