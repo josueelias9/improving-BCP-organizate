@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import DocumentsTable from '@/app/ui/documents/documents-table'
-import UploadPDFForm from '@/app/ui/dashboard/upload-pdf-form'
+import DocumentsTable from '@/app/ui/dashboard/documents/documents-table'
+import UploadPDFForm from '@/app/ui/dashboard/documents/upload-pdf-form'
 import { lusitana } from '@/app/ui/fonts'
 import { fetchDocuments } from '@/app/lib/data'
 

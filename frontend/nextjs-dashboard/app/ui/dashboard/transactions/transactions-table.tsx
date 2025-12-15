@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { formatCurrency } from '@/app/lib/utils'
 import { lusitana } from '@/app/ui/fonts'
-import EditTransactionModal from '../dashboard/edit-transaction-modal'
+import EditTransactionModal from '@/app/ui/dashboard/transactions/edit-transaction-modal'
 import type { Category } from '@/app/lib/definitions'
 import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
 import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
