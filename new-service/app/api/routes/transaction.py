@@ -3,10 +3,9 @@ Transaction Routes - HTTP Interface
 Delegates to application layer use cases
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
-from typing import Dict, Any, List, Optional
-from pathlib import Path
+from typing import Dict, Any
 
 import uuid
 import logging
@@ -15,7 +14,6 @@ from api.deps import get_db_session
 from models import TransactionUpdate, TransactionBatchUpdate
 from src.Capplication.DTO.transaction_dto import (
     DTOBatchUpdateRequest,
-    DTOExportFilterRequest,
 )
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
@@ -23,12 +21,7 @@ from src.Capplication.use_cases.transaction.update_transaction import (
 from src.Capplication.use_cases.transaction.batch_update_transactions import (
     BatchUpdateTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.export_transactions import (
-    ExportTransactionsUseCase,
-)
-from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
-    ImportTransactionsFromCsvUseCase,
-)
+
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 
@@ -148,139 +141,3 @@ def batch_update_transactions(
         logger.error(f"Unexpected error in batch update: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-
-@router.get("/export/csv")
-def export_transactions(
-    month: Optional[str] = Query(
-        None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
-    ),
-    document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
-    session: Session = Depends(get_db_session),
-) -> Dict[str, Any]:
-    """
-    Export transactions to CSV format and save to file
-
-    Filters:
-        - month: Optional filter by month in format YYYY-MM (e.g., "2025-01")
-        - document_id: Optional filter by specific document
-
-    Returns:
-        JSON with file path, transaction count, and status
-
-    Examples:
-        - GET /transactions/export/csv - Export all transactions
-        - GET /transactions/export/csv?month=2025-01 - Export transactions from January 2025
-        - GET /transactions/export/csv?document_id=xxx-xxx-xxx - Export transactions from specific document
-        - GET /transactions/export/csv?month=2025-01&document_id=xxx-xxx-xxx - Combined filters
-    """
-    try:
-        # Instantiate gateway and inject into use case
-        transaction_gateway = TransactionDbGateway(session)
-        use_case = ExportTransactionsUseCase(transaction_gateway)
-
-        # Create filter object
-        filters = DTOExportFilterRequest(month=month, document_id=document_id)
-
-        # Execute use case
-        result = use_case.execute(filters)
-
-        if not result.success:
-            raise HTTPException(
-                status_code=400 if "Invalid" in result.error_message else 404,
-                detail=result.error_message,
-            )
-
-        # Save CSV to file in shared_files/output directory
-        output_dir = Path("/shared_files/output")
-        output_dir.mkdir(exist_ok=True)
-
-        file_path = output_dir / result.filename
-
-        with open(file_path, "w", encoding="utf-8", newline="") as f:
-            f.write(result.csv_content)
-
-        logger.info(
-            f"Exported {result.transaction_count} transactions to CSV: {file_path}"
-        )
-
-        return {
-            "success": True,
-            "message": f"Successfully exported {result.transaction_count} transactions",
-            "file_path": str(file_path),
-            "filename": result.filename,
-            "transaction_count": result.transaction_count,
-            "filters": {
-                "month": month,
-                "document_id": str(document_id) if document_id else None,
-            },
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error exporting transactions to CSV: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error exporting transactions: {str(e)}"
-        )
-
-
-@router.post("/import/csv")
-def import_transactions_from_csv(
-    csv_filename: Optional[str] = Query(
-        None,
-        description="Specific CSV filename to import (optional, uses latest if not provided)",
-    ),
-    session: Session = Depends(get_db_session),
-) -> Dict[str, Any]:
-    """
-    Import and update transactions from CSV file
-
-    Reads a CSV file from the output/ directory and updates transactions based on unique_identifier.
-    Updates the 'history' and 'category_name' fields for matching transactions.
-
-    Args:
-        csv_filename: Optional specific CSV filename. If not provided, uses the most recent CSV file.
-
-    Returns:
-        JSON with import summary including updated count, errors, etc.
-
-    Examples:
-        - POST /transactions/import/csv - Import from latest CSV file
-        - POST /transactions/import/csv?csv_filename=transactions_226records_20251205_221111.csv - Import from specific file
-    """
-    try:
-        # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        use_case = ImportTransactionsFromCsvUseCase(
-            transaction_gateway, category_gateway
-        )
-
-        # Execute use case
-        result = use_case.execute(csv_filename)
-
-        if not result.success and result.total_rows == 0:
-            raise HTTPException(status_code=404, detail=result.message)
-
-        logger.info(
-            f"Import completed: {result.updated_count} updated, {result.skipped_count} skipped"
-        )
-
-        return {
-            "success": result.success,
-            "message": result.message,
-            "updated_count": result.updated_count,
-            "skipped_count": result.skipped_count,
-            "total_rows": result.total_rows,
-            "errors": (
-                result.errors[:10] if result.errors else []
-            ),  # Limit errors to first 10
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error importing transactions from CSV: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error importing transactions: {str(e)}"
-        )

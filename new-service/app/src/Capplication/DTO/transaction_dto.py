@@ -31,7 +31,7 @@ class DTOBatchUpdateResponse:
 
 
 @dataclass
-class DTOExportFilterRequest:
+class DTOExportTransactionsRequest:
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
     month: Optional[str] = None  # Format: YYYY-MM
@@ -46,11 +46,21 @@ class DTOExportTransactionsResponse:
     csv_content: str
     filename: str
     transaction_count: int
+    file_path: Optional[str] = None
+    month: Optional[str] = None
+    document_id: Optional[uuid.UUID] = None
     error_message: Optional[str] = None
 
 
 @dataclass
-class DTOImportTransactionsResponse:
+class DTOImportTransactionsFromCsvRequest:
+    """DTO for import transactions request - from controller to use case"""
+
+    csv_filename: Optional[str] = None  # Specific CSV filename to import
+
+
+@dataclass
+class DTOImportTransactionsFromCsvResponse:
     """Result DTO for import transactions operation - returned from use case to controller"""
 
     success: bool

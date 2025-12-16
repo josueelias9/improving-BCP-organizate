@@ -10,10 +10,11 @@ from typing import List
 from datetime import datetime
 
 from src.Capplication.DTO.transaction_dto import (
-    DTOExportFilterRequest,
+    DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway
+from src.Capplication.gateway.file_system import IFileSystemGateway
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +22,25 @@ logger = logging.getLogger(__name__)
 class ExportTransactionsUseCase:
     """Use case for exporting transactions to CSV format"""
 
-    def __init__(self, transaction_gateway: ITransactionDbGateway):
+    def __init__(
+        self,
+        transaction_gateway: ITransactionDbGateway,
+        file_system_gateway: IFileSystemGateway,
+        output_dir: str = "/shared_files/output"
+    ):
         """
-        Initialize use case with gateway dependency
+        Initialize use case with gateway dependencies
 
         Args:
             transaction_gateway: Transaction gateway interface
+            file_system_gateway: File system gateway interface
+            output_dir: Directory where to save exported files
         """
         self.transaction_gateway = transaction_gateway
+        self.file_system_gateway = file_system_gateway
+        self.output_dir = output_dir
 
-    def execute(self, filters: DTOExportFilterRequest) -> DTOExportTransactionsResponse:
+    def execute(self, filters: DTOExportTransactionsRequest) -> DTOExportTransactionsResponse:
         """
         Execute the use case: export transactions to CSV
 
@@ -62,8 +72,15 @@ class ExportTransactionsUseCase:
             # 4. Generate filename
             filename = self._generate_filename(filters, len(transactions))
 
+            # 5. Save file using file system gateway
+            file_path = self.file_system_gateway.save_file(
+                filename=filename,
+                content=csv_content,
+                output_dir=self.output_dir
+            )
+
             logger.info(
-                f"Successfully exported {len(transactions)} transactions to CSV"
+                f"Successfully exported {len(transactions)} transactions to CSV: {file_path}"
             )
 
             return DTOExportTransactionsResponse(
@@ -71,6 +88,9 @@ class ExportTransactionsUseCase:
                 csv_content=csv_content,
                 filename=filename,
                 transaction_count=len(transactions),
+                file_path=file_path,
+                month=filters.month,
+                document_id=filters.document_id,
             )
 
         except ValueError as e:
@@ -138,7 +158,7 @@ class ExportTransactionsUseCase:
 
         return output.getvalue()
 
-    def _generate_filename(self, filters: DTOExportFilterRequest, count: int) -> str:
+    def _generate_filename(self, filters: DTOExportTransactionsRequest, count: int) -> str:
         """
         Generate descriptive filename for export
 

@@ -75,16 +75,14 @@ class TransactionEntity:
 
     def generate_unique_identifier(self) -> str:
         """Generate unique identifier for the transaction
-        
+
         Format: {order}__{transaction_date}__{amount}__{transaction_type}__{description}
-        
+
         Returns:
             Unique identifier string
         """
         date_str = (
-            self.transaction_date.strftime("%Y-%m-%d")
-            if self.transaction_date
-            else ""
+            self.transaction_date.strftime("%Y-%m-%d") if self.transaction_date else ""
         )
         return f"{self.order}__{date_str}__{self.amount}__{self.transaction_type}__{self.description}"
 
