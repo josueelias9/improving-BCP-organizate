@@ -106,6 +106,12 @@ class LoadTransactionsFromDocumentUseCase:
         """
         transactions = []
 
+        # Extract currency from document data
+        # TODO: Analyize if this is feasible, because it works with debit documents but not with credit ones, where there are multiple currencies.
+        # if that is the case, maybe we will need to have LoadTransactionsFromDocumentUseCase per document type.
+        # one workaround could be to have a fixed dict structure for all document_types.
+        currency = document.data.get("currency", "")
+
         for idx, transaction_dict in enumerate(document.data["transactions"]):
             try:
                 # Parse date strings from JSON back to date objects
@@ -131,6 +137,7 @@ class LoadTransactionsFromDocumentUseCase:
                     amount=amount,
                     transaction_type=transaction_type,
                     transaction_date=fecha_valor,
+                    currency=currency,
                     unique_identifier=None,  # Will be set by gateway
                 )
                 transactions.append(transaction)

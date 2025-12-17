@@ -76,10 +76,9 @@ class BCPCreditParser:
                 "saldo_anterior_dolares": saldo_anterior_dolares,
                 "transactions": transactions,
             }
-
+            # TODO: this should be done by the Entity itself.
             return (
                 data,
-                currency,
                 f"{account_code}__{initial_day}__{final_day}__{saldo_anterior_soles}",
             )
 

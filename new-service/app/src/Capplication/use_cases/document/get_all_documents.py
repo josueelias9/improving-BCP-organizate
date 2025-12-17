@@ -73,7 +73,6 @@ class GetAllDocumentsUseCase:
             # Extract metadata from document entity
             summary = {
                 "id": str(doc_entity.id),
-                "currency": doc_entity.currency,
                 "unique_identifier": doc_entity.unique_identifier,
                 "processed": doc_entity.processed,
                 "user_id": str(doc_entity.user_id),

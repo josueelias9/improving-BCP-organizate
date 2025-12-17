@@ -57,7 +57,7 @@ async def get_all_documents(
     Get all documents with pagination
 
     Returns all documents with their properties including:
-    - id, currency, unique_identifier
+    - id, unique_identifier
     - processed status, user_id, document_type_id
     - transactions count
     """

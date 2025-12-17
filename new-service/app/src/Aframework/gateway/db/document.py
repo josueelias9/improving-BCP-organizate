@@ -58,7 +58,6 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Map domain entity to database model
         db_document = DocumentModel(
             data=document.data,
-            currency=document.currency,
             unique_identifier=document.unique_identifier,
             processed=document.processed,
             user_id=document.user_id,
@@ -89,7 +88,6 @@ class DocumentDbGateway(IDocumentDbGateway):
         return DocumentEntity(
             id=db_document.id,
             data=db_document.data,
-            currency=db_document.currency,
             unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
             user_id=db_document.user_id,

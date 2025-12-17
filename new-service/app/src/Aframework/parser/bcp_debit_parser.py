@@ -76,7 +76,7 @@ class BCPDebitParser:
                     "internal_transaction": transaction["internal_transaction"],
                 }
             )
-        return data, currency, f"{account_code}__{initial_day}__{final_day}"
+        return data, f"{account_code}__{initial_day}__{final_day}"
 
     @staticmethod
     def parse_transactions(text: str) -> List[dict[str, any]]:

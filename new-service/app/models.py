@@ -44,7 +44,6 @@ class DocumentBase(SQLModel):
     data: Optional[Dict[str, Any]] = Field(
         default=None, sa_column=Column(JSON)
     )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
-    currency: str = Field(default="")
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
 
@@ -56,6 +55,7 @@ class TransactionBase(SQLModel):
     amount: float
     transaction_type: TransactionType
     transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
+    currency: str = Field(default="")
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
 
 
@@ -153,7 +153,6 @@ class UserUpdate(SQLModel):
 
 class DocumentUpdate(SQLModel):
     data: Optional[Dict[str, Any]] = None
-    currency: Optional[str] = None
     document_type_id: Optional[uuid.UUID] = None
     processed: Optional[bool] = None
 

@@ -125,6 +125,7 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
             )
 
         # Open file and pass binary content to controller
+        # TODO: I think that this logic should be in the infrastructure layer, not here in the route.
         with open(request.pdf_filename, "rb") as pdf_file:
             result = controller(
                 pdf_file=pdf_file,

@@ -45,6 +45,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     amount=transaction_entity.amount,
                     transaction_type=transaction_entity.transaction_type,
                     transaction_date=transaction_entity.transaction_date,
+                    currency=transaction_entity.currency,
                     unique_identifier=unique_id,
                     document_id=document_id,
                 )
@@ -91,6 +92,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                 amount=db_transaction.amount,
                 transaction_type=db_transaction.transaction_type,
                 transaction_date=db_transaction.transaction_date,
+                currency=db_transaction.currency,
                 unique_identifier=db_transaction.unique_identifier,
                 category_id=db_transaction.category_id,
                 document_id=db_transaction.document_id,
@@ -118,6 +120,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             amount=db_transaction.amount,
             transaction_type=db_transaction.transaction_type,
             transaction_date=db_transaction.transaction_date,
+            currency=db_transaction.currency,
             unique_identifier=db_transaction.unique_identifier,
             category_id=db_transaction.category_id,
         )
@@ -213,6 +216,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             amount=db_transaction.amount,
             transaction_type=db_transaction.transaction_type,
             transaction_date=db_transaction.transaction_date,
+            currency=db_transaction.currency,
             unique_identifier=db_transaction.unique_identifier,
             category_id=db_transaction.category_id,
         )
