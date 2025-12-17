@@ -60,6 +60,8 @@ class DocumentDbGateway(IDocumentDbGateway):
             data=document.data,
             unique_identifier=document.unique_identifier,
             processed=document.processed,
+            start_date=document.start_date,
+            end_date=document.end_date,
             user_id=document.user_id,
             document_type_id=document.document_type_id,
         )
@@ -90,6 +92,8 @@ class DocumentDbGateway(IDocumentDbGateway):
             data=db_document.data,
             unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
+            start_date=db_document.start_date,
+            end_date=db_document.end_date,
             user_id=db_document.user_id,
             document_type_id=db_document.document_type_id,
         )

@@ -87,6 +87,8 @@ class DocumentEntity:
     data: List[Dict[str, Any]] = field(default_factory=list)
     unique_identifier: Optional[str] = None
     processed: bool = False
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
     user_id: Optional[uuid.UUID] = None
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None

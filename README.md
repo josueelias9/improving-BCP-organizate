@@ -13,9 +13,7 @@ docker compose up -d
 docker exec new-service-container /app/scripts/prestart.sh
 ```
 
-- go to the `new-service/REST client.http` file and execute the following endpoints:
-   - `populateDocument`
-   - `populateTransaction`
+- go to the `localhost:8000/dashboard/documents`
 
 ## stop processes
 
@@ -27,16 +25,4 @@ docker compose down
 
 ```sh
 docker compose -f docker-compose.yml -f docker-compose.combined.yml up -d
-```
-
-# TODO
-
-```txt
-- [x] do not show transactions's uuid in the frontend. Instead, show only the order of the transaction
-- [ ] create unique identifier for the transaction table
-- [ ] create script to update transaction table with saved data
-
-- [ ] create a unique identifier for transaction
-- [ ] store pdf file
-- [ ] implement logic to diferenciate between credit and debit pdf files
 ```

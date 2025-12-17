@@ -42,7 +42,11 @@ class BCPCreditParser:
     }
 
     def get_data(self, full_text: str) -> tuple[dict[str, Any], str, str]:
-        """Parse BCP credit card PDF text and extract transaction data"""
+        """Parse BCP credit card PDF text and extract transaction data
+
+        Returns:
+            tuple: (data_dict, unique_identifier, start_date, end_date)
+        """
         try:
             # Extract account code
             account_code_match = re.search(r"Cuenta:\s+(\d{20})", full_text)
@@ -50,10 +54,29 @@ class BCPCreditParser:
 
             # Extract date range
             date_range_match = re.search(
-                r"Del\s+(\d{2}/\d{2}/\d{4})\s+al\s+(\d{2}/\d{2}/\d{4})", full_text
+                r"Del\s+(\d{2})/(\d{2})/(\d{4})\s+al\s+(\d{2})/(\d{2})/(\d{4})",
+                full_text,
             )
-            initial_day = date_range_match.group(1) if date_range_match else ""
-            final_day = date_range_match.group(2) if date_range_match else ""
+            start_date = None
+            end_date = None
+            initial_day_str = ""
+            final_day_str = ""
+
+            if date_range_match:
+                day1, month1, year1 = (
+                    int(date_range_match.group(1)),
+                    int(date_range_match.group(2)),
+                    int(date_range_match.group(3)),
+                )
+                day2, month2, year2 = (
+                    int(date_range_match.group(4)),
+                    int(date_range_match.group(5)),
+                    int(date_range_match.group(6)),
+                )
+                start_date = date(year1, month1, day1)
+                end_date = date(year2, month2, day2)
+                initial_day_str = start_date.strftime("%d/%m/%Y")
+                final_day_str = end_date.strftime("%d/%m/%Y")
 
             # Extract currency
             currency_match = re.search(r"Moneda:\s+([A-Z]{3})", full_text)
@@ -69,8 +92,8 @@ class BCPCreditParser:
 
             data = {
                 "account_code": account_code,
-                "initial_day": initial_day,
-                "final_day": final_day,
+                "initial_day": initial_day_str,
+                "final_day": final_day_str,
                 "currency": currency,
                 "saldo_anterior_soles": saldo_anterior_soles,
                 "saldo_anterior_dolares": saldo_anterior_dolares,
@@ -79,7 +102,9 @@ class BCPCreditParser:
             # TODO: this should be done by the Entity itself.
             return (
                 data,
-                f"{account_code}__{initial_day}__{final_day}__{saldo_anterior_soles}",
+                f"{account_code}__{initial_day_str}__{final_day_str}__{saldo_anterior_soles}",
+                start_date,
+                end_date,
             )
 
         except Exception as e:

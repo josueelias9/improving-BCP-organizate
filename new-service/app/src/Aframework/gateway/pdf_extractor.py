@@ -42,19 +42,28 @@ class PDFExtractorGateway(IPDFExtractorGateway):
             password = os.getenv("PDF_PASSWORD")
             full_text = self._extract_text_from_pdf(pdf_file, password)
 
+            start_date = None
+            end_date = None
+
             if document_type == "bcp_credit":
                 # TODO: here is what we discussed about the unique_identifier. The generation of it is being done in the parser.
                 # This should be done by the Entity itself.
-                data, unique_identifier = self.parser_credit.get_data(full_text)
+                data, unique_identifier, start_date, end_date = (
+                    self.parser_credit.get_data(full_text)
+                )
 
             else:
-                data, unique_identifier = self.parser_debit.get_data(full_text)
+                data, unique_identifier, start_date, end_date = (
+                    self.parser_debit.get_data(full_text)
+                )
 
             # Return DocumentEntity with the extracted data (currency is now in data)
             return DocumentEntity(
                 data=data,
                 unique_identifier=unique_identifier or "",
                 processed=False,
+                start_date=start_date,
+                end_date=end_date,
             )
 
         except Exception as e:

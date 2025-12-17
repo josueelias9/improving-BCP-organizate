@@ -46,6 +46,8 @@ class DocumentBase(SQLModel):
     )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
+    start_date: Optional[date] = Field(default=None)
+    end_date: Optional[date] = Field(default=None)
 
 
 class TransactionBase(SQLModel):
@@ -155,6 +157,8 @@ class DocumentUpdate(SQLModel):
     data: Optional[Dict[str, Any]] = None
     document_type_id: Optional[uuid.UUID] = None
     processed: Optional[bool] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
 
 
 class TransactionUpdate(SQLModel):

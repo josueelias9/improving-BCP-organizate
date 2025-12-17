@@ -41,7 +41,14 @@ class BCPDebitParser:
         "SET": "09",  # Setiembre
     }
 
-    def get_data(self, full_text) -> Tuple[dict[str, any], str, str]:
+    def get_data(
+        self, full_text
+    ) -> Tuple[dict[str, any], str, Optional[date], Optional[date]]:
+        """Parse BCP debit PDF text and extract transaction data
+
+        Returns:
+            tuple: (data_dict, unique_identifier, start_date, end_date)
+        """
         # Use parser from Denterprise layer for business logic
         account_code, currency = self.extract_account_code(full_text)
         saldo_anterior = self.extract_saldo_anterior(full_text)
@@ -76,7 +83,12 @@ class BCPDebitParser:
                     "internal_transaction": transaction["internal_transaction"],
                 }
             )
-        return data, f"{account_code}__{initial_day}__{final_day}"
+        return (
+            data,
+            f"{account_code}__{initial_day}__{final_day}",
+            initial_day,
+            final_day,
+        )
 
     @staticmethod
     def parse_transactions(text: str) -> List[dict[str, any]]:

@@ -75,6 +75,12 @@ class GetAllDocumentsUseCase:
                 "id": str(doc_entity.id),
                 "unique_identifier": doc_entity.unique_identifier,
                 "processed": doc_entity.processed,
+                "start_date": (
+                    doc_entity.start_date.isoformat() if doc_entity.start_date else None
+                ),
+                "end_date": (
+                    doc_entity.end_date.isoformat() if doc_entity.end_date else None
+                ),
                 "user_id": str(doc_entity.user_id),
                 "document_type_id": str(doc_entity.document_type_id),
                 "document_type_name": document_type_map.get(
