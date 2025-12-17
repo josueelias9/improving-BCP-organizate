@@ -6,12 +6,11 @@ import logging
 from api.deps import SessionDep
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Capplication.use_cases.document.get_all_documents import (
-    GetAllDocumentsUseCase,
-    GetAllDocumentsRequest,
+from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
+from src.Capplication.DTO.document_dto import (
+    DTOGetAllDocumentsResponse,
+    DTOGetAllDocumentsRequest,
 )
-
-from src.Capplication.DTO.document_dto import DTOGetAllDocumentsResponse
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ def controller(session, skip, limit):
     document_type_gateway = DocumentTypeDbGateway(session)
 
     # Create request DTO
-    dto_request = GetAllDocumentsRequest(skip=skip, limit=limit)
+    dto_request = DTOGetAllDocumentsRequest(skip=skip, limit=limit)
 
     # Inject gateways into use case
     use_case = GetAllDocumentsUseCase(document_gateway, document_type_gateway)

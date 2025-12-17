@@ -140,4 +140,3 @@ def batch_update_transactions(
         # Unexpected errors
         logger.error(f"Unexpected error in batch update: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-

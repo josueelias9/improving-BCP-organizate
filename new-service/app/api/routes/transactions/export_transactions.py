@@ -1,4 +1,3 @@
-
 """
 Transaction Routes - HTTP Interface
 Delegates to application layer use cases
@@ -13,7 +12,8 @@ import logging
 
 from api.deps import get_db_session
 from src.Capplication.DTO.transaction_dto import (
-    DTOExportTransactionsRequest, DTOExportTransactionsResponse
+    DTOExportTransactionsRequest,
+    DTOExportTransactionsResponse,
 )
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
@@ -40,17 +40,24 @@ def presenter(response: DTOExportTransactionsResponse):
     }
 
 
-def controller(session: Session, month: Optional[str], document_id: Optional[uuid.UUID]):
+def controller(
+    session: Session,
+    month: Optional[str],
+    document_id: Optional[uuid.UUID],
+    output_dir: str,
+):
     # Instantiate gateways and inject into use case
     transaction_gateway = TransactionDbGateway(session)
     file_system_gateway = FileSystemGateway()
     use_case = ExportTransactionsUseCase(
         transaction_gateway=transaction_gateway,
-        file_system_gateway=file_system_gateway
+        file_system_gateway=file_system_gateway,
     )
 
-    # Create filter object
-    filters = DTOExportTransactionsRequest(month=month, document_id=document_id)
+    # Create filter object with output_dir
+    filters = DTOExportTransactionsRequest(
+        month=month, document_id=document_id, output_dir=output_dir
+    )
 
     # Execute use case
     dto_response = use_case.execute(filters)
@@ -63,12 +70,16 @@ def controller(session: Session, month: Optional[str], document_id: Optional[uui
 
     return presenter(dto_response)
 
+
 @router.get("/export/csv")
 def export_transactions(
     month: Optional[str] = Query(
         None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
     ),
     document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
+    output_dir: str = Query(
+        "./exports", description="Output directory for exported CSV files"
+    ),
     session: Session = Depends(get_db_session),
 ):
     """
@@ -77,6 +88,7 @@ def export_transactions(
     Filters:
         - month: Optional filter by month in format YYYY-MM (e.g., "2025-01")
         - document_id: Optional filter by specific document
+        - output_dir: Output directory for CSV file (default: ./exports)
 
     Returns:
         JSON with file path, transaction count, and status
@@ -88,7 +100,12 @@ def export_transactions(
         - GET /transactions/export/csv?month=2025-01&document_id=xxx-xxx-xxx - Combined filters
     """
     try:
-        return controller(month=month, document_id=document_id, session=session)
+        return controller(
+            month=month,
+            document_id=document_id,
+            session=session,
+            output_dir=output_dir,
+        )
 
     except HTTPException:
         raise

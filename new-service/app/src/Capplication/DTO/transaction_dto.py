@@ -30,12 +30,18 @@ class DTOBatchUpdateResponse:
     errors: List[Dict[str, Any]]
 
 
+# ===========================================================
+
+
 @dataclass
 class DTOExportTransactionsRequest:
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
     month: Optional[str] = None  # Format: YYYY-MM
     document_id: Optional[uuid.UUID] = None
+    output_dir: str = (
+        "/shared_files/output"  # Directory where to save the exported file
+    )
 
 
 @dataclass
@@ -52,11 +58,15 @@ class DTOExportTransactionsResponse:
     error_message: Optional[str] = None
 
 
+# ===========================================================
+
+
 @dataclass
 class DTOImportTransactionsFromCsvRequest:
     """DTO for import transactions request - from controller to use case"""
 
     csv_filename: Optional[str] = None  # Specific CSV filename to import
+    input_dir: str = "/shared_files/output"  # Directory where to read the CSV file from
 
 
 @dataclass
@@ -69,6 +79,9 @@ class DTOImportTransactionsFromCsvResponse:
     errors: List[str]
     total_rows: int
     message: str
+
+
+# ===========================================================
 
 
 @dataclass

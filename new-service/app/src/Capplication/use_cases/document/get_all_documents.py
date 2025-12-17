@@ -11,7 +11,7 @@ from typing import List
 from src.Capplication.gateway.db import IDocumentDbGateway, IDocumentTypeDbGateway
 from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsResponse,
-    GetAllDocumentsRequest,
+    DTOGetAllDocumentsRequest,
 )
 
 
@@ -40,12 +40,12 @@ class GetAllDocumentsUseCase:
         self.document_gateway = document_gateway
         self.document_type_gateway = document_type_gateway
 
-    def execute(self, request: GetAllDocumentsRequest) -> DTOGetAllDocumentsResponse:
+    def execute(self, request: DTOGetAllDocumentsRequest) -> DTOGetAllDocumentsResponse:
         """
         Execute the use case to get all documents
 
         Args:
-            request: GetAllDocumentsRequest with pagination parameters
+            request: DTOGetAllDocumentsRequest with pagination parameters
 
         Returns:
             DTOGetAllDocumentsResponse with list of document summaries

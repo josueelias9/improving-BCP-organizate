@@ -32,6 +32,9 @@ class DTOPdfProcessingResponse:
     message: str
 
 
+# ===========================================================
+
+
 @dataclass
 class DTOLoadTransactionsFromDocumentRequest:
     document_id: uuid.UUID
@@ -49,8 +52,11 @@ class DTOLoadTransactionsFromDocumentResponse:
     document_id: str
 
 
+# ===========================================================
+
+
 @dataclass
-class GetAllDocumentsRequest:
+class DTOGetAllDocumentsRequest:
     """Request DTO for getting all documents - input from controller"""
 
     skip: int = 0

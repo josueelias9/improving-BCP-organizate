@@ -49,7 +49,9 @@ class ImportTransactionsFromCsvUseCase:
         """
         try:
             # 1. Find the CSV file
-            csv_path = self._find_csv_file(dto_request.csv_filename)
+            csv_path = self._find_csv_file(
+                dto_request.csv_filename, dto_request.input_dir
+            )
 
             if not csv_path.exists():
                 return DTOImportTransactionsFromCsvResponse(
@@ -122,17 +124,20 @@ class ImportTransactionsFromCsvUseCase:
                 message=f"Import failed: {str(e)}",
             )
 
-    def _find_csv_file(self, filename: Optional[str] = None) -> Path:
+    def _find_csv_file(
+        self, filename: Optional[str] = None, input_dir: str = "/shared_files/output"
+    ) -> Path:
         """
-        Find the CSV file in the /downloads/output directory
+        Find the CSV file in the specified input directory
 
         Args:
             filename: Optional specific filename, otherwise uses latest
+            input_dir: Directory where to read CSV files from
 
         Returns:
             Path to the CSV file
         """
-        output_dir = Path("/downloads/output")
+        output_dir = Path(input_dir)
 
         if filename:
             return output_dir / filename
@@ -141,9 +146,7 @@ class ImportTransactionsFromCsvUseCase:
         csv_files = list(output_dir.glob("transactions*.csv"))
 
         if not csv_files:
-            raise ValueError(
-                "No transaction CSV files found in /downloads/output directory"
-            )
+            raise ValueError(f"No transaction CSV files found in {input_dir} directory")
 
         # Sort by modification time, newest first
         csv_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)

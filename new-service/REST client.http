@@ -1,6 +1,12 @@
 ### BCP PDF Extractor - REST Client Tests
 ### Variables
 @baseUrl = http://127.0.0.1:8000
+@outputInputDir = /workspace/new-service/examples
+
+@outputFileName = transactions.csv
+
+# docker compose:
+# @outputInputDir = /downloads
 
 ### =================================================================== health.py
 
@@ -23,7 +29,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "/shared_files/examples/EECC102025_07750301.PDF",
+    "pdf_filename": "{{outputInputDir}}/EECC102025_07750301.PDF",
     "type": "bcp_debit",
     "user_email": "admin@bcpextractor.com"
 }
@@ -36,7 +42,7 @@ POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
 {
-    "pdf_filename": "/shared_files/examples/EECC102025_09745280.PDF",
+    "pdf_filename": "{{outputInputDir}}/EECC102025_09745280.PDF",
     "type": "bcp_credit",
     "user_email": "admin@bcpextractor.com"
 }
@@ -110,15 +116,13 @@ Content-Type: application/json
 ###
 
 # Export all transactions to CSV format
-# File will be saved in the output/ directory
-# @name exportTransactionsToCSV
-GET {{baseUrl}}/api/transactions/export/csv
+# File will be saved in the specified output directory (default: /shared_files/output)
+# @name exportTransactionsCsv
+GET {{baseUrl}}/api/transactions/export/csv?output_dir={{outputInputDir}}
 Accept: application/json
 
 ###
 
-# Import and update transactions from the most recent CSV file in output/ directory
-# Updates 'history' and 'category_name' fields based on unique_identifier
-# @name importTransactionsFromCSV
-POST {{baseUrl}}/api/transactions/import/csv
+# @name importTransactionsFromCsv
+POST {{baseUrl}}/api/transactions/import/csv?csv_filename={{outputFileName}}&input_dir={{outputInputDir}}
 Accept: application/json
