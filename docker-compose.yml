@@ -13,6 +13,7 @@ services:
       - postgres
     volumes:
       - ./files:/shared_files
+      - /mnt/c/Users/josue/Downloads:/downloads
 
   postgres:
     image: postgres:15
@@ -43,6 +44,7 @@ services:
       - .env
     volumes:
       - ./files:/shared_files
+      - /mnt/c/Users/josue/Downloads:/downloads
 
 volumes:
   pgadmin_data:

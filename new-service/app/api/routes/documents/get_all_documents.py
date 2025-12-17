@@ -5,12 +5,12 @@ import logging
 
 from api.deps import SessionDep
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Capplication.use_cases.document.get_all_documents import (
-    GetAllDocumentsUseCase,
-    GetAllDocumentsRequest,
+from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
+from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
+from src.Capplication.DTO.document_dto import (
+    DTOGetAllDocumentsResponse,
+    DTOGetAllDocumentsRequest,
 )
-
-from src.Capplication.DTO.document_dto import DTOGetAllDocumentsResponse
 
 
 logger = logging.getLogger(__name__)
@@ -21,18 +21,7 @@ router = APIRouter(prefix="/api", tags=["PDF Processing"])
 
 def presenter(dto_response: DTOGetAllDocumentsResponse):
     return {
-        "documents": [
-            {
-                "id": doc.id,
-                "currency": doc.currency,
-                "unique_identifier": doc.unique_identifier,
-                "processed": doc.processed,
-                "user_id": doc.user_id,
-                "document_type_id": doc.document_type_id,
-                "transactions_count": doc.transactions_count,
-            }
-            for doc in dto_response.documents
-        ],
+        "documents": dto_response.documents,
         "total_returned": dto_response.total_returned,
         "skip": dto_response.skip,
         "limit": dto_response.limit,
@@ -41,12 +30,13 @@ def presenter(dto_response: DTOGetAllDocumentsResponse):
 
 def controller(session, skip, limit):
     document_gateway = DocumentDbGateway(session)
+    document_type_gateway = DocumentTypeDbGateway(session)
 
     # Create request DTO
-    dto_request = GetAllDocumentsRequest(skip=skip, limit=limit)
+    dto_request = DTOGetAllDocumentsRequest(skip=skip, limit=limit)
 
-    # Inject gateway into use case
-    use_case = GetAllDocumentsUseCase(document_gateway)
+    # Inject gateways into use case
+    use_case = GetAllDocumentsUseCase(document_gateway, document_type_gateway)
 
     # Execute use case
     dto_response = use_case.execute(dto_request)

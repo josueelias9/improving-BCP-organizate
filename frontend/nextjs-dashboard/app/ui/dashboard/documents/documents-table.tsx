@@ -31,26 +31,20 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
     const handleProcessDocument = async (documentId: string) => {
         setProcessingId(documentId)
         setMessage(null)
-        
+
         const result = await processDocument(documentId)
-        
+
         setProcessingId(null)
         setMessage({
             text: result.message,
             type: result.success ? 'success' : 'error'
         })
-        
+
         // Clear message after 5 seconds
         setTimeout(() => setMessage(null), 5000)
     }
 
-    const not_included_columns = [
-        'account_number',
-        'unique_identifier',
-        'user_id',
-        'id',
-        'previous_balance'
-    ]
+    const not_included_columns = ['user_id', 'id', 'document_type_id']
 
     // Get column names from the first document
     const columns =
@@ -61,7 +55,7 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
     return (
         <div className='flex w-full flex-col'>
             <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>All Documents</h2>
-            
+
             {message && (
                 <div
                     className={`mb-4 rounded-md px-4 py-3 text-sm ${
@@ -163,8 +157,12 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                             }`}
                                             title='Process document and load to transactions'
                                         >
-                                            <ArrowPathIcon className={`h-4 w-4 ${processingId === document.id ? 'animate-spin' : ''}`} />
-                                            {processingId === document.id ? 'Processing...' : 'Process'}
+                                            <ArrowPathIcon
+                                                className={`h-4 w-4 ${processingId === document.id ? 'animate-spin' : ''}`}
+                                            />
+                                            {processingId === document.id
+                                                ? 'Processing...'
+                                                : 'Process'}
                                         </button>
                                     </td>
                                 </tr>

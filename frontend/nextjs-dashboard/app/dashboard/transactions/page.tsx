@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import TransactionsTable from '@/app/ui/transactions/transactions-table'
+import TransactionsTable from '@/app/ui/dashboard/transactions/transactions-table'
 import { lusitana } from '@/app/ui/fonts'
 import { fetchTransactions, fetchCategories } from '@/app/lib/data'
 

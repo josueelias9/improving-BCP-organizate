@@ -236,7 +236,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         // Save file to /shared_files/only_one_file
         const fileBuffer = await file.arrayBuffer()
         const fileName = file.name
-        const filePath = `/shared_files/only_one_file/${fileName}`
+        const filePath = `${process.env.PATH_TO_SHARED_FILES}${fileName}`
 
         // Send to API for processing
         const response = await fetch(`${baseUrl}/api/pdf-processing`, {
@@ -264,8 +264,8 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         }
     } catch (error) {
         console.error('API Error:', error)
-        return { 
-            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.' 
+        return {
+            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.'
         }
     }
 }
@@ -278,27 +278,30 @@ export async function processDocument(documentId: string) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store'
         })
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}))
-            throw new Error(errorData.detail || `Failed to process document: ${response.statusText}`)
+            throw new Error(
+                errorData.detail || `Failed to process document: ${response.statusText}`
+            )
         }
 
         const result = await response.json()
         revalidatePath('/dashboard/documents')
-        return { 
+        return {
             success: true,
-            message: `Document processed successfully! ${result.message || ''}` 
+            message: `Document processed successfully! ${result.message || ''}`
         }
     } catch (error) {
         console.error('API Error:', error)
-        return { 
+        return {
             success: false,
-            message: error instanceof Error ? error.message : 'API Error: Failed to Process Document.' 
+            message:
+                error instanceof Error ? error.message : 'API Error: Failed to Process Document.'
         }
     }
 }
@@ -310,7 +313,7 @@ export async function exportTransactionsToCSV() {
         const response = await fetch(`${baseUrl}/api/transactions/export/csv`, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store'
         })
@@ -321,16 +324,16 @@ export async function exportTransactionsToCSV() {
         }
 
         const result = await response.json()
-        return { 
+        return {
             success: true,
             message: result.message || 'CSV exported successfully!',
             filename: result.filename || 'transactions.csv'
         }
     } catch (error) {
         console.error('Export CSV Error:', error)
-        return { 
+        return {
             success: false,
-            message: error instanceof Error ? error.message : 'Failed to export CSV.' 
+            message: error instanceof Error ? error.message : 'Failed to export CSV.'
         }
     }
 }
@@ -342,7 +345,7 @@ export async function importTransactionsFromCSV() {
         const response = await fetch(`${baseUrl}/api/transactions/import/csv`, {
             method: 'POST',
             headers: {
-                'Accept': 'application/json'
+                Accept: 'application/json'
             },
             cache: 'no-store'
         })
@@ -354,16 +357,16 @@ export async function importTransactionsFromCSV() {
 
         const result = await response.json()
         revalidatePath('/dashboard/transactions')
-        return { 
+        return {
             success: true,
             message: result.message || 'CSV imported successfully!',
             updated_count: result.updated_count || 0
         }
     } catch (error) {
         console.error('Import CSV Error:', error)
-        return { 
+        return {
             success: false,
-            message: error instanceof Error ? error.message : 'Failed to import CSV.' 
+            message: error instanceof Error ? error.message : 'Failed to import CSV.'
         }
     }
 }
