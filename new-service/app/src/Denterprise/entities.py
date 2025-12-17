@@ -60,6 +60,7 @@ class TransactionEntity:
         transaction_date: Optional[date] = None,
         unique_identifier: Optional[str] = None,
         category_id: Optional[uuid.UUID] = None,
+        document_id: Optional[uuid.UUID] = None,
     ):
         self.id = id
         self.order = order
@@ -70,6 +71,20 @@ class TransactionEntity:
         self.transaction_date = transaction_date
         self.unique_identifier = unique_identifier
         self.category_id = category_id
+        self.document_id = document_id
+
+    def generate_unique_identifier(self) -> str:
+        """Generate unique identifier for the transaction
+
+        Format: {order}__{transaction_date}__{amount}__{transaction_type}__{description}
+
+        Returns:
+            Unique identifier string
+        """
+        date_str = (
+            self.transaction_date.strftime("%Y-%m-%d") if self.transaction_date else ""
+        )
+        return f"{self.order}__{date_str}__{self.amount}__{self.transaction_type}__{self.description}"
 
 
 class CategoryEntity:

@@ -90,6 +90,7 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6
+
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
     const offset = (currentPage - 1) * ITEMS_PER_PAGE
 
@@ -318,7 +319,9 @@ export async function fetchDocumentTypes() {
         })
 
         if (!response.ok) {
-            console.error(`Failed to fetch document types: ${response.status} ${response.statusText}`)
+            console.error(
+                `Failed to fetch document types: ${response.status} ${response.statusText}`
+            )
             return []
         }
 
