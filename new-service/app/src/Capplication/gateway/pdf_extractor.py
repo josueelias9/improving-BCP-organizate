@@ -3,7 +3,7 @@ Defines contracts for data access without implementation details
 """
 
 from abc import ABC, abstractmethod
-from typing import BinaryIO, Optional
+from typing import Optional
 from src.Denterprise.entities import DocumentEntity
 
 
@@ -13,9 +13,19 @@ class IPDFExtractorGateway(ABC):
     @abstractmethod
     def extract_document(
         self,
-        pdf_file: BinaryIO,
-        filename: str = "",
-        document_type_id: Optional[str] = None,
+        pdf_content: bytes,
+        document_type: Optional[str] = None,
     ) -> DocumentEntity:
-        """Extract transactions from PDF file and return entity with extracted data"""
+        """Extract document from PDF content and return DocumentEntity with data
+
+        Args:
+            pdf_content: Binary PDF file content as bytes
+            document_type: Type of document (e.g., 'bcp_credit', 'bcp_debit')
+
+        Returns:
+            DocumentEntity with extracted transaction data
+
+        Raises:
+            ValueError: If PDF cannot be processed
+        """
         pass

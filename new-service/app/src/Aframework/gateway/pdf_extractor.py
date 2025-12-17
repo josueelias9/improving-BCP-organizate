@@ -4,7 +4,7 @@ Implements the PDFExtractorGateway interface
 """
 
 import fitz  # PyMuPDF
-from typing import BinaryIO, Optional
+from typing import Optional
 import logging
 import os
 from dotenv import load_dotenv
@@ -26,21 +26,21 @@ class PDFExtractorGateway(IPDFExtractorGateway):
 
     def extract_document(
         self,
-        pdf_file: BinaryIO,
+        pdf_content: bytes,
         document_type: Optional[str] = None,
     ) -> DocumentEntity:
-        """Extract document from PDF file and return DocumentEntity with data
+        """Extract document from PDF content and return DocumentEntity with data
 
         Args:
-            pdf_file: Binary PDF file content
-            filename: Filename for unique identifier
+            pdf_content: Binary PDF file content as bytes
+            document_type: Type of document
 
         Returns:
             DocumentEntity with extracted transaction data
         """
         try:
             password = os.getenv("PDF_PASSWORD")
-            full_text = self._extract_text_from_pdf(pdf_file, password)
+            full_text = self._extract_text_from_pdf(pdf_content, password)
 
             start_date = None
             end_date = None
@@ -75,15 +75,13 @@ class PDFExtractorGateway(IPDFExtractorGateway):
                 processed=False,
             )
 
-    def _extract_text_from_pdf(self, pdf_file: BinaryIO, password: str = None) -> str:
+    def _extract_text_from_pdf(self, pdf_content: bytes, password: str = None) -> str:
         """Extract text from PDF using PyMuPDF"""
         logger.info("Extracting text from PDF")
 
         try:
             text = ""
-            pdf_file.seek(0)
-            pdf_bytes = pdf_file.read()
-            pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
+            pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
 
             if pdf_document.is_encrypted:
                 if password:

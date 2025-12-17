@@ -2,9 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
-import os
 import logging
-from typing import BinaryIO
 
 from api.deps import SessionDep
 
@@ -12,6 +10,7 @@ from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.pdf_extractor import PDFExtractorGateway
+from src.Aframework.gateway.file_system import FileSystemGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
 from src.Capplication.DTO.document_dto import (
@@ -59,7 +58,7 @@ def presenter(dto_response: DTOPdfProcessingResponse):
 
 
 def controller(
-    pdf_file: BinaryIO,
+    pdf_filepath: str,
     user_email: str,
     session: Session,
     document_type: str,
@@ -67,26 +66,29 @@ def controller(
     """
     Process PDF file and save document using application layer
 
-    This controller method receives infrastructure inputs (BinaryIO)
-    and returns a DTO for the HTTP response layer.
+    This controller method receives simple data types and delegates
+    all processing orchestration to the use case.
 
     Args:
-        pdf_file: Binary PDF file content (file stream)
+        pdf_filepath: Path to the PDF file
         user_email: Email of the user
-        document_type: Type of document (default: BCP_STATEMENT)
+        document_type: Type of document
 
     Returns:
         DTOPdfProcessingResponse (DTO for HTTP response)
 
     Raises:
         ValueError: If PDF processing fails
+        FileNotFoundError: If file not found
         UnsupportedDocumentTypeException: If document type is not supported
     """
 
+    # Initialize all gateways (infrastructure layer)
     document_gateway = DocumentDbGateway(session)
     user_gateway = UserDbGateway(session)
     document_type_gateway = DocumentTypeDbGateway(session)
     pdf_extractor_gateway = PDFExtractorGateway()
+    file_system_gateway = FileSystemGateway()
 
     # Delegate all processing to application layer use case
     use_case = PDFProcessingUseCase(
@@ -94,10 +96,11 @@ def controller(
         user_gateway,
         pdf_extractor_gateway,
         document_type_gateway,
+        file_system_gateway,
     )
 
     dto_request = DTOPdfProcessingRequest(
-        pdf_file=pdf_file,
+        pdf_filepath=pdf_filepath,
         user_email=user_email,
         document_type=document_type,
     )
@@ -118,27 +121,22 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
     - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
     try:
-        # Verify file exists (infrastructure concern - stays in route)
-        if not os.path.exists(request.pdf_filename):
-            raise HTTPException(
-                status_code=404, detail=f"File '{request.pdf_filename}' not found"
-            )
-
-        # Open file and pass binary content to controller
-        # TODO: I think that this logic should be in the infrastructure layer, not here in the route.
-        with open(request.pdf_filename, "rb") as pdf_file:
-            result = controller(
-                pdf_file=pdf_file,
-                user_email=request.user_email,
-                session=session,
-                document_type=request.type,
-            )
+        # Delegate to controller with simple data types
+        # Use case will orchestrate file operations via FileSystemGateway
+        result = controller(
+            pdf_filepath=request.pdf_filename,
+            user_email=request.user_email,
+            session=session,
+            document_type=request.type,
+        )
 
         return result
 
     except UnsupportedDocumentTypeException as e:
         # Adapt business exception to HTTP response
         raise HTTPException(status_code=501, detail=str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:

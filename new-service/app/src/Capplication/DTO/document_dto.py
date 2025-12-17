@@ -1,4 +1,3 @@
-from typing import BinaryIO
 import uuid
 from typing import List
 from dataclasses import dataclass
@@ -15,7 +14,7 @@ Internal domain logic uses entities from Denterprise layer.
 
 @dataclass
 class DTOPdfProcessingRequest:
-    pdf_file: BinaryIO
+    pdf_filepath: str
     user_email: str
     document_type: str
 

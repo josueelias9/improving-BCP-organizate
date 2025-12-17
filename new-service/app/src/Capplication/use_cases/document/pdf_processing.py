@@ -12,7 +12,8 @@ from src.Capplication.DTO.document_dto import (
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
+from src.Capplication.gateway.file_system import IFileSystemGateway
+from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -25,35 +26,43 @@ class PDFProcessingUseCase:
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
         pdf_extractor_gateway: IPDFExtractorGateway,
-        document_type_gateway: DocumentTypeDbGateway,
+        document_type_gateway: IDocumentTypeDbGateway,
+        file_system_gateway: IFileSystemGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
         self.pdf_extractor_gateway = pdf_extractor_gateway
         self.document_type_gateway = document_type_gateway
+        self.file_system_gateway = file_system_gateway
 
     def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
         """
         Process PDF file: get/create user, extract transactions, and create document
 
         Args:
-            pdf_file: Binary PDF file content
-            user_email: Email of the user
-            document_type: Type of document (default: BCP_STATEMENT)
-            pdf_filename: Optional filename for logging purposes only
+            request: DTOPdfProcessingRequest containing:
+                - pdf_filepath: Path to the PDF file
+                - user_email: Email of the user
+                - document_type: Type of document
 
         Returns:
             DTOPdfProcessingResponse (DTO for controller response)
 
         Raises:
             ValueError: If validation fails
+            FileNotFoundError: If PDF file not found
             UnsupportedDocumentTypeException: If document type is not supported
         """
 
-        pdf_file = request.pdf_file
+        pdf_filepath = request.pdf_filepath
         user_email = request.user_email
         document_type = request.document_type
+
         try:
+            # Check if file exists using file system gateway
+            if not self.file_system_gateway.file_exists(pdf_filepath):
+                raise FileNotFoundError(f"File '{pdf_filepath}' not found")
+
             # Validate document type (business rule)
             self._validate_document_type(document_type)
 
@@ -67,9 +76,12 @@ class PDFProcessingUseCase:
                     f"Document type '{document_type}' not found in database"
                 )
 
-            # Extract document from PDF (returns DocumentEntity with data)
+            # Read PDF file using file system gateway
+            pdf_content = self.file_system_gateway.read_binary_file(pdf_filepath)
+
+            # Extract document from PDF content
             document = self.pdf_extractor_gateway.extract_document(
-                pdf_file, document_type=doc_type.name
+                pdf_content, document_type=doc_type.name
             )
 
             # Validate document has data
