@@ -1,0 +1,9 @@
+[ ] understand the code
+[ ] todo is not working, and this is important to fix code
+
+[ ] endpoints well documented using swagger
+[ ] use the endpoints documentations to update the frontend
+[ ] one to one relationship withing endpoint and use cases
+[ ] there should be only one file for db gateway (consolidate directory Aframework/gateway/db)
+[ ] create init container to populate models
+[ ] define layer names
