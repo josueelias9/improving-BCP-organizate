@@ -5,20 +5,20 @@ Delegates to application layer use cases
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
-from typing import Dict, Any
 import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.use_cases.document_type.get_all_document_types import GetAllDocumentTypesUseCase
+from src.Capplication.DTO.document_type_dto import DTOGetAllDocumentTypesResponse
 
 router = APIRouter(prefix="/api/document-types", tags=["document-types"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=Dict[str, Any])
+@router.get("/", response_model=DTOGetAllDocumentTypesResponse)
 def get_all_document_types(
     session: Session = Depends(get_db_session),
-) -> Dict[str, Any]:
+) -> DTOGetAllDocumentTypesResponse:
     """
     Get all document types
 
@@ -31,12 +31,7 @@ def get_all_document_types(
         # Inject gateway into use case
         use_case = GetAllDocumentTypesUseCase(document_type_gateway)
 
-        dto_response = use_case.execute()
-
-        return {
-            "document_types": dto_response.document_types,
-            "total_count": dto_response.total_count,
-        }
+        return use_case.execute()
 
     except Exception as e:
         logger.error(f"Error retrieving document types: {str(e)}")

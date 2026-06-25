@@ -26,6 +26,7 @@ class DTOBatchUpdateResponse(BaseModel):
     updated: int
     failed: int
     errors: List[Dict[str, Any]]
+    message: Optional[str] = None
 
 
 # ===========================================================
@@ -82,3 +83,46 @@ class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
     transactions: List[Dict[str, Any]]
+
+
+# ===========================================================
+
+
+class DTOUpdateTransactionRequest(BaseModel):
+    """DTO for updating a single transaction - request from controller to use case"""
+
+    history: Optional[str] = None
+    category_name: Optional[str] = None
+
+
+class DTOUpdateTransactionResponse(BaseModel):
+    """Result DTO for update transaction operation - returned from use case to controller"""
+
+    transaction_id: str
+    updated: bool
+    message: str
+
+
+# ===========================================================
+
+
+class DTOBatchUpdateListRequest(BaseModel):
+    """Wrapper DTO for batch update list request - input from controller"""
+
+    updates: List[DTOBatchUpdateRequest]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "updates": [
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "history": "Gasto en supermercado - alimentaci\u00f3n",
+                    },
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174001",
+                        "history": "Pago de servicios - electricidad",
+                    },
+                ]
+            }
+        }

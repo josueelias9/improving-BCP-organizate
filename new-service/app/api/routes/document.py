@@ -2,14 +2,13 @@ import logging
 import uuid
 
 from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import Dict, Any
 from api.deps import SessionDep, get_db_session
 from sqlmodel import Session
 
 from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
-from src.Capplication.DTO.document_dto import DTOGetAllDocumentsRequest, DTOLoadTransactionsFromDocumentRequest, DTOPdfProcessingRequest, DTOPdfProcessingResponse
+from src.Capplication.DTO.document_dto import DTOGetAllDocumentsRequest, DTOGetAllDocumentsResponse, DTOLoadTransactionsFromDocumentRequest, DTOLoadTransactionsFromDocumentResponse, DTOPdfProcessingRequest, DTOPdfProcessingResponse
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
@@ -25,14 +24,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/document", tags=["document management"])
 
 
-@router.get("/documents/")
+@router.get("/documents/", response_model=DTOGetAllDocumentsResponse)
 async def get_all_documents(
     session: SessionDep,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(
         100, ge=1, le=1000, description="Maximum number of records to return"
     ),
-) -> Dict[str, Any]:
+) -> DTOGetAllDocumentsResponse:
     """
     Get all documents with pagination
 
@@ -54,14 +53,7 @@ async def get_all_documents(
         # Execute use case
         dto_response = use_case.execute(dto_request)
 
-        # Map domain result to HTTP response
-
-        return {
-            "documents": dto_response.documents,
-            "total_returned": dto_response.total_returned,
-            "skip": dto_response.skip,
-            "limit": dto_response.limit,
-        }
+        return dto_response
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -76,10 +68,10 @@ async def get_all_documents(
 
 
 # Modelos Pydantic para request body
-@router.post("/load-from-document/{document_id}", response_model=Dict[str, Any])
+@router.post("/load-from-document/{document_id}", response_model=DTOLoadTransactionsFromDocumentResponse)
 def load_transactions_from_document(
     document_id: uuid.UUID, session: Session = Depends(get_db_session)
-) -> Dict[str, Any]:
+) -> DTOLoadTransactionsFromDocumentResponse:
     """
     Load transactions from a document's data column into the transactions table.
 
@@ -110,14 +102,7 @@ def load_transactions_from_document(
         # Execute use case
         dto_response = use_case.execute(dto_request)
 
-        return {
-            "document_id": dto_response.document_id,
-            "total_records": dto_response.total_records,
-            "loaded": dto_response.loaded_count,
-            "skipped": dto_response.skipped_count,
-            "errors": dto_response.errors if dto_response.errors else None,
-            "processed": True,
-        }
+        return dto_response
 
     except ValueError as e:
         # Business validation errors

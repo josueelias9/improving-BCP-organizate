@@ -17,14 +17,15 @@ class DTOPdfProcessingRequest(BaseModel):
     user_email: str
     document_type: str
 
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "pdf_filepath": "files/EECC102025_09745280.PDF",
                 "document_type": "debit",
                 "user_email": "admin@bcpextractor.com",
             }
         }
+    }
 
 class DTOPdfProcessingResponse(BaseModel):
     """Result DTO for PDF processing - returned from use case to controller"""

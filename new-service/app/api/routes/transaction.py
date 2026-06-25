@@ -5,19 +5,29 @@ Delegates to application layer use cases
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
-from typing import Dict, Any, List, Optional
+from typing import Optional
 import uuid
 import logging
 
 from api.deps import get_db_session
-from models import TransactionUpdate, TransactionBatchUpdate
 
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.file_system import FileSystemGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Capplication.DTO.transaction_dto import DTOBatchUpdateRequest, DTOExportTransactionsRequest, DTOImportTransactionsFromCsvRequest
+from src.Capplication.DTO.transaction_dto import (
+    DTOBatchUpdateRequest,
+    DTOBatchUpdateListRequest,
+    DTOBatchUpdateResponse,
+    DTOExportTransactionsRequest,
+    DTOExportTransactionsResponse,
+    DTOImportTransactionsFromCsvRequest,
+    DTOImportTransactionsFromCsvResponse,
+    DTOGetAllTransactionsResponse,
+    DTOUpdateTransactionRequest,
+    DTOUpdateTransactionResponse,
+)
 from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
 from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase
 from src.Capplication.use_cases.transaction.export_transactions import ExportTransactionsUseCase
@@ -28,12 +38,12 @@ router = APIRouter(prefix="/transactions", tags=["all transactions endpoints"])
 logger = logging.getLogger(__name__)
 
 
-@router.put("/{transaction_id}", response_model=Dict[str, Any])
+@router.put("/{transaction_id}", response_model=DTOUpdateTransactionResponse)
 def update_transaction(
     transaction_id: uuid.UUID,
-    transaction_update: TransactionUpdate,
+    transaction_update: DTOUpdateTransactionRequest,
     session: Session = Depends(get_db_session),
-) -> Dict[str, Any]:
+) -> DTOUpdateTransactionResponse:
     """
     Update a specific transaction by ID.
 
@@ -70,7 +80,7 @@ def update_transaction(
         # Execute use case
         result = use_case.execute(transaction_id, update_data)
 
-        return result
+        return DTOUpdateTransactionResponse(**result)
 
     except ValueError as e:
         # Business validation errors
@@ -87,10 +97,10 @@ def update_transaction(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.patch("/batch", response_model=Dict[str, Any])
+@router.patch("/batch", response_model=DTOBatchUpdateResponse)
 def batch_update_transactions(
-    batch_update: TransactionBatchUpdate, session: Session = Depends(get_db_session)
-) -> Dict[str, Any]:
+    batch_update: DTOBatchUpdateListRequest, session: Session = Depends(get_db_session)
+) -> DTOBatchUpdateResponse:
     """
     Update multiple transactions simultaneously.
 
@@ -115,25 +125,13 @@ def batch_update_transactions(
         use_case = BatchUpdateTransactionsUseCase(transaction_gateway, category_gateway)
 
         # Convert Pydantic models to domain objects
-        updates = [
-            DTOBatchUpdateRequest(
-                transaction_id=item.transaction_id,
-                history=item.history,
-                category_name=item.category_name,
-            )
-            for item in batch_update.updates
-        ]
+        updates = batch_update.updates
 
         # Execute use case
         result = use_case.execute(updates)
 
-        return {
-            "total": result.total,
-            "updated": result.updated,
-            "failed": result.failed,
-            "errors": result.errors if result.errors else None,
-            "message": f"Successfully updated {result.updated}/{result.total} transactions",
-        }
+        result.message = f"Successfully updated {result.updated}/{result.total} transactions"
+        return result
 
     except Exception as e:
         # Unexpected errors
@@ -146,7 +144,7 @@ def batch_update_transactions(
 
 
 
-@router.get("/export/csv")
+@router.get("/export/csv", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     month: Optional[str] = Query(
         None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
@@ -156,7 +154,7 @@ def export_transactions(
         "./exports", description="Output directory for exported CSV files"
     ),
     session: Session = Depends(get_db_session),
-):
+) -> DTOExportTransactionsResponse:
     """
     Export transactions to CSV format and save to file
 
@@ -198,17 +196,7 @@ def export_transactions(
                 detail=dto_response.error_message,
             )
         # Presenter:
-        return {
-            "success": dto_response.success,
-            "message": f"Successfully exported {dto_response.transaction_count} transactions",
-            "file_path": dto_response.file_path,
-            "filename": dto_response.filename,
-            "transaction_count": dto_response.transaction_count,
-            "filters": {
-                "month": dto_response.month,
-                "document_id": str(dto_response.document_id) if dto_response.document_id else None,
-            },
-        }
+        return dto_response
 
     except HTTPException:
         raise
@@ -224,10 +212,10 @@ def export_transactions(
 
 
 
-@router.get("/", response_model=List[Dict[str, Any]])
+@router.get("/", response_model=DTOGetAllTransactionsResponse)
 def get_all_transactions(
     skip: int = 0, limit: int = 100, session: Session = Depends(get_db_session)
-) -> List[Dict[str, Any]]:
+) -> DTOGetAllTransactionsResponse:
     """
     Get all transactions with pagination
 
@@ -251,7 +239,7 @@ def get_all_transactions(
         )
         dto_response = use_case.execute(skip=skip, limit=limit)
 
-        return dto_response.transactions
+        return dto_response
 
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")
@@ -263,7 +251,7 @@ def get_all_transactions(
 # ===============================================================================================
 
 
-@router.post("/import/csv")
+@router.post("/import/csv", response_model=DTOImportTransactionsFromCsvResponse)
 def import_transactions_from_csv(
     csv_filename: Optional[str] = Query(
         None,
@@ -273,7 +261,7 @@ def import_transactions_from_csv(
         "/shared_files/output", description="Directory where to read the CSV file from"
     ),
     session: Session = Depends(get_db_session),
-) -> Dict[str, Any]:
+) -> DTOImportTransactionsFromCsvResponse:
     """
     Import and update transactions from CSV file
 
@@ -309,16 +297,7 @@ def import_transactions_from_csv(
         )
         # Execute use case
         dto_response = use_case.execute(dto_request)
-        return {
-            "success": dto_response.success,
-            "message": dto_response.message,
-            "updated_count": dto_response.updated_count,
-            "skipped_count": dto_response.skipped_count,
-            "total_rows": dto_response.total_rows,
-            "errors": (
-                dto_response.errors[:10] if dto_response.errors else []
-            ),  # Limit errors to first 10
-        }
+        return dto_response
 
     except HTTPException:
         raise
