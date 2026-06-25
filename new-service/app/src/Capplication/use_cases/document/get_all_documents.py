@@ -14,7 +14,6 @@ from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsRequest,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

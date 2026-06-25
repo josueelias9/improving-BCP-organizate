@@ -21,6 +21,7 @@ class TransactionType(str, Enum):
 # 2. this block was names as "entities", but it is not correct, because these classes are not domain entities, they are base database models. Base because it helped to avoid code duplication in table models and DTO models
 # 3. It seems that the best final approach is to delete all these base models and move the features inside the table models
 
+
 class DocumentTypeBase(SQLModel):
     name: str = Field(max_length=100, unique=True, index=True)
 

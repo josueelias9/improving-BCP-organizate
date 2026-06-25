@@ -8,7 +8,9 @@ from sqlmodel import Session
 import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Capplication.use_cases.document_type.get_all_document_types import GetAllDocumentTypesUseCase
+from src.Capplication.use_cases.document_type.get_all_document_types import (
+    GetAllDocumentTypesUseCase,
+)
 from src.Capplication.DTO.document_type_dto import DTOGetAllDocumentTypesResponse
 
 router = APIRouter(prefix="/api/document-types", tags=["document-types"])
@@ -38,4 +40,3 @@ def get_all_document_types(
         raise HTTPException(
             status_code=500, detail=f"Error retrieving document types: {str(e)}"
         )
-

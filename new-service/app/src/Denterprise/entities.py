@@ -7,6 +7,7 @@ import uuid
 # TODO: delete this. There will only be a single type of user
 # Enums
 
+
 class TransactionType(str, Enum):
     INCOME = "income"
     EXPENSE = "expense"

@@ -6,8 +6,6 @@ from fastapi import APIRouter
 
 from api.routes import health, transaction, category, document_type, document
 
-
-
 api_router = APIRouter()
 
 # Include all route modules

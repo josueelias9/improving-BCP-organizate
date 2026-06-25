@@ -7,7 +7,10 @@ import logging
 
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Denterprise.entities import UserEntity
-from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse, DTOPdfProcessingRequest
+from src.Capplication.DTO.document_dto import (
+    DTOPdfProcessingResponse,
+    DTOPdfProcessingRequest,
+)
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
 from src.Capplication.gateway.file_system import IFileSystemGateway

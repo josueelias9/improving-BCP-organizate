@@ -28,11 +28,21 @@ from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
 )
-from src.Capplication.use_cases.transaction.update_transaction import UpdateTransactionUseCase
-from src.Capplication.use_cases.transaction.batch_update_transactions import BatchUpdateTransactionsUseCase
-from src.Capplication.use_cases.transaction.export_transactions import ExportTransactionsUseCase
-from src.Capplication.use_cases.transaction.get_all_transactions import GetAllTransactionsUseCase
-from src.Capplication.use_cases.transaction.import_transactions_from_csv import ImportTransactionsFromCsvUseCase
+from src.Capplication.use_cases.transaction.update_transaction import (
+    UpdateTransactionUseCase,
+)
+from src.Capplication.use_cases.transaction.batch_update_transactions import (
+    BatchUpdateTransactionsUseCase,
+)
+from src.Capplication.use_cases.transaction.export_transactions import (
+    ExportTransactionsUseCase,
+)
+from src.Capplication.use_cases.transaction.get_all_transactions import (
+    GetAllTransactionsUseCase,
+)
+from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
+    ImportTransactionsFromCsvUseCase,
+)
 
 router = APIRouter(prefix="/transactions", tags=["all transactions endpoints"])
 logger = logging.getLogger(__name__)
@@ -131,7 +141,9 @@ def batch_update_transactions(
         # Execute use case
         result = use_case.execute(updates)
         # TODO: it seems that this message will always be the same, maybe we can move it to the use case
-        result.message = f"Successfully updated {result.updated}/{result.total} transactions"
+        result.message = (
+            f"Successfully updated {result.updated}/{result.total} transactions"
+        )
         return result
 
     except Exception as e:
@@ -140,9 +152,7 @@ def batch_update_transactions(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-
 # ===============================================================================================
-
 
 
 @router.get("/export/csv", response_model=DTOExportTransactionsResponse)
@@ -208,9 +218,7 @@ def export_transactions(
         )
 
 
-
 # ================================================================================================
-
 
 
 @router.get("/", response_model=DTOGetAllTransactionsResponse)
@@ -236,7 +244,10 @@ def get_all_transactions(
         document_gateway = DocumentDbGateway(session)
         document_type_gateway = DocumentTypeDbGateway(session)
         use_case = GetAllTransactionsUseCase(
-            transaction_gateway, category_gateway, document_gateway, document_type_gateway
+            transaction_gateway,
+            category_gateway,
+            document_gateway,
+            document_type_gateway,
         )
         dto_response = use_case.execute(skip=skip, limit=limit)
 

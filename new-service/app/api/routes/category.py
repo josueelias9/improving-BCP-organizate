@@ -8,7 +8,9 @@ from sqlmodel import Session
 import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.category import CategoryDbGateway
-from src.Capplication.use_cases.category.get_all_categories import GetAllCategoriesUseCase
+from src.Capplication.use_cases.category.get_all_categories import (
+    GetAllCategoriesUseCase,
+)
 from src.Capplication.DTO.category_dto import DTOGetAllCategoriesResponse
 
 router = APIRouter(prefix="/categories", tags=["categories"])

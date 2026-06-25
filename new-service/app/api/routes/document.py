@@ -5,10 +5,19 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from api.deps import SessionDep, get_db_session
 from sqlmodel import Session
 
-from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
+from src.Capplication.use_cases.document.load_transactions_from_document import (
+    LoadTransactionsFromDocumentUseCase,
+)
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
-from src.Capplication.DTO.document_dto import DTOGetAllDocumentsRequest, DTOGetAllDocumentsResponse, DTOLoadTransactionsFromDocumentRequest, DTOLoadTransactionsFromDocumentResponse, DTOPdfProcessingRequest, DTOPdfProcessingResponse
+from src.Capplication.DTO.document_dto import (
+    DTOGetAllDocumentsRequest,
+    DTOGetAllDocumentsResponse,
+    DTOLoadTransactionsFromDocumentRequest,
+    DTOLoadTransactionsFromDocumentResponse,
+    DTOPdfProcessingRequest,
+    DTOPdfProcessingResponse,
+)
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
@@ -16,7 +25,6 @@ from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.pdf_extractor import PDFExtractorGateway
 from src.Aframework.gateway.file_system import FileSystemGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,12 +71,14 @@ async def get_all_documents(
         )
 
 
-
 # ===============================================================================================================
 
 
 # Modelos Pydantic para request body
-@router.post("/load-from-document/{document_id}", response_model=DTOLoadTransactionsFromDocumentResponse)
+@router.post(
+    "/load-from-document/{document_id}",
+    response_model=DTOLoadTransactionsFromDocumentResponse,
+)
 def load_transactions_from_document(
     document_id: uuid.UUID, session: Session = Depends(get_db_session)
 ) -> DTOLoadTransactionsFromDocumentResponse:
@@ -123,7 +133,9 @@ def load_transactions_from_document(
 
 
 @router.post("/pdf-processing")
-async def pdf_processing(dto_request: DTOPdfProcessingRequest, session: SessionDep) -> DTOPdfProcessingResponse:
+async def pdf_processing(
+    dto_request: DTOPdfProcessingRequest, session: SessionDep
+) -> DTOPdfProcessingResponse:
     """
     Process a PDF file and save extracted data to the Documents table
 
@@ -154,10 +166,8 @@ async def pdf_processing(dto_request: DTOPdfProcessingRequest, session: SessionD
 
         # Use case returns DTO for controller response
         dto_response = use_case.execute(dto_request)
-        
+
         return dto_response
-
-
 
     except UnsupportedDocumentTypeException as e:
         # Adapt business exception to HTTP response

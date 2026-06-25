@@ -44,7 +44,12 @@ class DTOBatchUpdateResponse(BaseModel):
                 "total": 3,
                 "updated": 2,
                 "failed": 1,
-                "errors": [{"transaction_id": "123e4567-e89b-12d3-a456-426614174002", "error": "Category not found"}],
+                "errors": [
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174002",
+                        "error": "Category not found",
+                    }
+                ],
                 "message": "Successfully updated 2/3 transactions",
             }
         }

@@ -2,7 +2,6 @@ import uuid
 from typing import List
 from pydantic import BaseModel
 
-
 """
 Document DTOs - Data Transfer Objects
 Used ONLY for transferring data between controllers and use cases (boundary layer)
@@ -26,6 +25,7 @@ class DTOPdfProcessingRequest(BaseModel):
             }
         }
     }
+
 
 class DTOPdfProcessingResponse(BaseModel):
     """Result DTO for PDF processing - returned from use case to controller"""
