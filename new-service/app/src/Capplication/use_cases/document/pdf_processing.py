@@ -161,12 +161,11 @@ class PDFProcessingUseCase:
         """
         user = self.user_gateway.get_by_email(user_email)
         if not user:
-            from models import UserCreate, CustomerType
+            from models import UserCreate
 
             user_create = UserCreate(
                 email=user_email,
                 name="Admin User",
-                customer_type=CustomerType.INDIVIDUAL,
             )
             user = self.user_gateway.create(user_create)
             logger.info(f"Created new user with email: {user_email}")

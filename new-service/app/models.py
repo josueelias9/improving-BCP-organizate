@@ -11,18 +11,13 @@ from enum import Enum
 
 
 # Enums
-class CustomerType(str, Enum):
-    INDIVIDUAL = "individual"
-    BUSINESS = "business"
-
-
 class TransactionType(str, Enum):
     INCOME = "income"
     EXPENSE = "expense"
 
 
 # ============================================================================= entities
-
+# after analyizing this Base models, it is determined that is important for the sake of this file.
 
 class DocumentTypeBase(SQLModel):
     name: str = Field(max_length=100, unique=True, index=True)
@@ -32,7 +27,6 @@ class UserBase(SQLModel):
     email: str = Field(unique=True, index=True, max_length=255)
     name: str = Field(max_length=255)
     is_active: bool = Field(default=True)
-    customer_type: CustomerType = Field(default=CustomerType.INDIVIDUAL)
 
 
 class CategoryBase(SQLModel):
@@ -150,7 +144,6 @@ class UserUpdate(SQLModel):
     email: Optional[str] = None
     name: Optional[str] = None
     is_active: Optional[bool] = None
-    customer_type: Optional[CustomerType] = None
 
 
 class DocumentUpdate(SQLModel):

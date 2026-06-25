@@ -34,9 +34,9 @@ class UserDbGateway(IUserDbGateway):
             email=db_user.email,
             name=db_user.name,
             is_active=db_user.is_active,
-            customer_type=db_user.customer_type,
         )
 
+    # TODO: this is wrong: it is using clases from the models.py module. It should be using the domain entities from the src.Denterprise.entities module. Fix this.
     def create(self, user_create: UserCreate) -> UserEntity:
         """Create a new user and map to domain entity"""
         db_user = UserModel.model_validate(user_create)
@@ -50,5 +50,4 @@ class UserDbGateway(IUserDbGateway):
             email=db_user.email,
             name=db_user.name,
             is_active=db_user.is_active,
-            customer_type=db_user.customer_type,
         )

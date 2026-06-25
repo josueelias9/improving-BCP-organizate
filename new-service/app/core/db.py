@@ -2,7 +2,7 @@ from sqlmodel import Session, create_engine, SQLModel, select
 from core.config import settings
 
 # Import all models so SQLModel can detect them and create all tables
-from models import User, Category, CustomerType, DocumentType, Document, Transaction
+from models import User, Category, DocumentType, Document, Transaction
 import logging
 from core.data import default_categories, default_document_types
 
@@ -67,7 +67,6 @@ def init_db(session: Session) -> None:
             email="admin@bcpextractor.com",
             name="Administrator",
             is_active=True,
-            customer_type=CustomerType.INDIVIDUAL,
         )
         session.add(default_user)
 
@@ -76,7 +75,6 @@ def init_db(session: Session) -> None:
             email="test@bcpextractor.com",
             name="Test User",
             is_active=True,
-            customer_type=CustomerType.INDIVIDUAL,
         )
         session.add(test_user)
 

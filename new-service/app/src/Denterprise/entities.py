@@ -4,12 +4,8 @@ from enum import Enum
 from dataclasses import dataclass, field
 import uuid
 
-
+# TODO: delete this. There will only be a single type of user
 # Enums
-class CustomerType(str, Enum):
-    INDIVIDUAL = "individual"
-    BUSINESS = "business"
-
 
 class TransactionType(str, Enum):
     INCOME = "income"
@@ -36,7 +32,6 @@ class UserEntity:
     email: str = ""
     name: str = ""
     is_active: bool = True
-    customer_type: CustomerType = CustomerType.INDIVIDUAL
     id: Optional[uuid.UUID] = None
 
 
