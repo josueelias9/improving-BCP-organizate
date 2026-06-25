@@ -4,13 +4,12 @@ import uuid
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import Dict, Any
 from api.deps import SessionDep, get_db_session
-from pydantic import BaseModel
 from sqlmodel import Session
 
 from src.Capplication.use_cases.document.load_transactions_from_document import LoadTransactionsFromDocumentUseCase
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
-from src.Capplication.DTO.document_dto import DTOGetAllDocumentsRequest, DTOLoadTransactionsFromDocumentRequest, DTOPdfProcessingRequest
+from src.Capplication.DTO.document_dto import DTOGetAllDocumentsRequest, DTOLoadTransactionsFromDocumentRequest, DTOPdfProcessingRequest, DTOPdfProcessingResponse
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
@@ -138,42 +137,19 @@ def load_transactions_from_document(
 # ===============================================================================================================
 
 
-class PDFProcessRequest(BaseModel):
-    pdf_filename: str
-    type: str  # "debit" o "credit"
-    user_email: str = "admin@bcpextractor.com"
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "pdf_filename": "files/EECC102025_09745280.PDF",
-                "type": "debit",
-                "user_email": "admin@bcpextractor.com",
-            }
-        }
-
-
 @router.post("/pdf-processing")
-async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
+async def pdf_processing(dto_request: DTOPdfProcessingRequest, session: SessionDep) -> DTOPdfProcessingResponse:
     """
     Process a PDF file and save extracted data to the Documents table
 
-    - **pdf_filename**: PDF file path (e.g., "files/document.pdf")
-    - **type**: Account type ("debit" or "credit")
+    - **pdf_filepath**: PDF file path (e.g., "files/document.pdf")
+    - **document_type**: Account type ("debit" or "credit")
     - **user_email**: User email (optional, defaults to admin@bcpextractor.com)
     - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
     try:
         # Delegate to controller with simple data types
         # Use case will orchestrate file operations via FileSystemGateway
-
-
-
-
-        pdf_filepath=request.pdf_filename
-        user_email=request.user_email
-        session=session
-        document_type=request.type
 
         # Initialize all gateways (infrastructure layer)
         document_gateway = DocumentDbGateway(session)
@@ -191,27 +167,10 @@ async def pdf_processing(request: PDFProcessRequest, session: SessionDep):
             file_system_gateway,
         )
 
-        dto_request = DTOPdfProcessingRequest(
-            pdf_filepath=pdf_filepath,
-            user_email=user_email,
-            document_type=document_type,
-        )
         # Use case returns DTO for controller response
         dto_response = use_case.execute(dto_request)
-
-        if dto_response.already_exists:
-            return {
-                "message": dto_response.message,
-                "unique_identifier": dto_response.unique_identifier,
-                "document_id": dto_response.document_id,
-            }
-
-        return {
-            "success": True,
-            "message": dto_response.message,
-            "document_id": dto_response.document_id,
-            "transactions_count": dto_response.transactions_count,
-        }
+        
+        return dto_response
 
 
 

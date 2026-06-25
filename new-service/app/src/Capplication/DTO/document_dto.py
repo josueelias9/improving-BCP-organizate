@@ -1,6 +1,7 @@
 import uuid
 from typing import List
 from dataclasses import dataclass
+from pydantic import BaseModel
 
 
 """
@@ -18,6 +19,14 @@ class DTOPdfProcessingRequest:
     user_email: str
     document_type: str
 
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "pdf_filepath": "files/EECC102025_09745280.PDF",
+                "document_type": "debit",
+                "user_email": "admin@bcpextractor.com",
+            }
+        }
 
 @dataclass
 class DTOPdfProcessingResponse:
