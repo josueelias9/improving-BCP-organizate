@@ -7,7 +7,7 @@ import logging
 from sqlmodel import Session, select
 from typing import Optional
 
-from models import User as UserModel, UserCreate
+from models import User
 from src.Denterprise.entities import UserEntity
 from src.Capplication.gateway.db import IUserDbGateway
 
@@ -22,7 +22,7 @@ class UserDbGateway(IUserDbGateway):
 
     def get_by_email(self, email: str) -> Optional[UserEntity]:
         """Get user by email and map to domain entity"""
-        statement = select(UserModel).where(UserModel.email == email)
+        statement = select(User).where(User.email == email)
         db_user = self.session.exec(statement).first()
 
         if not db_user:
@@ -36,10 +36,13 @@ class UserDbGateway(IUserDbGateway):
             is_active=db_user.is_active,
         )
 
-    # TODO: this is wrong: it is using clases from the models.py module. It should be using the domain entities from the src.Denterprise.entities module. Fix this.
-    def create(self, user_create: UserCreate) -> UserEntity:
+    def create(self, user_data: UserEntity) -> UserEntity:
         """Create a new user and map to domain entity"""
-        db_user = UserModel.model_validate(user_create)
+        db_user = User(
+            email=user_data.email,
+            name=user_data.name,
+            is_active=user_data.is_active,
+        )
         self.session.add(db_user)
         self.session.commit()
         self.session.refresh(db_user)

@@ -6,10 +6,8 @@ Orchestrates the flow of processing a PDF and creating a document
 import logging
 
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
-from src.Capplication.DTO.document_dto import (
-    DTOPdfProcessingResponse,
-    DTOPdfProcessingRequest,
-)
+from src.Denterprise.entities import UserEntity
+from src.Capplication.DTO.document_dto import DTOPdfProcessingResponse, DTOPdfProcessingRequest
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
 from src.Capplication.gateway.file_system import IFileSystemGateway
@@ -161,11 +159,11 @@ class PDFProcessingUseCase:
         """
         user = self.user_gateway.get_by_email(user_email)
         if not user:
-            from models import UserCreate
 
-            user_create = UserCreate(
+            user_create = UserEntity(
                 email=user_email,
                 name="Admin User",
+                is_active=True,
             )
             user = self.user_gateway.create(user_create)
             logger.info(f"Created new user with email: {user_email}")

@@ -16,8 +16,10 @@ class TransactionType(str, Enum):
     EXPENSE = "expense"
 
 
-# ============================================================================= entities
-# after analyizing this Base models, it is determined that is important for the sake of this file.
+# ============================================================================= base models
+# 1. it was decided to delete all classes that behave as DTOs and are not used for persistence. They were moved to the src.Capplication.DTO module.
+# 2. this block was names as "entities", but it is not correct, because these classes are not domain entities, they are base database models. Base because it helped to avoid code duplication in table models and DTO models
+# 3. It seems that the best final approach is to delete all these base models and move the features inside the table models
 
 class DocumentTypeBase(SQLModel):
     name: str = Field(max_length=100, unique=True, index=True)
@@ -126,12 +128,3 @@ class Transaction(TransactionBase, table=True):
     # Relationships
     document: Document = Relationship(back_populates="transactions")
     category: Optional[Category] = Relationship(back_populates="transactions")
-
-
-# ============================================================================= DTO
-
-
-class UserCreate(UserBase):
-    pass
-
-

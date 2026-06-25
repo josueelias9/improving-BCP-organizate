@@ -92,7 +92,7 @@ class IUserDbGateway(ABC):
         pass
 
     @abstractmethod
-    def create(self, user_data) -> UserEntity:
+    def create(self, user_data: UserEntity) -> UserEntity:
         """
         Create a new user
 
