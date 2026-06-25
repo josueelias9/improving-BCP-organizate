@@ -37,12 +37,33 @@ class DTOPdfProcessingResponse(BaseModel):
     transactions_count: int
     message: str
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "success": True,
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "unique_identifier": "09745280-2025-10",
+                "already_exists": False,
+                "transactions_count": 42,
+                "message": "PDF processed successfully",
+            }
+        }
+    }
+
 
 # ===========================================================
 
 
 class DTOLoadTransactionsFromDocumentRequest(BaseModel):
     document_id: uuid.UUID
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            }
+        }
+    }
 
 
 class DTOLoadTransactionsFromDocumentResponse(BaseModel):
@@ -55,6 +76,19 @@ class DTOLoadTransactionsFromDocumentResponse(BaseModel):
     total_records: int
     document_id: str
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "success": True,
+                "loaded_count": 40,
+                "skipped_count": 2,
+                "errors": [],
+                "total_records": 42,
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            }
+        }
+    }
+
 
 # ===========================================================
 
@@ -65,6 +99,15 @@ class DTOGetAllDocumentsRequest(BaseModel):
     skip: int = 0
     limit: int = 100
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "skip": 0,
+                "limit": 100,
+            }
+        }
+    }
+
 
 class DTOGetAllDocumentsResponse(BaseModel):
     """Response DTO for get all documents operation - returned from use case to controller"""
@@ -73,3 +116,22 @@ class DTOGetAllDocumentsResponse(BaseModel):
     total_returned: int
     skip: int
     limit: int
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "documents": [
+                    {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "unique_identifier": "09745280-2025-10",
+                        "processed": True,
+                        "document_type": "debit",
+                        "transactions_count": 42,
+                    }
+                ],
+                "total_returned": 1,
+                "skip": 0,
+                "limit": 100,
+            }
+        }
+    }

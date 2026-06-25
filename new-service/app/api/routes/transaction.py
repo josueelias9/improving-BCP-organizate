@@ -67,6 +67,7 @@ def update_transaction(
         use_case = UpdateTransactionUseCase(transaction_gateway, category_gateway)
 
         # Convert Pydantic model to dict, excluding None values
+        # TODO: move this logic inside the use case to keep controller thin
         update_data = transaction_update.model_dump(
             exclude_unset=True, exclude_none=True
         )
@@ -129,7 +130,7 @@ def batch_update_transactions(
 
         # Execute use case
         result = use_case.execute(updates)
-
+        # TODO: it seems that this message will always be the same, maybe we can move it to the use case
         result.message = f"Successfully updated {result.updated}/{result.total} transactions"
         return result
 
