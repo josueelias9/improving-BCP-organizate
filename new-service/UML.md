@@ -7,7 +7,6 @@ erDiagram
     USER {
         _ name
         _ is_active
-        _ customer_type
     }
 
     TRANSACTION {
