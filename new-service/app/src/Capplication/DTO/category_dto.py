@@ -7,11 +7,9 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 from typing import List, Dict, Any
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-
-@dataclass
-class DTOGetAllCategoriesResponse:
+class DTOGetAllCategoriesResponse(BaseModel):
     """Response DTO for get all categories operation - returned from use case to controller"""
 
     categories: List[Dict[str, Any]]

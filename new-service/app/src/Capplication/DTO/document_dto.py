@@ -1,6 +1,5 @@
 import uuid
 from typing import List
-from dataclasses import dataclass
 from pydantic import BaseModel
 
 
@@ -13,8 +12,7 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 
-@dataclass
-class DTOPdfProcessingRequest:
+class DTOPdfProcessingRequest(BaseModel):
     pdf_filepath: str
     user_email: str
     document_type: str
@@ -28,8 +26,7 @@ class DTOPdfProcessingRequest:
             }
         }
 
-@dataclass
-class DTOPdfProcessingResponse:
+class DTOPdfProcessingResponse(BaseModel):
     """Result DTO for PDF processing - returned from use case to controller"""
 
     success: bool
@@ -43,13 +40,11 @@ class DTOPdfProcessingResponse:
 # ===========================================================
 
 
-@dataclass
-class DTOLoadTransactionsFromDocumentRequest:
+class DTOLoadTransactionsFromDocumentRequest(BaseModel):
     document_id: uuid.UUID
 
 
-@dataclass
-class DTOLoadTransactionsFromDocumentResponse:
+class DTOLoadTransactionsFromDocumentResponse(BaseModel):
     """Result DTO for loading transactions operation - returned from use case to controller"""
 
     success: bool
@@ -63,16 +58,14 @@ class DTOLoadTransactionsFromDocumentResponse:
 # ===========================================================
 
 
-@dataclass
-class DTOGetAllDocumentsRequest:
+class DTOGetAllDocumentsRequest(BaseModel):
     """Request DTO for getting all documents - input from controller"""
 
     skip: int = 0
     limit: int = 100
 
 
-@dataclass
-class DTOGetAllDocumentsResponse:
+class DTOGetAllDocumentsResponse(BaseModel):
     """Response DTO for get all documents operation - returned from use case to controller"""
 
     documents: List[dict]

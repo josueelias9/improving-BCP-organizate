@@ -8,11 +8,10 @@ Internal domain logic uses entities from Denterprise layer.
 
 import uuid
 from typing import Optional, List, Dict, Any
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class DTOBatchUpdateRequest:
+class DTOBatchUpdateRequest(BaseModel):
     """Single transaction update item - DTO for batch update request"""
 
     transaction_id: uuid.UUID
@@ -20,8 +19,7 @@ class DTOBatchUpdateRequest:
     category_name: str = None
 
 
-@dataclass
-class DTOBatchUpdateResponse:
+class DTOBatchUpdateResponse(BaseModel):
     """Result DTO for batch update operation - returned from use case to controller"""
 
     total: int
@@ -33,8 +31,7 @@ class DTOBatchUpdateResponse:
 # ===========================================================
 
 
-@dataclass
-class DTOExportTransactionsRequest:
+class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
     month: Optional[str] = None  # Format: YYYY-MM
@@ -44,8 +41,7 @@ class DTOExportTransactionsRequest:
     )
 
 
-@dataclass
-class DTOExportTransactionsResponse:
+class DTOExportTransactionsResponse(BaseModel):
     """Result DTO for export transactions operation - returned from use case to controller"""
 
     success: bool
@@ -61,16 +57,14 @@ class DTOExportTransactionsResponse:
 # ===========================================================
 
 
-@dataclass
-class DTOImportTransactionsFromCsvRequest:
+class DTOImportTransactionsFromCsvRequest(BaseModel):
     """DTO for import transactions request - from controller to use case"""
 
     csv_filename: Optional[str] = None  # Specific CSV filename to import
     input_dir: str = "/shared_files/output"  # Directory where to read the CSV file from
 
 
-@dataclass
-class DTOImportTransactionsFromCsvResponse:
+class DTOImportTransactionsFromCsvResponse(BaseModel):
     """Result DTO for import transactions operation - returned from use case to controller"""
 
     success: bool
@@ -84,8 +78,7 @@ class DTOImportTransactionsFromCsvResponse:
 # ===========================================================
 
 
-@dataclass
-class DTOGetAllTransactionsResponse:
+class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
     transactions: List[Dict[str, Any]]
