@@ -6,9 +6,9 @@
       "type": "debugpy",
       "request": "launch",
       "module": "fastapi",
-      "args": ["run", "app/main.py"],
+      "args": ["dev", "main.py", "--host", "0.0.0.0"],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/app",
       "justMyCode": true
     }
     

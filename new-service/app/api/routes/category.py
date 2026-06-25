@@ -15,7 +15,7 @@ from src.Capplication.use_cases.category.get_all_categories import (
 )
 from src.Capplication.DTO.category_dto import DTOGetAllCategoriesResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/api/categories", tags=["categories"])
 logger = logging.getLogger(__name__)
 
 

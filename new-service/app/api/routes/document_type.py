@@ -15,7 +15,7 @@ from src.Capplication.use_cases.document_type.get_all_document_types import (
 )
 from src.Capplication.DTO.document_type_dto import DTOGetAllDocumentTypesResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/api/document-types", tags=["document-types"])
 logger = logging.getLogger(__name__)
 
 
