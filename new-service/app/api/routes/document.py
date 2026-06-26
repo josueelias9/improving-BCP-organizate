@@ -36,7 +36,7 @@ async def get_documents(
     limit: int = Query(
         100, ge=1, le=1000, description="Maximum number of records to return"
     ),
-) -> DTOGetDocumentsResponse:
+):
     """
     Get all documents with pagination
 
@@ -68,13 +68,8 @@ async def get_documents(
         )
 
 
-
-
-
-@router.post("/")
-async def create_document(
-    dto_request: DTOCreateDocumentRequest, session: SessionDep
-) -> DTOCreateDocumentResponse:
+@router.post("/", response_model=DTOCreateDocumentResponse)
+async def create_document(dto_request: DTOCreateDocumentRequest, session: SessionDep):
     """
     Process a PDF file and save extracted data to the Documents table
 
@@ -125,5 +120,3 @@ def delete_document(session: SessionDep, document_id: uuid.UUID) -> dict:
         "message": f"Document {document_id} deleted successfully",
         "status": "success",
     }
-
-

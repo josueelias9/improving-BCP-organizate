@@ -10,7 +10,7 @@ from typing import List, Dict, Any
 from pydantic import BaseModel
 
 
-class DTOGetAllCategoriesResponse(BaseModel):
+class DTOGetCategoriesResponse(BaseModel):
     """Response DTO for get all categories operation - returned from use case to controller"""
 
     categories: List[Dict[str, Any]]

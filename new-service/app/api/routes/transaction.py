@@ -103,9 +103,7 @@ def get_transactions(
     "/{document_id}",
     response_model=DTOCreateTransactionsResponse,
 )
-def create_transactions(
-    document_id: uuid.UUID, session: SessionDep
-) -> DTOCreateTransactionsResponse:
+def create_transactions(document_id: uuid.UUID, session: SessionDep):
     """
     Load transactions from a document's data column into the transactions table.
 
@@ -156,7 +154,7 @@ def update_transaction(
     transaction_id: uuid.UUID,
     transaction_update: DTOUpdateTransactionRequest,
     session: SessionDep,
-) -> DTOUpdateTransactionResponse:
+):
     """
     Update a specific transaction by ID.
 
@@ -217,7 +215,7 @@ def update_transaction(
 @router.patch("/batch", response_model=DTOBatchUpdateResponse)
 def batch_update_transactions(
     batch_update: DTOBatchUpdateListRequest, session: SessionDep
-) -> DTOBatchUpdateResponse:
+):
     """
     Update multiple transactions simultaneously.
 
@@ -334,7 +332,7 @@ def import_transactions_from_csv(
     input_dir: str = Query(
         "/shared_files/output", description="Directory where to read the CSV file from"
     ),
-) -> DTOImportTransactionsFromCsvResponse:
+):
     """
     Import and update transactions from CSV file
 

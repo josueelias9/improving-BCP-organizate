@@ -246,7 +246,6 @@ class DTOBatchUpdateListRequest(BaseModel):
 # ==========================================================
 
 
-
 # TODO: move to transaction_dto.py
 class DTOCreateTransactionsRequest(BaseModel):
     document_id: uuid.UUID

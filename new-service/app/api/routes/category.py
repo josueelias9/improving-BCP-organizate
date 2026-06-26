@@ -3,24 +3,23 @@ Category Routes - HTTP Interface
 Delegates to application layer use cases
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from fastapi import APIRouter, HTTPException
 import logging
-from api.deps import get_db_session
+from api.deps import SessionDep
 from src.Aframework.gateway.db.category import CategoryDbGateway
-from src.Capplication.use_cases.category.get_all_categories import (
-    GetAllCategoriesUseCase,
+from src.Capplication.use_cases.category.get_categories import (
+    GetCategoriesUseCase,
 )
-from src.Capplication.DTO.category_dto import DTOGetAllCategoriesResponse
+from src.Capplication.DTO.category_dto import DTOGetCategoriesResponse
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=DTOGetAllCategoriesResponse)
-def get_all_categories(
-    session: Session = Depends(get_db_session),
-) -> DTOGetAllCategoriesResponse:
+@router.get("/", response_model=DTOGetCategoriesResponse)
+def get_categories(
+    session: SessionDep,
+) -> DTOGetCategoriesResponse:
     """
     Get all categories
 
@@ -32,7 +31,7 @@ def get_all_categories(
         category_gateway = CategoryDbGateway(session)
 
         # Inject gateway into use case
-        use_case = GetAllCategoriesUseCase(category_gateway)
+        use_case = GetCategoriesUseCase(category_gateway)
 
         return use_case.execute()
 
