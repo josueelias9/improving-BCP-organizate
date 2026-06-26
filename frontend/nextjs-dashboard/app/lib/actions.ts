@@ -158,7 +158,7 @@ export async function updateTransaction(
 
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/transactions/${id}`
+        const url = `${baseUrl}/transactions/${id}`
 
         const response = await fetch(url, {
             method: 'PUT',
@@ -221,7 +221,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         }
     }
 
-    if (!file.name.endsWith('.PDF')) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
         return {
             errors: { file: ['Only PDF files are allowed.'] },
             message: 'Invalid file type.'
@@ -239,14 +239,14 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         const filePath = `${process.env.PATH_TO_SHARED_FILES}${fileName}`
 
         // Send to API for processing
-        const response = await fetch(`${baseUrl}/api/pdf-processing`, {
+        const response = await fetch(`${baseUrl}/document/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                pdf_filename: filePath,
-                type,
+                pdf_filepath: filePath,
+                document_type: type,
                 user_email
             }),
             cache: 'no-store'
@@ -260,7 +260,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
         const result = await response.json()
         revalidatePath('/dashboard/documents')
         return {
-            message: `PDF processed successfully! Document ID: ${result.id || 'N/A'}`
+            message: `PDF processed successfully! Document ID: ${result.document_id || 'N/A'}`
         }
     } catch (error) {
         console.error('API Error:', error)
@@ -273,7 +273,7 @@ export async function processPDF(prevState: ProcessPDFState, formData: FormData)
 export async function processDocument(documentId: string) {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/load-from-document/${documentId}`
+        const url = `${baseUrl}/transactions/${documentId}`
 
         const response = await fetch(url, {
             method: 'POST',
@@ -310,7 +310,7 @@ export async function processDocument(documentId: string) {
 export async function exportTransactionsToCSV() {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const response = await fetch(`${baseUrl}/api/transactions/export/csv`, {
+        const response = await fetch(`${baseUrl}/transactions/export/csv`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
@@ -342,7 +342,7 @@ export async function exportTransactionsToCSV() {
 export async function importTransactionsFromCSV() {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const response = await fetch(`${baseUrl}/api/transactions/import/csv`, {
+        const response = await fetch(`${baseUrl}/transactions/import/csv`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json'

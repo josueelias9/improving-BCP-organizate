@@ -65,8 +65,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    env_file:
-      - .env
+    environment:
+      - PATH_TO_SHARED_FILES
+      - AUTH_SECRET
     volumes:
       - ./files:/shared_files
       - /mnt/c/Users/josue/Downloads:/downloads

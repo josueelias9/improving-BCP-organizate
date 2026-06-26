@@ -3,3 +3,7 @@ nextjs-dashboard/.next
 nextjs-dashboard/.env.example
 Dockerfile
 README.md
+
+.vscode
+.gitignore
+hola.md
