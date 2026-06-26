@@ -22,8 +22,8 @@ from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
-from src.Aframework.gateway.pdf_extractor import PDFExtractorGateway
-from src.Aframework.gateway.file_system import FileSystemGateway
+from src.Aframework.gateway.content_extractor import ContentExtractorGateway
+from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
 logger = logging.getLogger(__name__)
@@ -91,22 +91,22 @@ async def pdf_processing(
     """
     try:
         # Delegate to controller with simple data types
-        # Use case will orchestrate file operations via FileSystemGateway
+        # Use case will orchestrate file operations via FileExtractorGateway
 
         # Initialize all gateways (infrastructure layer)
         document_gateway = DocumentDbGateway(session)
         user_gateway = UserDbGateway(session)
         document_type_gateway = DocumentTypeDbGateway(session)
-        pdf_extractor_gateway = PDFExtractorGateway()
-        file_system_gateway = FileSystemGateway()
+        content_extractor_gateway = ContentExtractorGateway()
+        file_extractor_gateway = FileExtractorGateway()
 
         # Delegate all processing to application layer use case
         use_case = PDFProcessingUseCase(
             document_gateway,
             user_gateway,
-            pdf_extractor_gateway,
+            content_extractor_gateway,
             document_type_gateway,
-            file_system_gateway,
+            file_extractor_gateway,
         )
 
         # Use case returns DTO for controller response

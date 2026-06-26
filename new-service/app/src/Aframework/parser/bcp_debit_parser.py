@@ -253,7 +253,7 @@ class BCPDebitParser:
             logger.warning(
                 "Could not find account code in format NNN-NNNNNNNN-N-NN with currency"
             )
-            return None
+            return None, None
 
         except Exception as e:
             logger.error(f"Error extracting account code: {str(e)}")

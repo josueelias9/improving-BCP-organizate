@@ -12,8 +12,8 @@ from src.Capplication.DTO.document_dto import (
     DTOPdfProcessingRequest,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
-from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
-from src.Capplication.gateway.file_system import IFileSystemGateway
+from src.Capplication.gateway.content_extractor import IContentExtractorGateway
+from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
 
 logger = logging.getLogger(__name__)
@@ -26,15 +26,15 @@ class PDFProcessingUseCase:
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        pdf_extractor_gateway: IPDFExtractorGateway,
+        content_extractor_gateway: IContentExtractorGateway,
         document_type_gateway: IDocumentTypeDbGateway,
-        file_system_gateway: IFileSystemGateway,
+        file_extractor_gateway: IFileExtractorGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
-        self.pdf_extractor_gateway = pdf_extractor_gateway
+        self.content_extractor_gateway = content_extractor_gateway
         self.document_type_gateway = document_type_gateway
-        self.file_system_gateway = file_system_gateway
+        self.file_extractor_gateway = file_extractor_gateway
 
     def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
         """
@@ -61,7 +61,7 @@ class PDFProcessingUseCase:
 
         try:
             # Check if file exists using file system gateway
-            if not self.file_system_gateway.file_exists(pdf_filepath):
+            if not self.file_extractor_gateway.file_exists(pdf_filepath):
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
             # Validate document type (business rule)
@@ -78,10 +78,10 @@ class PDFProcessingUseCase:
                 )
 
             # Read PDF file using file system gateway
-            pdf_content = self.file_system_gateway.read_binary_file(pdf_filepath)
+            pdf_content = self.file_extractor_gateway.read_binary_file(pdf_filepath)
 
             # Extract document from PDF content
-            document = self.pdf_extractor_gateway.extract_document(
+            document = self.content_extractor_gateway.extract_document(
                 pdf_content, document_type=doc_type.name
             )
 

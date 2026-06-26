@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 
-class IFileSystemGateway(ABC):
+class IFileExtractorGateway(ABC):
     """Interface for file system operations"""
 
     @abstractmethod

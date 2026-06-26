@@ -7,7 +7,7 @@ from typing import Optional
 from src.Denterprise.entities import DocumentEntity
 
 
-class IPDFExtractorGateway(ABC):
+class IContentExtractorGateway(ABC):
     """Abstract gateway for PDF extraction operations"""
 
     @abstractmethod

@@ -14,7 +14,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsResponse,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway
-from src.Capplication.gateway.file_system import IFileSystemGateway
+from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +25,17 @@ class ExportTransactionsUseCase:
     def __init__(
         self,
         transaction_gateway: ITransactionDbGateway,
-        file_system_gateway: IFileSystemGateway,
+        file_extractor_gateway: IFileExtractorGateway,
     ):
         """
         Initialize use case with gateway dependencies
 
         Args:
             transaction_gateway: Transaction gateway interface
-            file_system_gateway: File system gateway interface
+            file_extractor_gateway: File system gateway interface
         """
         self.transaction_gateway = transaction_gateway
-        self.file_system_gateway = file_system_gateway
+        self.file_extractor_gateway = file_extractor_gateway
 
     def execute(
         self, filters: DTOExportTransactionsRequest
@@ -72,7 +72,7 @@ class ExportTransactionsUseCase:
             filename = self._generate_filename(filters, len(transactions))
 
             # 5. Save file using file system gateway
-            file_path = self.file_system_gateway.save_file(
+            file_path = self.file_extractor_gateway.save_file(
                 filename=filename, content=csv_content, output_dir=filters.output_dir
             )
 

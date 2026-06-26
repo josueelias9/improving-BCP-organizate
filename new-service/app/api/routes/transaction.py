@@ -12,7 +12,7 @@ import logging
 from api.deps import get_db_session
 
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
-from src.Aframework.gateway.file_system import FileSystemGateway
+from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -186,10 +186,10 @@ def export_transactions(
         # Controller:
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
-        file_system_gateway = FileSystemGateway()
+        file_extractor_gateway = FileExtractorGateway()
         use_case = ExportTransactionsUseCase(
             transaction_gateway=transaction_gateway,
-            file_system_gateway=file_system_gateway,
+            file_extractor_gateway=file_extractor_gateway,
         )
 
         # Create filter object with output_dir

@@ -1,6 +1,6 @@
 """PDF Extractor Gateway - Interface Adapter Layer
 Extracts transactions from BCP PDF bank statements
-Implements the PDFExtractorGateway interface
+Implements the ContentExtractorGateway interface
 """
 
 import fitz  # PyMuPDF
@@ -10,14 +10,14 @@ import os
 from dotenv import load_dotenv
 from src.Aframework.parser.bcp_debit_parser import BCPDebitParser
 from src.Aframework.parser.bcp_credit_parser import BCPCreditParser
-from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
+from src.Capplication.gateway.content_extractor import IContentExtractorGateway
 from src.Denterprise.entities import DocumentEntity
 
 logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-class PDFExtractorGateway(IPDFExtractorGateway):
+class ContentExtractorGateway(IContentExtractorGateway):
     """Gateway implementation for BCP PDF bank statements extraction"""
 
     def __init__(self):
@@ -44,7 +44,7 @@ class PDFExtractorGateway(IPDFExtractorGateway):
 
             start_date = None
             end_date = None
-
+            # TODO: use factory pattern to instantiate the correct parser based on document_type
             if document_type == "bcp_credit":
                 # TODO: here is what we discussed about the unique_identifier. The generation of it is being done in the parser.
                 # This should be done by the Entity itself.
