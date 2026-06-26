@@ -26,5 +26,5 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/jungaretti/features/ripgrep:1": {}
   },
-  "runServices": ["new-service"]
+  "runServices": ["new-service","pgadmin"]
 }

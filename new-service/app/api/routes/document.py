@@ -74,7 +74,6 @@ async def get_all_documents(
 # ===============================================================================================================
 
 
-# Modelos Pydantic para request body
 @router.post(
     "/load-from-document/{document_id}",
     response_model=DTOLoadTransactionsFromDocumentResponse,

@@ -17,7 +17,6 @@ from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
-    DTOBatchUpdateRequest,
     DTOBatchUpdateListRequest,
     DTOBatchUpdateResponse,
     DTOExportTransactionsRequest,

@@ -54,3 +54,58 @@ default_document_types = [
     {"name": "bcp_credit"},
     {"name": "pichincha"},
 ]
+
+
+default_users = [
+    {
+        "email": "admin@bcpextractor.com",
+        "name": "Administrator",
+        "is_active": True,
+    },
+    {
+        "email": "test@bcpextractor.com",
+        "name": "Test User",
+        "is_active": True,
+    },
+]
+
+
+default_documents = [
+    {
+        "processed": True,
+        "unique_identifier": "bcp_debit_2023-01-01_2023-01-31",
+        "document_type": "bcp_debit",
+        "user": "admin@bcpextractor.com"
+    }
+]
+
+# default_transactions = [
+#     {
+#         "description": "Grocery Store",
+#         "amount": 50.0,
+#         "category": "Groceries",
+#         "order": 1,
+#         "transaction_type": "expense",
+#     },
+#     {
+#         "description": "Restaurant",
+#         "amount": 30.0,
+#         "category": "Restaurants",
+#         "order": 2,
+#         "transaction_type": "expense",
+#     },
+#     {
+#         "description": "Gas Station",
+#         "amount": 40.0,
+#         "category": "Fuel",
+#         "order": 3,
+#         "transaction_type": "expense",
+#     },
+#     {
+#         "description": "Movie Theater",
+#         "amount": 15.0,
+#         "category": "Movies",
+#         "order": 4,
+#         "transaction_type": "expense",
+#     }
+# ]
