@@ -85,7 +85,6 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         for db_transaction in transactions:
             entity = TransactionEntity(
-                id=db_transaction.id,
                 order=db_transaction.order,
                 description=db_transaction.description,
                 history=db_transaction.history,
@@ -93,9 +92,8 @@ class TransactionDbGateway(ITransactionDbGateway):
                 transaction_type=db_transaction.transaction_type,
                 transaction_date=db_transaction.transaction_date,
                 currency=db_transaction.currency,
-                unique_identifier=db_transaction.unique_identifier,
-                category_id=db_transaction.category_id,
-                document_id=db_transaction.document_id,
+                category_name=db_transaction.category.name,
+                document_type_name=db_transaction.document.document_type.name,
             )
             entities.append(entity)
 
@@ -110,7 +108,8 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         if not db_transaction:
             return None
-
+        
+        # TODO: create a single model -> entity mapper for all functions
         # Map to domain entity
         return TransactionEntity(
             id=db_transaction.id,

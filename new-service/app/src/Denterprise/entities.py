@@ -50,6 +50,8 @@ class TransactionEntity:
     category_id: Optional[uuid.UUID] = None
     document_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
+    category_name: Optional[str] = None  # Added to store the category name
+    document_type_name: Optional[str] = None  # Added to store the document type name
 
     def generate_unique_identifier(self) -> str:
         """Generate unique identifier for the transaction

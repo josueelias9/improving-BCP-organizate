@@ -10,7 +10,7 @@ import uuid
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
-
+from ...Denterprise.entities import TransactionEntity
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 

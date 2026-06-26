@@ -43,6 +43,7 @@ This project is highly integrated with vs code. Thus, you can take advantage of 
 This is the design of the application and de database
 
 ```mermaid
+
 erDiagram
     USER {
         _ name
@@ -95,6 +96,7 @@ erDiagram
 
 ## project architecture
 
+Example with db 
 
 ```mermaid
 sequenceDiagram
@@ -110,6 +112,9 @@ sequenceDiagram
     DocumentUseCase->>FastAPI: DTOResponse
 ```
 
+in general, this is the pattern we are using for this project:
+
+
 ```mermaid
 sequenceDiagram
     box rgb(141, 173, 241) frameworks and drivers layer
@@ -122,6 +127,27 @@ sequenceDiagram
     Framework->>UseCase: DTORequest
     Driver<<->>UseCase: Entity
     UseCase->>Framework: DTOResponse
+
+```
+The original architecture: For this project the `Interface Adapters` layer was removed to take advantage of FastAPI and swagger. the idea was to use the DTO directly in the routes to generate the documentation automatically, otherwise, and aditional layer of DTO (FastAPI DTO) would have been required.
+```mermaid
+sequenceDiagram
+    box rgb(141, 173, 241) frameworks & drivers
+    participant Framework
+    participant Driver
+    end
+    box rgb(127, 176, 134) Interface Adapters 
+    participant Controller
+    end
+    box rgb(248, 131, 131) application
+    participant UseCase
+    end
+    Framework->>Controller:
+    Controller->>UseCase: DTORequest
+    Driver<<->>UseCase: Entity
+    UseCase->>Controller: DTOResponse
+    Controller->>Framework:
+    
 ```
 
 ## future integration
