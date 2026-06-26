@@ -4,7 +4,7 @@ from core.config import settings
 # Import all models so SQLModel can detect them and create all tables
 from models import User, Category, DocumentType, Transaction, Document
 import logging
-from core.data import default_categories, default_document_types, default_users, default_documents
+from core.data import default_categories, default_document_types, default_users, default_documents, default_transactions
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,6 @@ def init_db(session: Session) -> None:
         for doc_type_data in default_document_types:
             doc_type = DocumentType(name=doc_type_data["name"])
             session.add(doc_type)
-
         session.flush()  # Flush to ensure document types are created before categories
 
         # ================= Create default categories
@@ -59,6 +58,7 @@ def init_db(session: Session) -> None:
                     )
                     session.add(child_category)
                     created_categories_count += 1
+        session.flush()  # Flush to ensure categories are created before users
 
         # ================= Create default admin user
         logger.info("👤 Creating default admin user...")
@@ -88,28 +88,34 @@ def init_db(session: Session) -> None:
             )
             session.add(document)
         session.flush()
-        #================= Create default transactions
-        # logger.info("💰 Creating default transactions...")
-        # for transaction_data in default_transactions:
-        #     # search for the category by name
-        #     statement = select(Category).where(Category.name == transaction_data["category"])
-        #     category = session.exec(statement).first()
 
-        #     transaction = Transaction(
-        #         description=transaction_data["description"],
-        #         amount=transaction_data["amount"],
-        #         order=transaction_data["order"],
-        #         transaction_type=transaction_data["transaction_type"],
-        #         category_id=category.id if category else None,
-        #     )
-        #     session.add(transaction)
+        # ================= Create default transactions
+        logger.info("💰 Creating default transactions...")
+        for transaction_data in default_transactions:
+            # search for the category by name
+            statement = select(Category).where(Category.name == transaction_data["category"])
+            category = session.exec(statement).first()
+
+            statement = select(Document).where(Document.unique_identifier == transaction_data["document"])
+            document = session.exec(statement).first()
+
+            transaction = Transaction(
+                description=transaction_data["description"],
+                amount=transaction_data["amount"],
+                order=transaction_data["order"],
+                transaction_type=transaction_data["transaction_type"],
+                category_id=category.id,
+                document_id=document.id,
+            )
+            session.add(transaction)
 
         session.commit()
         logger.info(f"✅ Database initialized successfully!")
         logger.info(f"   📄 Created {len(default_document_types)} document types")
         logger.info(f"   📁 Created {created_categories_count} categories")
         logger.info(f"   👥 Created {len(default_users)} users")
-        # logger.info(f"   💰 Created {len(default_transactions)} transactions")
+        logger.info(f"   📄 Created {len(default_documents)} documents")
+        logger.info(f"   💰 Created {len(default_transactions)} transactions")
 
     except Exception as e:
         logger.error(f"❌ Error initializing database: {e}")
