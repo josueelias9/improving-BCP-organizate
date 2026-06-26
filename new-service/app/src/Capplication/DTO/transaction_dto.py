@@ -215,7 +215,7 @@ class DTOUpdateTransactionsResponse(BaseModel):
     }
 
 
-class DTOBatchUpdateListRequest(BaseModel):
+class DTOUpdateTransactionsRequest(BaseModel):
     """Wrapper DTO for batch update list request - input from controller"""
 
     updates: List[DTOBatchUpdateRequest]

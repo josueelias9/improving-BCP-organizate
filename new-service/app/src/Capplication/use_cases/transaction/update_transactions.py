@@ -7,7 +7,7 @@ import logging
 
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsResponse,
-    DTOBatchUpdateListRequest,
+    DTOUpdateTransactionsRequest,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
@@ -26,7 +26,7 @@ class UpdateTransactionsUseCase:
         self.category_gateway = category_gateway
 
     def execute(
-        self, batch_update: DTOBatchUpdateListRequest
+        self, batch_update: DTOUpdateTransactionsRequest
     ) -> DTOUpdateTransactionsResponse:
         """
         Update multiple transactions simultaneously

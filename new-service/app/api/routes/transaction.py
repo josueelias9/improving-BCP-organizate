@@ -17,7 +17,7 @@ from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
-    DTOBatchUpdateListRequest,
+    DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
@@ -30,7 +30,7 @@ from src.Capplication.DTO.transaction_dto import (
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
 )
-from src.Capplication.use_cases.transaction.batch_update_transactions import (
+from src.Capplication.use_cases.transaction.update_transactions import (
     UpdateTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.export_transactions import (
@@ -210,7 +210,7 @@ def update_transaction(
 
 
 @router.put("/batch", response_model=DTOUpdateTransactionsResponse)
-def update_transactions(batch_update: DTOBatchUpdateListRequest, session: SessionDep):
+def update_transactions(batch_update: DTOUpdateTransactionsRequest, session: SessionDep):
     """
     Update multiple transactions simultaneously.
 
