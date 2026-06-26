@@ -64,6 +64,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             end_date=document.end_date,
             user_id=document.user_id,
             document_type_id=document.document_type_id,
+            plain_text=document.plain_text,  # Store the plain text in the database
         )
 
         self.session.add(db_document)

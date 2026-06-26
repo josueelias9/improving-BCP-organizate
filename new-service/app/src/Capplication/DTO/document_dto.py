@@ -19,7 +19,7 @@ class DTOPdfProcessingRequest(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "pdf_filepath": "/shared_files/examples/EECC102025_09745280.PDF",
+                "pdf_filepath": "/shared_files/examples/EECC102025_07750301.PDF",
                 "document_type": "bcp_debit",
                 "user_email": "admin@bcpextractor.com",
             }

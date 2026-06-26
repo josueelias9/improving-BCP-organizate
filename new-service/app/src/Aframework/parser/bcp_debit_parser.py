@@ -55,7 +55,7 @@ class BCPDebitParser:
         initial_day, final_day = self.extract_period(full_text)
         transactions = self.parse_transactions(full_text)
 
-        # Convert transactions to data list
+
         data = {
             "account_code": account_code,
             "currency": currency,

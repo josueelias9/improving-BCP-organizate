@@ -9,7 +9,7 @@ from src.Capplication.use_cases.document.load_transactions_from_document import 
     LoadTransactionsFromDocumentUseCase,
 )
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
-from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
+from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsRequest,
@@ -107,7 +107,7 @@ async def create_document(
         file_extractor_gateway = FileExtractorGateway()
 
         # Delegate all processing to application layer use case
-        use_case = PDFProcessingUseCase(
+        use_case = CreateDocumentUseCase(
             document_gateway,
             user_gateway,
             content_extractor_gateway,

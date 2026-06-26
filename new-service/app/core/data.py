@@ -73,7 +73,7 @@ default_users = [
 default_documents = [
     {
         "processed": True,
-        "unique_identifier": "this_is_a_example_of_an_unique_identifier",
+        "unique_identifier": "example__unique__identifier",
         "document_type": "bcp_debit",
         "user": "admin@bcpextractor.com",
         "data": {"information": "Data here is dynamic. It depends on the PDF content and the parser used."},
@@ -87,7 +87,7 @@ default_transactions = [
         "category": "Groceries",
         "order": 1,
         "transaction_type": "expense",
-        "document": "this_is_a_example_of_an_unique_identifier",
+        "document": "example__unique__identifier",
     },
     {
         "description": "Restaurant",
@@ -95,7 +95,7 @@ default_transactions = [
         "category": "Restaurants",
         "order": 2,
         "transaction_type": "expense",
-        "document": "this_is_a_example_of_an_unique_identifier",
+        "document": "example__unique__identifier",
     },
     {
         "description": "Gas Station",
@@ -103,7 +103,7 @@ default_transactions = [
         "category": "Fuel",
         "order": 3,
         "transaction_type": "expense",
-        "document": "this_is_a_example_of_an_unique_identifier",
+        "document": "example__unique__identifier",
     },
     {
         "description": "Movie Theater",
@@ -111,6 +111,6 @@ default_transactions = [
         "category": "Movies",
         "order": 4,
         "transaction_type": "expense",
-        "document": "this_is_a_example_of_an_unique_identifier",
+        "document": "example__unique__identifier",
     },
 ]

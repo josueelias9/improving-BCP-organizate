@@ -19,7 +19,7 @@ from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
 logger = logging.getLogger(__name__)
 
 
-class PDFProcessingUseCase:
+class CreateDocumentUseCase:
     """Use case for processing PDF and creating document"""
 
     def __init__(
@@ -78,11 +78,11 @@ class PDFProcessingUseCase:
                 )
 
             # Read PDF file using file system gateway
-            pdf_content = self.file_extractor_gateway.read_binary_file(pdf_filepath)
+            pdf_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
 
             # Extract document from PDF content
             document = self.content_extractor_gateway.extract_document(
-                pdf_content, document_type=doc_type.name
+                pdf_binary, document_type=doc_type.name
             )
 
             # Validate document has data
@@ -170,5 +170,5 @@ class PDFProcessingUseCase:
             )
             user = self.user_gateway.create(user_create)
             logger.info(f"Created new user with email: {user_email}")
-
+        logger.info(f"Using user with email: {user_email}")
         return user

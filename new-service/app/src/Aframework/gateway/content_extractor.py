@@ -66,6 +66,7 @@ class ContentExtractorGateway(IContentExtractorGateway):
                 processed=False,
                 start_date=start_date,
                 end_date=end_date,
+                plain_text=full_text,
             )
 
         except Exception as e:

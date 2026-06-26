@@ -45,6 +45,7 @@ class DocumentBase(SQLModel):
     processed: bool = Field(default=False)
     start_date: Optional[date] = Field(default=None)
     end_date: Optional[date] = Field(default=None)
+    plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 
 class TransactionBase(SQLModel):
