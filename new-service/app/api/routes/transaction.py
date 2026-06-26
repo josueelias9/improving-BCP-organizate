@@ -210,7 +210,9 @@ def update_transaction(
 
 
 @router.put("/batch", response_model=DTOUpdateTransactionsResponse)
-def update_transactions(batch_update: DTOUpdateTransactionsRequest, session: SessionDep):
+def update_transactions(
+    batch_update: DTOUpdateTransactionsRequest, session: SessionDep
+):
     """
     Update multiple transactions simultaneously.
 

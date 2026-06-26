@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", response_model=DTOGetCategoriesResponse)
-def get_categories(
-    session: SessionDep,
-) -> DTOGetCategoriesResponse:
+def get_categories(session: SessionDep):
     """
     Get all categories
 

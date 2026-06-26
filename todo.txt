@@ -2,6 +2,7 @@
 
 frontend/
 
+[ ] remove all response examples
 [ ] use the endpoints documentations to update the frontend
 
 new-service/

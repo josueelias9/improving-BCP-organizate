@@ -1,6 +1,9 @@
 from typing import List
 from pydantic import BaseModel
 
+
+from ...Denterprise.entities import DocumentEntity
+
 """
 Document DTOs - Data Transfer Objects
 Used ONLY for transferring data between controllers and use cases (boundary layer)
@@ -72,26 +75,7 @@ class DTOGetDocumentsRequest(BaseModel):
 class DTOGetDocumentsResponse(BaseModel):
     """Response DTO for get all documents operation - returned from use case to controller"""
 
-    documents: List[dict]
+    documents: List[DocumentEntity]
     total_returned: int
     skip: int
     limit: int
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "documents": [
-                    {
-                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                        "unique_identifier": "09745280-2025-10",
-                        "processed": True,
-                        "document_type": "debit",
-                        "transactions_count": 42,
-                    }
-                ],
-                "total_returned": 1,
-                "skip": 0,
-                "limit": 100,
-            }
-        }
-    }

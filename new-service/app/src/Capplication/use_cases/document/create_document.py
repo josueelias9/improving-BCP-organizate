@@ -98,7 +98,7 @@ class CreateDocumentUseCase:
                 logger.info(
                     f"Document already exists with unique_id: {document.unique_identifier}"
                 )
-                return DTOCreateDocumentRequest(
+                return DTOCreateDocumentResponse(
                     success=True,
                     document_id=str(existing_document.id),
                     unique_identifier=document.unique_identifier,
@@ -117,7 +117,7 @@ class CreateDocumentUseCase:
             logger.info(f"Created new document with ID: {created_document.id}")
 
             # Return DTO for controller
-            return DTOCreateDocumentRequest(
+            return DTOCreateDocumentResponse(
                 success=True,
                 document_id=str(created_document.id),
                 unique_identifier=document.unique_identifier,

@@ -80,7 +80,6 @@ erDiagram
         _ plain_text
     }
 
-
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
     DOCUMENT ||--o{ TRANSACTION : "has"
@@ -91,7 +90,39 @@ erDiagram
 ```
 
 
----
+
+
+
+## project architecture
+
+
+```mermaid
+sequenceDiagram
+    box rgb(141, 173, 241) external layer
+    participant FastAPI
+    participant DbDocument
+    end
+    box rgb(248, 131, 131) application layer
+    participant DocumentUseCase
+    end
+    FastAPI->>DocumentUseCase: DTORequest
+    DbDocument<<->>DocumentUseCase: DocumentEntity
+    DocumentUseCase->>FastAPI: DTOResponse
+```
+
+```mermaid
+sequenceDiagram
+    box rgb(141, 173, 241) frameworks and drivers layer
+    participant Framework
+    participant Driver
+    end
+    box rgb(248, 131, 131) application layer
+    participant UseCase
+    end
+    Framework->>UseCase: DTORequest
+    Driver<<->>UseCase: Entity
+    UseCase->>Framework: DTOResponse
+```
 
 ## future integration
 

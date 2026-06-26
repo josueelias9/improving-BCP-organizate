@@ -88,3 +88,4 @@ class DocumentEntity:
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
     plain_text: Optional[str] = None  # Added to store the plain text of the document
+    document_type_name: Optional[str] = None  # Added to store the document type name
