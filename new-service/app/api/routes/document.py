@@ -4,14 +4,14 @@ import uuid
 from fastapi import APIRouter, HTTPException, Query
 from api.deps import SessionDep
 
-from src.Capplication.use_cases.document.get_all_documents import GetDocumentsUseCase
+from src.Capplication.use_cases.document.get_documents import GetDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
     DTOGetDocumentsRequest,
     DTOGetDocumentsResponse,
-    DTOPdfProcessingRequest,
-    DTOPdfProcessingResponse,
+    DTOCreateDocumentRequest,
+    DTOCreateDocumentResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -68,21 +68,13 @@ async def get_documents(
         )
 
 
-@router.delete("/{document_id}")
-def delete_document(session: SessionDep, document_id: uuid.UUID):
-    document_db_gateway = DocumentDbGateway(session)
-    delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
-    delete_document_use_case.execute(document_id)
-    return {
-        "message": f"Document {document_id} deleted successfully",
-        "status": "success",
-    }
+
 
 
 @router.post("/")
 async def create_document(
-    dto_request: DTOPdfProcessingRequest, session: SessionDep
-) -> DTOPdfProcessingResponse:
+    dto_request: DTOCreateDocumentRequest, session: SessionDep
+) -> DTOCreateDocumentResponse:
     """
     Process a PDF file and save extracted data to the Documents table
 
@@ -124,4 +116,14 @@ async def create_document(
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 
-# other
+@router.delete("/{document_id}")
+def delete_document(session: SessionDep, document_id: uuid.UUID) -> dict:
+    document_db_gateway = DocumentDbGateway(session)
+    delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
+    delete_document_use_case.execute(document_id)
+    return {
+        "message": f"Document {document_id} deleted successfully",
+        "status": "success",
+    }
+
+

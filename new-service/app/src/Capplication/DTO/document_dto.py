@@ -11,7 +11,7 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 
-class DTOPdfProcessingRequest(BaseModel):
+class DTOCreateDocumentRequest(BaseModel):
     pdf_filepath: str
     user_email: str
     document_type: str
@@ -27,7 +27,7 @@ class DTOPdfProcessingRequest(BaseModel):
     }
 
 
-class DTOPdfProcessingResponse(BaseModel):
+class DTOCreateDocumentResponse(BaseModel):
     """Result DTO for PDF processing - returned from use case to controller"""
 
     success: bool

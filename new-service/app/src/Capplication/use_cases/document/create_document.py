@@ -8,8 +8,8 @@ import logging
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Denterprise.entities import UserEntity
 from src.Capplication.DTO.document_dto import (
-    DTOPdfProcessingResponse,
-    DTOPdfProcessingRequest,
+    DTOCreateDocumentResponse,
+    DTOCreateDocumentRequest,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.content_extractor import IContentExtractorGateway
@@ -36,18 +36,18 @@ class CreateDocumentUseCase:
         self.document_type_gateway = document_type_gateway
         self.file_extractor_gateway = file_extractor_gateway
 
-    def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
+    def execute(self, request: DTOCreateDocumentRequest) -> DTOCreateDocumentResponse:
         """
         Process PDF file: get/create user, extract transactions, and create document
 
         Args:
-            request: DTOPdfProcessingRequest containing:
+            request: DTOCreateDocumentRequest containing:
                 - pdf_filepath: Path to the PDF file
                 - user_email: Email of the user
                 - document_type: Type of document
 
         Returns:
-            DTOPdfProcessingResponse (DTO for controller response)
+            DTOCreateDocumentRequest (DTO for controller response)
 
         Raises:
             ValueError: If validation fails
@@ -98,7 +98,7 @@ class CreateDocumentUseCase:
                 logger.info(
                     f"Document already exists with unique_id: {document.unique_identifier}"
                 )
-                return DTOPdfProcessingResponse(
+                return DTOCreateDocumentRequest(
                     success=True,
                     document_id=str(existing_document.id),
                     unique_identifier=document.unique_identifier,
@@ -117,7 +117,7 @@ class CreateDocumentUseCase:
             logger.info(f"Created new document with ID: {created_document.id}")
 
             # Return DTO for controller
-            return DTOPdfProcessingResponse(
+            return DTOCreateDocumentRequest(
                 success=True,
                 document_id=str(created_document.id),
                 unique_identifier=document.unique_identifier,
