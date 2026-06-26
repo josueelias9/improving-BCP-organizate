@@ -3,7 +3,6 @@
 __pycache__/
 new-service/output/
 files/*
-!files/examples/
 
 .pnpm-store/
 
