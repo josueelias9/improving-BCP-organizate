@@ -44,7 +44,7 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
         setTimeout(() => setMessage(null), 5000)
     }
 
-    const not_included_columns = ['user_id', 'id', 'document_type_id']
+    const not_included_columns = ['user_id', 'id', 'document_type_id', 'data', 'plain_text']
 
     // Get column names from the first document
     const columns =
@@ -94,16 +94,16 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                         let displayValue: React.ReactNode = value || 'N/A'
 
                                         // Special formatting for specific columns
-                                        if (column === 'type') {
+                                        if (column === 'document_type_name') {
                                             displayValue = (
                                                 <span
                                                     className={`inline-flex items-center rounded-full px-2 py-1 text-xs ${
-                                                        value === 'debit'
+                                                        String(value).includes('debit')
                                                             ? 'bg-red-100 text-red-700'
                                                             : 'bg-green-100 text-green-700'
                                                     }`}
                                                 >
-                                                    {value}
+                                                    {value as string}
                                                 </span>
                                             )
                                         } else if (column === 'processed') {
@@ -119,11 +119,16 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                                     {isProcessed ? 'Sí' : 'No'}
                                                 </span>
                                             )
-                                        } else if (column === 'created_at') {
+                                        } else if (
+                                            column === 'start_date' ||
+                                            column === 'end_date'
+                                        ) {
                                             displayValue = formatDocumentDate(value as string)
-                                        } else if (column === 'filename') {
+                                        } else if (column === 'unique_identifier') {
                                             displayValue = (
-                                                <span className='font-medium'>{value}</span>
+                                                <span className='font-medium'>
+                                                    {value as string}
+                                                </span>
                                             )
                                         } else if (typeof value === 'string' && value.length > 30) {
                                             // Truncate long strings

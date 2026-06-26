@@ -4,7 +4,6 @@ from enum import Enum
 from dataclasses import dataclass, field
 import uuid
 
-# TODO: delete this. There will only be a single type of user
 # Enums
 
 
@@ -51,6 +50,8 @@ class TransactionEntity:
     category_id: Optional[uuid.UUID] = None
     document_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
+    category_name: Optional[str] = None  # Added to store the category name
+    document_type_name: Optional[str] = None  # Added to store the document type name
 
     def generate_unique_identifier(self) -> str:
         """Generate unique identifier for the transaction
@@ -89,3 +90,4 @@ class DocumentEntity:
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
     plain_text: Optional[str] = None  # Added to store the plain text of the document
+    document_type_name: Optional[str] = None  # Added to store the document type name

@@ -17,8 +17,8 @@ from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
-    DTOBatchUpdateListRequest,
-    DTOBatchUpdateResponse,
+    DTOUpdateTransactionsRequest,
+    DTOUpdateTransactionsResponse,
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
     DTOImportTransactionsFromCsvRequest,
@@ -30,8 +30,8 @@ from src.Capplication.DTO.transaction_dto import (
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
 )
-from src.Capplication.use_cases.transaction.batch_update_transactions import (
-    BatchUpdateTransactionsUseCase,
+from src.Capplication.use_cases.transaction.update_transactions import (
+    UpdateTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
@@ -47,9 +47,9 @@ from src.Capplication.use_cases.transaction.import_transactions_from_csv import 
 from src.Capplication.use_cases.transaction.create_transactions import (
     CreateTransactionsUseCase,
 )
-from src.Capplication.DTO.document_dto import (
-    DTOLoadTransactionsFromDocumentRequest,
-    DTOLoadTransactionsFromDocumentResponse,
+from src.Capplication.DTO.transaction_dto import (
+    DTOCreateTransactionsRequest,
+    DTOCreateTransactionsResponse,
 )
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -101,11 +101,9 @@ def get_transactions(
 
 @router.post(
     "/{document_id}",
-    response_model=DTOLoadTransactionsFromDocumentResponse,
+    response_model=DTOCreateTransactionsResponse,
 )
-def create_transactions(
-    document_id: uuid.UUID, session: SessionDep
-) -> DTOLoadTransactionsFromDocumentResponse:
+def create_transactions(document_id: uuid.UUID, session: SessionDep):
     """
     Load transactions from a document's data column into the transactions table.
 
@@ -130,7 +128,7 @@ def create_transactions(
         # Inject gateways into use case
         use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
 
-        dto_request = DTOLoadTransactionsFromDocumentRequest(document_id=document_id)
+        dto_request = DTOCreateTransactionsRequest(document_id=document_id)
         # Execute use case
         dto_response = use_case.execute(dto_request)
 
@@ -156,7 +154,7 @@ def update_transaction(
     transaction_id: uuid.UUID,
     transaction_update: DTOUpdateTransactionRequest,
     session: SessionDep,
-) -> DTOUpdateTransactionResponse:
+):
     """
     Update a specific transaction by ID.
 
@@ -211,13 +209,10 @@ def update_transaction(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-# other endpoints
-
-
-@router.patch("/batch", response_model=DTOBatchUpdateResponse)
-def batch_update_transactions(
-    batch_update: DTOBatchUpdateListRequest, session: SessionDep
-) -> DTOBatchUpdateResponse:
+@router.put("/batch", response_model=DTOUpdateTransactionsResponse)
+def update_transactions(
+    batch_update: DTOUpdateTransactionsRequest, session: SessionDep
+):
     """
     Update multiple transactions simultaneously.
 
@@ -239,17 +234,10 @@ def batch_update_transactions(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        use_case = BatchUpdateTransactionsUseCase(transaction_gateway, category_gateway)
-
-        # Convert Pydantic models to domain objects
-        updates = batch_update.updates
+        use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
 
         # Execute use case
-        result = use_case.execute(updates)
-        # TODO: it seems that this message will always be the same, maybe we can move it to the use case
-        result.message = (
-            f"Successfully updated {result.updated}/{result.total} transactions"
-        )
+        result = use_case.execute(batch_update)
         return result
 
     except Exception as e:
@@ -334,7 +322,7 @@ def import_transactions_from_csv(
     input_dir: str = Query(
         "/shared_files/output", description="Directory where to read the CSV file from"
     ),
-) -> DTOImportTransactionsFromCsvResponse:
+):
     """
     Import and update transactions from CSV file
 

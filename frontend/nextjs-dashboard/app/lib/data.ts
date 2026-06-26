@@ -222,7 +222,7 @@ export async function fetchFilteredCustomers(query: string) {
 export async function fetchTransactions(skip: number = 0, limit: number = 1000) {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/transactions?skip=${skip}&limit=${limit}`
+        const url = `${baseUrl}/transactions/?skip=${skip}&limit=${limit}`
 
         console.log('Fetching transactions from:', url)
 
@@ -239,8 +239,8 @@ export async function fetchTransactions(skip: number = 0, limit: number = 1000) 
             return []
         }
 
-        const data: TransactionTable[] = await response.json()
-        return data
+        const data: { transactions: TransactionTable[] } = await response.json()
+        return data.transactions
     } catch (error) {
         console.error('API Error:', error)
         return []
@@ -250,7 +250,7 @@ export async function fetchTransactions(skip: number = 0, limit: number = 1000) 
 export async function fetchCategories() {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/categories/`
+        const url = `${baseUrl}/categories/`
 
         console.log('Fetching categories from:', url)
 
@@ -267,8 +267,8 @@ export async function fetchCategories() {
             return []
         }
 
-        const data: Category[] = await response.json()
-        return data
+        const data: { categories: Category[]; total_count: number } = await response.json()
+        return data.categories
     } catch (error) {
         console.error('API Error:', error)
         return []
@@ -278,7 +278,7 @@ export async function fetchCategories() {
 export async function fetchDocuments(skip: number = 0, limit: number = 100) {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/documents/?skip=${skip}&limit=${limit}`
+        const url = `${baseUrl}/document/?skip=${skip}&limit=${limit}`
 
         console.log('Fetching documents from:', url)
 
@@ -295,8 +295,13 @@ export async function fetchDocuments(skip: number = 0, limit: number = 100) {
             return []
         }
 
-        const data: DocumentTable[] = await response.json()
-        return data
+        const data: {
+            documents: DocumentTable[]
+            total_returned: number
+            skip: number
+            limit: number
+        } = await response.json()
+        return data.documents
     } catch (error) {
         console.error('API Error:', error)
         return []
@@ -306,7 +311,7 @@ export async function fetchDocuments(skip: number = 0, limit: number = 100) {
 export async function fetchDocumentTypes() {
     try {
         const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/api/document-types/`
+        const url = `${baseUrl}/document-types/`
 
         console.log('Fetching document types from:', url)
 

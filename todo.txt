@@ -1,9 +1,12 @@
-[ ] understand the code
 [ ] todo is not working, and this is important to fix code
 
-[ ] endpoints well documented using swagger
+frontend/
+
+[ ] remove all response examples
 [ ] use the endpoints documentations to update the frontend
-[ ] one to one relationship withing endpoint and use cases
-[ ] there should be only one file for db gateway (consolidate directory Aframework/gateway/db)
-[ ] create init container to populate models
+
+new-service/
+
 [ ] define layer names
+[ ] one to one relationship withing endpoint and use cases
+[ ] since we changed the names of use cases (CRUD), we need to change the DTO's name also

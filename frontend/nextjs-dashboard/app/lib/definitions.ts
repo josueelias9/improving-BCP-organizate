@@ -87,49 +87,38 @@ export type InvoiceForm = {
     status: 'pending' | 'paid'
 }
 
-export type Transaction = {
-    id: string
-    user_id: string
-    category_id: string
-    amount: number
-    description: string
-    transaction_date: string
-    created_at: string
-    updated_at: string
-}
-
 export type TransactionTable = {
-    id: string
-    user_id: string
-    category_id: string
-    amount: number
+    id?: string
+    order: number
     description: string
-    transaction_date: string
-    created_at: string
+    history?: string
+    amount: number
+    transaction_type: string
+    transaction_date?: string
+    currency: string
+    unique_identifier?: string
+    category_id?: string
+    document_id?: string
+    category_name?: string
+    document_type_name?: string
 }
 
 export type Category = {
     id: string
     name: string
-    description?: string
-}
-
-export type Document = {
-    id: string
-    filename: string
-    type: string
-    user_email: string
-    json_data?: any
-    created_at: string
-    updated_at: string
+    description: string
+    parent_id?: string | null
 }
 
 export type DocumentTable = {
-    id: string
-    filename: string
-    type: string
-    user_email: string
-    created_at: string
+    id?: string
+    unique_identifier?: string
+    processed: boolean
+    start_date?: string
+    end_date?: string
+    user_id?: string
+    document_type_id?: string
+    document_type_name?: string
 }
 
 export type DocumentType = {

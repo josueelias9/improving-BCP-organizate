@@ -18,7 +18,7 @@ export default async function DocumentsPage() {
                 </div>
                 <div className='md:col-span-2'>
                     <Suspense fallback={<div>Loading documents...</div>}>
-                        <DocumentsTable documents={documents.documents} />
+                        <DocumentsTable documents={documents} />
                     </Suspense>
                 </div>
             </div>

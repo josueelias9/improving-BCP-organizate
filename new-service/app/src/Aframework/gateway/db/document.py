@@ -98,11 +98,10 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         return DocumentEntity(
             id=db_document.id,
-            data=db_document.data,
             unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
             start_date=db_document.start_date,
             end_date=db_document.end_date,
             user_id=db_document.user_id,
-            document_type_id=db_document.document_type_id,
+            document_type_name=db_document.document_type.name,
         )

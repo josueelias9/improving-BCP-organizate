@@ -10,55 +10,7 @@ import uuid
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
-
-class DTOBatchUpdateRequest(BaseModel):
-    """Single transaction update item - DTO for batch update request"""
-
-    transaction_id: uuid.UUID
-    history: str
-    category_name: str = None
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                "history": "Gasto en supermercado - alimentación",
-                "category_name": "Food & Dining",
-            }
-        }
-    }
-
-
-class DTOBatchUpdateResponse(BaseModel):
-    """Result DTO for batch update operation - returned from use case to controller"""
-
-    total: int
-    updated: int
-    failed: int
-    errors: List[Dict[str, Any]]
-    message: Optional[str] = None
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "total": 3,
-                "updated": 2,
-                "failed": 1,
-                "errors": [
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174002",
-                        "error": "Category not found",
-                    }
-                ],
-                "message": "Successfully updated 2/3 transactions",
-            }
-        }
-    }
-
-
-# ===========================================================
-
-
+from ...Denterprise.entities import TransactionEntity
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
@@ -91,20 +43,6 @@ class DTOExportTransactionsResponse(BaseModel):
     document_id: Optional[uuid.UUID] = None
     error_message: Optional[str] = None
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "csv_content": "date,description,amount\n2025-01-15,Supermercado,-150.00",
-                "filename": "transactions_2025-01.csv",
-                "transaction_count": 35,
-                "file_path": "/shared_files/output/transactions_2025-01.csv",
-                "month": "2025-01",
-                "document_id": None,
-                "error_message": None,
-            }
-        }
-    }
 
 
 # ===========================================================
@@ -136,18 +74,7 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
     total_rows: int
     message: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "updated_count": 30,
-                "skipped_count": 5,
-                "errors": [],
-                "total_rows": 35,
-                "message": "Import completed successfully",
-            }
-        }
-    }
+
 
 
 # ===========================================================
@@ -156,26 +83,7 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
 class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
-    transactions: List[Dict[str, Any]]
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transactions": [
-                    {
-                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                        "description": "Supermercado Wong",
-                        "amount": -150.00,
-                        "transaction_type": "expense",
-                        "transaction_date": "2025-01-15",
-                        "currency": "PEN",
-                        "category_name": "Food & Dining",
-                        "document_type_name": "debit",
-                    }
-                ]
-            }
-        }
-    }
+    transactions: List[TransactionEntity]
 
 
 # ===========================================================
@@ -204,21 +112,41 @@ class DTOUpdateTransactionResponse(BaseModel):
     updated: bool
     message: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                "updated": True,
-                "message": "Transaction updated successfully",
-            }
-        }
-    }
 
 
 # ===========================================================
 
 
-class DTOBatchUpdateListRequest(BaseModel):
+class DTOBatchUpdateRequest(BaseModel):
+    """Single transaction update item - DTO for batch update request"""
+
+    transaction_id: uuid.UUID
+    history: str
+    category_name: str = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+                "history": "Gasto en supermercado - alimentación",
+                "category_name": "Food & Dining",
+            }
+        }
+    }
+
+
+class DTOUpdateTransactionsResponse(BaseModel):
+    """Result DTO for batch update operation - returned from use case to controller"""
+
+    total: int
+    updated: int
+    failed: int
+    errors: List[Dict[str, Any]]
+    message: Optional[str] = None
+
+
+
+class DTOUpdateTransactionsRequest(BaseModel):
     """Wrapper DTO for batch update list request - input from controller"""
 
     updates: List[DTOBatchUpdateRequest]
@@ -241,3 +169,30 @@ class DTOBatchUpdateListRequest(BaseModel):
             }
         }
     }
+
+
+# ==========================================================
+
+
+class DTOCreateTransactionsRequest(BaseModel):
+    document_id: uuid.UUID
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            }
+        }
+    }
+
+
+class DTOCreateTransactionsResponse(BaseModel):
+    """Result DTO for loading transactions operation - returned from use case to controller"""
+
+    success: bool
+    loaded_count: int
+    skipped_count: int
+    errors: List[str]
+    total_records: int
+    document_id: str
+

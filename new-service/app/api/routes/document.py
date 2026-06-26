@@ -4,14 +4,14 @@ import uuid
 from fastapi import APIRouter, HTTPException, Query
 from api.deps import SessionDep
 
-from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
+from src.Capplication.use_cases.document.get_documents import GetDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
-    DTOGetAllDocumentsRequest,
-    DTOGetAllDocumentsResponse,
-    DTOPdfProcessingRequest,
-    DTOPdfProcessingResponse,
+    DTOGetDocumentsRequest,
+    DTOGetDocumentsResponse,
+    DTOCreateDocumentRequest,
+    DTOCreateDocumentResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -29,14 +29,14 @@ router = APIRouter(prefix="/document", tags=["document management"])
 # CRUD
 
 
-@router.get("/", response_model=DTOGetAllDocumentsResponse)
+@router.get("/", response_model=DTOGetDocumentsResponse)
 async def get_documents(
     session: SessionDep,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(
         100, ge=1, le=1000, description="Maximum number of records to return"
     ),
-) -> DTOGetAllDocumentsResponse:
+):
     """
     Get all documents with pagination
 
@@ -50,10 +50,10 @@ async def get_documents(
         document_type_gateway = DocumentTypeDbGateway(session)
 
         # Create request DTO
-        dto_request = DTOGetAllDocumentsRequest(skip=skip, limit=limit)
+        dto_request = DTOGetDocumentsRequest(skip=skip, limit=limit)
 
         # Inject gateways into use case
-        use_case = GetAllDocumentsUseCase(document_gateway, document_type_gateway)
+        use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
 
         # Execute use case
         dto_response = use_case.execute(dto_request)
@@ -68,21 +68,8 @@ async def get_documents(
         )
 
 
-@router.delete("/{document_id}")
-def delete_document(session: SessionDep, document_id: uuid.UUID):
-    document_db_gateway = DocumentDbGateway(session)
-    delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
-    delete_document_use_case.execute(document_id)
-    return {
-        "message": f"Document {document_id} deleted successfully",
-        "status": "success",
-    }
-
-
-@router.post("/")
-async def create_document(
-    dto_request: DTOPdfProcessingRequest, session: SessionDep
-) -> DTOPdfProcessingResponse:
+@router.post("/", response_model=DTOCreateDocumentResponse)
+async def create_document(dto_request: DTOCreateDocumentRequest, session: SessionDep):
     """
     Process a PDF file and save extracted data to the Documents table
 
@@ -124,4 +111,12 @@ async def create_document(
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 
-# other
+@router.delete("/{document_id}")
+def delete_document(session: SessionDep, document_id: uuid.UUID) -> dict:
+    document_db_gateway = DocumentDbGateway(session)
+    delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
+    delete_document_use_case.execute(document_id)
+    return {
+        "message": f"Document {document_id} deleted successfully",
+        "status": "success",
+    }
