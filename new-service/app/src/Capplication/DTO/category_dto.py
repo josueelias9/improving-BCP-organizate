@@ -25,24 +25,3 @@ class DTOGetCategoriesResponse(BaseModel):
     categories: List[DTOCategory]
     total_count: int
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "categories": [
-                    {
-                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                        "name": "Food & Dining",
-                        "description": "Restaurants, groceries and food expenses",
-                        "parent_id": None,
-                    },
-                    {
-                        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-                        "name": "Supermarket",
-                        "description": "Grocery store purchases",
-                        "parent_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                    },
-                ],
-                "total_count": 2,
-            }
-        }
-    }

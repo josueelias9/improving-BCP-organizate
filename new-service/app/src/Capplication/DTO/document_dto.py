@@ -39,19 +39,6 @@ class DTOCreateDocumentResponse(BaseModel):
     transactions_count: int
     message: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                "unique_identifier": "09745280-2025-10",
-                "already_exists": False,
-                "transactions_count": 42,
-                "message": "PDF processed successfully",
-            }
-        }
-    }
-
 
 # ===========================================================
 

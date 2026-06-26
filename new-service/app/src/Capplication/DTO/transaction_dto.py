@@ -43,20 +43,6 @@ class DTOExportTransactionsResponse(BaseModel):
     document_id: Optional[uuid.UUID] = None
     error_message: Optional[str] = None
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "csv_content": "date,description,amount\n2025-01-15,Supermercado,-150.00",
-                "filename": "transactions_2025-01.csv",
-                "transaction_count": 35,
-                "file_path": "/shared_files/output/transactions_2025-01.csv",
-                "month": "2025-01",
-                "document_id": None,
-                "error_message": None,
-            }
-        }
-    }
 
 
 # ===========================================================
@@ -88,18 +74,7 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
     total_rows: int
     message: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "updated_count": 30,
-                "skipped_count": 5,
-                "errors": [],
-                "total_rows": 35,
-                "message": "Import completed successfully",
-            }
-        }
-    }
+
 
 
 # ===========================================================
@@ -108,26 +83,7 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
 class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
-    transactions: List[Dict[str, Any]]
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transactions": [
-                    {
-                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                        "description": "Supermercado Wong",
-                        "amount": -150.00,
-                        "transaction_type": "expense",
-                        "transaction_date": "2025-01-15",
-                        "currency": "PEN",
-                        "category_name": "Food & Dining",
-                        "document_type_name": "debit",
-                    }
-                ]
-            }
-        }
-    }
+    transactions: List[TransactionEntity]
 
 
 # ===========================================================
@@ -156,15 +112,6 @@ class DTOUpdateTransactionResponse(BaseModel):
     updated: bool
     message: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transaction_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                "updated": True,
-                "message": "Transaction updated successfully",
-            }
-        }
-    }
 
 
 # ===========================================================
@@ -197,22 +144,6 @@ class DTOUpdateTransactionsResponse(BaseModel):
     errors: List[Dict[str, Any]]
     message: Optional[str] = None
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "total": 3,
-                "updated": 2,
-                "failed": 1,
-                "errors": [
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174002",
-                        "error": "Category not found",
-                    }
-                ],
-                "message": "Successfully updated 2/3 transactions",
-            }
-        }
-    }
 
 
 class DTOUpdateTransactionsRequest(BaseModel):
@@ -265,15 +196,3 @@ class DTOCreateTransactionsResponse(BaseModel):
     total_records: int
     document_id: str
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "success": True,
-                "loaded_count": 40,
-                "skipped_count": 2,
-                "errors": [],
-                "total_records": 42,
-                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            }
-        }
-    }
