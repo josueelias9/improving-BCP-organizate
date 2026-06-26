@@ -4,12 +4,12 @@ import uuid
 from fastapi import APIRouter, HTTPException, Query
 from api.deps import SessionDep
 
-from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
+from src.Capplication.use_cases.document.get_all_documents import GetDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
-    DTOGetAllDocumentsRequest,
-    DTOGetAllDocumentsResponse,
+    DTOGetDocumentsRequest,
+    DTOGetDocumentsResponse,
     DTOPdfProcessingRequest,
     DTOPdfProcessingResponse,
 )
@@ -29,14 +29,14 @@ router = APIRouter(prefix="/document", tags=["document management"])
 # CRUD
 
 
-@router.get("/", response_model=DTOGetAllDocumentsResponse)
+@router.get("/", response_model=DTOGetDocumentsResponse)
 async def get_documents(
     session: SessionDep,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(
         100, ge=1, le=1000, description="Maximum number of records to return"
     ),
-) -> DTOGetAllDocumentsResponse:
+) -> DTOGetDocumentsResponse:
     """
     Get all documents with pagination
 
@@ -50,10 +50,10 @@ async def get_documents(
         document_type_gateway = DocumentTypeDbGateway(session)
 
         # Create request DTO
-        dto_request = DTOGetAllDocumentsRequest(skip=skip, limit=limit)
+        dto_request = DTOGetDocumentsRequest(skip=skip, limit=limit)
 
         # Inject gateways into use case
-        use_case = GetAllDocumentsUseCase(document_gateway, document_type_gateway)
+        use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
 
         # Execute use case
         dto_response = use_case.execute(dto_request)

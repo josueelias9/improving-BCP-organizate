@@ -93,7 +93,7 @@ class DTOLoadTransactionsFromDocumentResponse(BaseModel):
 # ===========================================================
 
 
-class DTOGetAllDocumentsRequest(BaseModel):
+class DTOGetDocumentsRequest(BaseModel):
     """Request DTO for getting all documents - input from controller"""
 
     skip: int = 0
@@ -109,7 +109,7 @@ class DTOGetAllDocumentsRequest(BaseModel):
     }
 
 
-class DTOGetAllDocumentsResponse(BaseModel):
+class DTOGetDocumentsResponse(BaseModel):
     """Response DTO for get all documents operation - returned from use case to controller"""
 
     documents: List[dict]

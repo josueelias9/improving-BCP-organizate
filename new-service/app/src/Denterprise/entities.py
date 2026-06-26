@@ -4,7 +4,6 @@ from enum import Enum
 from dataclasses import dataclass, field
 import uuid
 
-# TODO: delete this. There will only be a single type of user
 # Enums
 
 

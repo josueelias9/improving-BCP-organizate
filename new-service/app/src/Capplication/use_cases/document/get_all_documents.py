@@ -10,14 +10,14 @@ from typing import List
 
 from src.Capplication.gateway.db import IDocumentDbGateway, IDocumentTypeDbGateway
 from src.Capplication.DTO.document_dto import (
-    DTOGetAllDocumentsResponse,
-    DTOGetAllDocumentsRequest,
+    DTOGetDocumentsResponse,
+    DTOGetDocumentsRequest,
 )
 
 logger = logging.getLogger(__name__)
 
 
-class GetAllDocumentsUseCase:
+class GetDocumentsUseCase:
     """
     Use Case: Retrieve all documents with pagination
 
@@ -39,15 +39,15 @@ class GetAllDocumentsUseCase:
         self.document_gateway = document_gateway
         self.document_type_gateway = document_type_gateway
 
-    def execute(self, request: DTOGetAllDocumentsRequest) -> DTOGetAllDocumentsResponse:
+    def execute(self, request: DTOGetDocumentsRequest) -> DTOGetDocumentsResponse:
         """
         Execute the use case to get all documents
 
         Args:
-            request: DTOGetAllDocumentsRequest with pagination parameters
+            request: DTOGetDocumentsRequest with pagination parameters
 
         Returns:
-            DTOGetAllDocumentsResponse with list of document summaries
+            DTOGetDocumentsResponse with list of document summaries
         """
         # Validate pagination parameters
         if request.skip < 0:
@@ -95,7 +95,7 @@ class GetAllDocumentsUseCase:
         )
 
         # Return DTO response
-        return DTOGetAllDocumentsResponse(
+        return DTOGetDocumentsResponse(
             documents=document_summaries,
             total_returned=len(document_summaries),
             skip=request.skip,
