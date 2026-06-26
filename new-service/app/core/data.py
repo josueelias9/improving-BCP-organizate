@@ -76,7 +76,9 @@ default_documents = [
         "unique_identifier": "example__unique__identifier",
         "document_type": "bcp_debit",
         "user": "admin@bcpextractor.com",
-        "data": {"information": "Data here is dynamic. It depends on the PDF content and the parser used."},
+        "data": {
+            "information": "Data here is dynamic. It depends on the PDF content and the parser used."
+        },
     }
 ]
 

@@ -1,4 +1,3 @@
-
 import uuid
 
 from src.Capplication.gateway.db import IDocumentDbGateway

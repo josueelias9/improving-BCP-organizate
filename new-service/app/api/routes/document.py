@@ -1,27 +1,20 @@
 import logging
 import uuid
 
-from fastapi import APIRouter, HTTPException, Query, Depends
-from api.deps import SessionDep, get_db_session
-from sqlmodel import Session
+from fastapi import APIRouter, HTTPException, Query
+from api.deps import SessionDep
 
-from src.Capplication.use_cases.document.load_transactions_from_document import (
-    LoadTransactionsFromDocumentUseCase,
-)
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsRequest,
     DTOGetAllDocumentsResponse,
-    DTOLoadTransactionsFromDocumentRequest,
-    DTOLoadTransactionsFromDocumentResponse,
     DTOPdfProcessingRequest,
     DTOPdfProcessingResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.content_extractor import ContentExtractorGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
@@ -130,57 +123,5 @@ async def create_document(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
+
 # other
-
-@router.post(
-    "/load-from-document/{document_id}",
-    response_model=DTOLoadTransactionsFromDocumentResponse,
-)
-def load_transactions_from_document(
-    document_id: uuid.UUID, session: Session = Depends(get_db_session)
-) -> DTOLoadTransactionsFromDocumentResponse:
-    """
-    Load transactions from a document's data column into the transactions table.
-
-    This endpoint delegates to the application layer use case.
-
-    Args:
-        document_id: The UUID of the document to load transactions from
-        session: Database session (injected)
-
-    Returns:
-        Summary of loaded transactions
-
-    Raises:
-        HTTPException: 404 if document not found, 400 for validation errors
-    """
-    try:
-
-        # Instantiate concrete gateways
-        document_gateway = DocumentDbGateway(session)
-        transaction_gateway = TransactionDbGateway(session)
-
-        # Inject gateways into use case
-        use_case = LoadTransactionsFromDocumentUseCase(
-            document_gateway, transaction_gateway
-        )
-
-        dto_request = DTOLoadTransactionsFromDocumentRequest(document_id=document_id)
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
-
-        return dto_response
-
-    except ValueError as e:
-        # Business validation errors
-        error_msg = str(e)
-
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=404, detail=error_msg)
-        else:
-            raise HTTPException(status_code=400, detail=error_msg)
-
-    except Exception as e:
-        # Unexpected errors
-        logger.error(f"Unexpected error loading transactions: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

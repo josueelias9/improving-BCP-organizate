@@ -16,7 +16,7 @@ from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGatewa
 logger = logging.getLogger(__name__)
 
 
-class LoadTransactionsFromDocumentUseCase:
+class CreateTransactionsUseCase:
     """Use case for loading transactions from document data into transaction table"""
 
     def __init__(
@@ -32,7 +32,9 @@ class LoadTransactionsFromDocumentUseCase:
             transaction_gateway: Transaction gateway interface
         """
         self.document_gateway = document_gateway
-        self.transaction_gateway = transaction_gateway
+        self.transaction_gateway = (
+            transaction_gateway  # TODO: should be transaction_db_gateway
+        )
 
     def execute(
         self, request: DTOLoadTransactionsFromDocumentRequest
@@ -108,7 +110,7 @@ class LoadTransactionsFromDocumentUseCase:
 
         # Extract currency from document data
         # TODO: Analyize if this is feasible, because it works with debit documents but not with credit ones, where there are multiple currencies.
-        # if that is the case, maybe we will need to have LoadTransactionsFromDocumentUseCase per document type.
+        # if that is the case, maybe we will need to have CreateTransactionsUseCase per document type.
         # one workaround could be to have a fixed dict structure for all document_types.
         currency = document.data.get("currency", "")
 

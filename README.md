@@ -26,3 +26,9 @@ docker compose down
 ```sh
 docker compose -f docker-compose.yml -f docker-compose.combined.yml up -d
 ```
+
+
+
+averiguar
+
+https://www.viabcp.com/empresas/open-economy

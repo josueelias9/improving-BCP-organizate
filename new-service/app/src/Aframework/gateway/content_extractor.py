@@ -18,9 +18,7 @@ load_dotenv()
 
 
 class ContentExtractorGateway(IContentExtractorGateway):
-    """
-    
-    """
+    """ """
 
     def __init__(self):
         self.parser_debit = BCPDebitParser()

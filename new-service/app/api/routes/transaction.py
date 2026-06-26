@@ -9,7 +9,7 @@ from typing import Optional
 import uuid
 import logging
 
-from api.deps import get_db_session
+from api.deps import SessionDep
 
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
@@ -43,15 +43,119 @@ from src.Capplication.use_cases.transaction.import_transactions_from_csv import 
     ImportTransactionsFromCsvUseCase,
 )
 
-router = APIRouter(prefix="/transactions", tags=["all transactions endpoints"])
+
+from src.Capplication.use_cases.transaction.create_transactions import (
+    CreateTransactionsUseCase,
+)
+from src.Capplication.DTO.document_dto import (
+    DTOLoadTransactionsFromDocumentRequest,
+    DTOLoadTransactionsFromDocumentResponse,
+)
+
+router = APIRouter(prefix="/transactions", tags=["transactions"])
 logger = logging.getLogger(__name__)
+
+# CRUD
+
+
+@router.get("/", response_model=DTOGetAllTransactionsResponse)
+def get_transactions(
+    session: SessionDep,
+    skip: int = 0,
+    limit: int = 100,
+) -> DTOGetAllTransactionsResponse:
+    """
+    Get all transactions with pagination
+
+    Includes category_name and document_type_name fields.
+
+    Args:
+        skip: Number of records to skip (default: 0)
+        limit: Maximum number of records to return (default: 100, max: 1000)
+        session: Database session (injected)
+
+    Returns:
+        List of transactions with category_name included
+    """
+    try:
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
+        document_gateway = DocumentDbGateway(session)
+        document_type_gateway = DocumentTypeDbGateway(session)
+        use_case = GetAllTransactionsUseCase(
+            transaction_gateway,
+            category_gateway,
+            document_gateway,
+            document_type_gateway,
+        )
+        dto_response = use_case.execute(skip=skip, limit=limit)
+
+        return dto_response
+
+    except Exception as e:
+        logger.error(f"Error retrieving transactions: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving transactions: {str(e)}"
+        )
+
+
+@router.post(
+    "/{document_id}",
+    response_model=DTOLoadTransactionsFromDocumentResponse,
+)
+def create_transactions(
+    document_id: uuid.UUID, session: SessionDep
+) -> DTOLoadTransactionsFromDocumentResponse:
+    """
+    Load transactions from a document's data column into the transactions table.
+
+    This endpoint delegates to the application layer use case.
+
+    Args:
+        document_id: The UUID of the document to load transactions from
+        session: Database session (injected)
+
+    Returns:
+        Summary of loaded transactions
+
+    Raises:
+        HTTPException: 404 if document not found, 400 for validation errors
+    """
+    try:
+
+        # Instantiate concrete gateways
+        document_gateway = DocumentDbGateway(session)
+        transaction_gateway = TransactionDbGateway(session)
+
+        # Inject gateways into use case
+        use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
+
+        dto_request = DTOLoadTransactionsFromDocumentRequest(document_id=document_id)
+        # Execute use case
+        dto_response = use_case.execute(dto_request)
+
+        return dto_response
+
+    except ValueError as e:
+        # Business validation errors
+        error_msg = str(e)
+
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=404, detail=error_msg)
+        else:
+            raise HTTPException(status_code=400, detail=error_msg)
+
+    except Exception as e:
+        # Unexpected errors
+        logger.error(f"Unexpected error loading transactions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.put("/{transaction_id}", response_model=DTOUpdateTransactionResponse)
 def update_transaction(
     transaction_id: uuid.UUID,
     transaction_update: DTOUpdateTransactionRequest,
-    session: Session = Depends(get_db_session),
+    session: SessionDep,
 ) -> DTOUpdateTransactionResponse:
     """
     Update a specific transaction by ID.
@@ -107,9 +211,12 @@ def update_transaction(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+# other endpoints
+
+
 @router.patch("/batch", response_model=DTOBatchUpdateResponse)
 def batch_update_transactions(
-    batch_update: DTOBatchUpdateListRequest, session: Session = Depends(get_db_session)
+    batch_update: DTOBatchUpdateListRequest, session: SessionDep
 ) -> DTOBatchUpdateResponse:
     """
     Update multiple transactions simultaneously.
@@ -151,11 +258,12 @@ def batch_update_transactions(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-# ===============================================================================================
+# TODO: it seams to me that this two endpoints belong to the document prefix. That is because its importing and exporting csv files
 
 
 @router.get("/export/csv", response_model=DTOExportTransactionsResponse)
 def export_transactions(
+    session: SessionDep,
     month: Optional[str] = Query(
         None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
     ),
@@ -163,7 +271,6 @@ def export_transactions(
     output_dir: str = Query(
         "./exports", description="Output directory for exported CSV files"
     ),
-    session: Session = Depends(get_db_session),
 ) -> DTOExportTransactionsResponse:
     """
     Export transactions to CSV format and save to file
@@ -217,53 +324,9 @@ def export_transactions(
         )
 
 
-# ================================================================================================
-
-
-@router.get("/", response_model=DTOGetAllTransactionsResponse)
-def get_all_transactions(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_db_session)
-) -> DTOGetAllTransactionsResponse:
-    """
-    Get all transactions with pagination
-
-    Includes category_name and document_type_name fields.
-
-    Args:
-        skip: Number of records to skip (default: 0)
-        limit: Maximum number of records to return (default: 100, max: 1000)
-        session: Database session (injected)
-
-    Returns:
-        List of transactions with category_name included
-    """
-    try:
-        transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        document_gateway = DocumentDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        use_case = GetAllTransactionsUseCase(
-            transaction_gateway,
-            category_gateway,
-            document_gateway,
-            document_type_gateway,
-        )
-        dto_response = use_case.execute(skip=skip, limit=limit)
-
-        return dto_response
-
-    except Exception as e:
-        logger.error(f"Error retrieving transactions: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving transactions: {str(e)}"
-        )
-
-
-# ===============================================================================================
-
-
 @router.post("/import/csv", response_model=DTOImportTransactionsFromCsvResponse)
 def import_transactions_from_csv(
+    session: SessionDep,
     csv_filename: Optional[str] = Query(
         None,
         description="Specific CSV filename to import (optional, uses latest if not provided)",
@@ -271,7 +334,6 @@ def import_transactions_from_csv(
     input_dir: str = Query(
         "/shared_files/output", description="Directory where to read the CSV file from"
     ),
-    session: Session = Depends(get_db_session),
 ) -> DTOImportTransactionsFromCsvResponse:
     """
     Import and update transactions from CSV file
