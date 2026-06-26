@@ -32,7 +32,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/document", tags=["document management"])
 
 
-@router.get("/documents/", response_model=DTOGetAllDocumentsResponse)
+# CRUD
+
+
+@router.get("/", response_model=DTOGetAllDocumentsResponse)
 async def get_all_documents(
     session: SessionDep,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
@@ -71,7 +74,55 @@ async def get_all_documents(
         )
 
 
-# ===============================================================================================================
+# other
+
+
+@router.post("/pdf-processing")
+async def pdf_processing(
+    dto_request: DTOPdfProcessingRequest, session: SessionDep
+) -> DTOPdfProcessingResponse:
+    """
+    Process a PDF file and save extracted data to the Documents table
+
+    - **pdf_filepath**: PDF file path (e.g., "files/document.pdf")
+    - **document_type**: Account type ("debit" or "credit")
+    - **user_email**: User email (optional, defaults to admin@bcpextractor.com)
+    - Extracted data is saved as JSON in the 'data' column of the Documents table
+    """
+    try:
+        # Delegate to controller with simple data types
+        # Use case will orchestrate file operations via FileSystemGateway
+
+        # Initialize all gateways (infrastructure layer)
+        document_gateway = DocumentDbGateway(session)
+        user_gateway = UserDbGateway(session)
+        document_type_gateway = DocumentTypeDbGateway(session)
+        pdf_extractor_gateway = PDFExtractorGateway()
+        file_system_gateway = FileSystemGateway()
+
+        # Delegate all processing to application layer use case
+        use_case = PDFProcessingUseCase(
+            document_gateway,
+            user_gateway,
+            pdf_extractor_gateway,
+            document_type_gateway,
+            file_system_gateway,
+        )
+
+        # Use case returns DTO for controller response
+        dto_response = use_case.execute(dto_request)
+
+        return dto_response
+
+    except UnsupportedDocumentTypeException as e:
+        # Adapt business exception to HTTP response
+        raise HTTPException(status_code=501, detail=str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 
 @router.post(
@@ -126,54 +177,3 @@ def load_transactions_from_document(
         # Unexpected errors
         logger.error(f"Unexpected error loading transactions: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-# ===============================================================================================================
-
-
-@router.post("/pdf-processing")
-async def pdf_processing(
-    dto_request: DTOPdfProcessingRequest, session: SessionDep
-) -> DTOPdfProcessingResponse:
-    """
-    Process a PDF file and save extracted data to the Documents table
-
-    - **pdf_filepath**: PDF file path (e.g., "files/document.pdf")
-    - **document_type**: Account type ("debit" or "credit")
-    - **user_email**: User email (optional, defaults to admin@bcpextractor.com)
-    - Extracted data is saved as JSON in the 'data' column of the Documents table
-    """
-    try:
-        # Delegate to controller with simple data types
-        # Use case will orchestrate file operations via FileSystemGateway
-
-        # Initialize all gateways (infrastructure layer)
-        document_gateway = DocumentDbGateway(session)
-        user_gateway = UserDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        pdf_extractor_gateway = PDFExtractorGateway()
-        file_system_gateway = FileSystemGateway()
-
-        # Delegate all processing to application layer use case
-        use_case = PDFProcessingUseCase(
-            document_gateway,
-            user_gateway,
-            pdf_extractor_gateway,
-            document_type_gateway,
-            file_system_gateway,
-        )
-
-        # Use case returns DTO for controller response
-        dto_response = use_case.execute(dto_request)
-
-        return dto_response
-
-    except UnsupportedDocumentTypeException as e:
-        # Adapt business exception to HTTP response
-        raise HTTPException(status_code=501, detail=str(e))
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")

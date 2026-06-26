@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class FileSystemGateway(IFileSystemGateway):
-    """Concrete implementation of file system gateway"""
+    """
+    - this class arises from the need to have a gateway that handles file system operations in a consistent manner across the application. It abstracts the underlying file system operations, allowing for easier testing and maintenance.
+    - this class is responsible for file system operations, such as saving files, checking if a file exists, and reading files in binary mode.
+    - it should also be able to read files that are sent throulgh the API, which are stored in a temporary folder, and then deleted after processing or files located in a remote bucket like S3
+    """
 
     def save_file(self, filename: str, content: str, output_dir: str) -> str:
         try:

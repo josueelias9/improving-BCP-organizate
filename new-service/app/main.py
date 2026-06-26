@@ -22,7 +22,7 @@ app = FastAPI(
         },
         {
             "name": "document management",
-            "description": "Endpoints for managing documents and transactions",
+            "description": "Load data from documents. Extract transactions from PDF documents and manage document types.",
         },
         {
             "name": "document types",
