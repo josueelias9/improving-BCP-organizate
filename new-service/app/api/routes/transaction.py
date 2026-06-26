@@ -47,9 +47,9 @@ from src.Capplication.use_cases.transaction.import_transactions_from_csv import 
 from src.Capplication.use_cases.transaction.create_transactions import (
     CreateTransactionsUseCase,
 )
-from src.Capplication.DTO.document_dto import (
-    DTOLoadTransactionsFromDocumentRequest,
-    DTOLoadTransactionsFromDocumentResponse,
+from src.Capplication.DTO.transaction_dto import (
+    DTOCreateTransactionsRequest,
+    DTOCreateTransactionsResponse,
 )
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -101,11 +101,11 @@ def get_transactions(
 
 @router.post(
     "/{document_id}",
-    response_model=DTOLoadTransactionsFromDocumentResponse,
+    response_model=DTOCreateTransactionsResponse,
 )
 def create_transactions(
     document_id: uuid.UUID, session: SessionDep
-) -> DTOLoadTransactionsFromDocumentResponse:
+) -> DTOCreateTransactionsResponse:
     """
     Load transactions from a document's data column into the transactions table.
 
@@ -130,7 +130,7 @@ def create_transactions(
         # Inject gateways into use case
         use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
 
-        dto_request = DTOLoadTransactionsFromDocumentRequest(document_id=document_id)
+        dto_request = DTOCreateTransactionsRequest(document_id=document_id)
         # Execute use case
         dto_response = use_case.execute(dto_request)
 

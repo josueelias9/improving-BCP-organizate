@@ -241,3 +241,44 @@ class DTOBatchUpdateListRequest(BaseModel):
             }
         }
     }
+
+
+# ==========================================================
+
+
+
+# TODO: move to transaction_dto.py
+class DTOCreateTransactionsRequest(BaseModel):
+    document_id: uuid.UUID
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            }
+        }
+    }
+
+
+class DTOCreateTransactionsResponse(BaseModel):
+    """Result DTO for loading transactions operation - returned from use case to controller"""
+
+    success: bool
+    loaded_count: int
+    skipped_count: int
+    errors: List[str]
+    total_records: int
+    document_id: str
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "success": True,
+                "loaded_count": 40,
+                "skipped_count": 2,
+                "errors": [],
+                "total_records": 42,
+                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            }
+        }
+    }

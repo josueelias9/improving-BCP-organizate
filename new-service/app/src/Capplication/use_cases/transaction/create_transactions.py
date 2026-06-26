@@ -7,9 +7,9 @@ import logging
 from datetime import date
 from typing import List
 from src.Denterprise.entities import DocumentEntity, TransactionEntity
-from src.Capplication.DTO.document_dto import (
-    DTOLoadTransactionsFromDocumentResponse,
-    DTOLoadTransactionsFromDocumentRequest,
+from src.Capplication.DTO.transaction_dto import (
+    DTOCreateTransactionsResponse,
+    DTOCreateTransactionsRequest,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGateway
 
@@ -37,8 +37,8 @@ class CreateTransactionsUseCase:
         )
 
     def execute(
-        self, request: DTOLoadTransactionsFromDocumentRequest
-    ) -> DTOLoadTransactionsFromDocumentResponse:
+        self, request: DTOCreateTransactionsRequest
+    ) -> DTOCreateTransactionsResponse:
         """
         Execute the use case: load transactions from document
 
@@ -46,7 +46,7 @@ class CreateTransactionsUseCase:
             document_id: UUID of the document to process
 
         Returns:
-            DTOLoadTransactionsFromDocumentResponse (DTO for controller response)
+            DTOCreateTransactionsResponse (DTO for controller response)
 
         Raises:
             ValueError: If document not found or validation fails
@@ -73,7 +73,7 @@ class CreateTransactionsUseCase:
             self.document_gateway.mark_as_processed(document_id)
 
             # 6. Return result DTO (for controller)
-            return DTOLoadTransactionsFromDocumentResponse(
+            return DTOCreateTransactionsResponse(
                 success=True,
                 loaded_count=loaded_count,
                 skipped_count=skipped_count,
@@ -84,7 +84,7 @@ class CreateTransactionsUseCase:
         except Exception as e:
             logger.error(f"Error loading transactions from document: {str(e)}")
             # Return error DTO instead of raising exception
-            return DTOLoadTransactionsFromDocumentResponse(
+            return DTOCreateTransactionsResponse(
                 success=False,
                 loaded_count=0,
                 skipped_count=0,
