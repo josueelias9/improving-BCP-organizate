@@ -1,42 +1,100 @@
-# Start project
+# Alternative to "BCP Organizate"
 
-- Build images
+This project is meant to replace the BCP-Organizate app that was removed by BCP. 
+
+The idea on the feature is to integrate this with other banks and currency platform.s
+
+## Start Project
+in order to run this project, you need to have the following features on you side:
+- docker
+- docker compose
+
+Once you have it, you can run the application:
 
 ```sh
-docker compose build
-docker compose up -d
+docker compose up --build
 ```
 
-- create tables and populare with data
+This command will create the complete setup
+- a db to store the transactions
+- a frontend to interact with
+- a backend that do all the clean architecture logic
+- an init container that will populate the db with intial data
 
-```sh
-docker exec new-service-container /app/scripts/prestart.sh
-```
 
-- go to the `new-service/REST client.http` file and execute the following endpoints:
-   - `populateDocument`
-   - `populateTransaction`
+go to the `localhost:8000/dashboard/documents` and start working on your budget
 
-## stop processes
+Once you are done, it is recommended to stop the process
 
 ```sh
 docker compose down
 ```
 
-# debug mode
+# developer guide
 
-```sh
-docker compose -f docker-compose.yml -f docker-compose.combined.yml up -d
+This project is highly integrated with vs code. Thus, you can take advantage of the dev container features to start upgrading the code.
+
+![alt text](image.png)
+
+
+
+## DB design
+
+This is the design of the application and de database
+
+```mermaid
+erDiagram
+    USER {
+        _ name
+        _ is_active
+    }
+
+    TRANSACTION {
+        _ description
+        _ amount
+        _ transaction_type
+        _ date
+        _ currency
+        _ unique_identifier 
+        _ history
+        _ order
+    }
+
+    CATEGORY {
+        _ name
+        _ description
+        _ subcategory
+    }
+
+    DOCUMENT_TYPE {
+        _ name
+    }
+
+
+
+    DOCUMENT {
+        json data
+        _ unique_identifier
+        bool processed
+        _ time_range
+        _ plain_text
+    }
+
+
+    %% Relaciones
+    USER ||--o{ DOCUMENT : "has"
+    DOCUMENT ||--o{ TRANSACTION : "has"
+    USER ||--o{ TRANSACTION : "realiza"
+    TRANSACTION }o--|| CATEGORY : "pertenece a"
+    CATEGORY ||--o| CATEGORY : "may have"
+    DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"
 ```
 
-# TODO
 
-```txt
-- [x] do not show transactions's uuid in the frontend. Instead, show only the order of the transaction
-- [ ] create unique identifier for the transaction table
-- [ ] create script to update transaction table with saved data
+---
 
-- [ ] create a unique identifier for transaction
-- [ ] store pdf file
-- [ ] implement logic to diferenciate between credit and debit pdf files
-```
+## future integration
+
+The idea is instead of using a pdf, use an API directly to consume information form BCP directly.
+
+https://www.viabcp.com/empresas/open-economy

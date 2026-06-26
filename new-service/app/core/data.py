@@ -54,3 +54,65 @@ default_document_types = [
     {"name": "bcp_credit"},
     {"name": "pichincha"},
 ]
+
+
+default_users = [
+    {
+        "email": "admin@bcpextractor.com",
+        "name": "Administrator",
+        "is_active": True,
+    },
+    {
+        "email": "test@bcpextractor.com",
+        "name": "Test User",
+        "is_active": True,
+    },
+]
+
+
+default_documents = [
+    {
+        "processed": True,
+        "unique_identifier": "example__unique__identifier",
+        "document_type": "bcp_debit",
+        "user": "admin@bcpextractor.com",
+        "data": {
+            "information": "Data here is dynamic. It depends on the PDF content and the parser used."
+        },
+    }
+]
+
+default_transactions = [
+    {
+        "description": "Grocery Store",
+        "amount": 50.0,
+        "category": "Groceries",
+        "order": 1,
+        "transaction_type": "expense",
+        "document": "example__unique__identifier",
+    },
+    {
+        "description": "Restaurant",
+        "amount": 30.0,
+        "category": "Restaurants",
+        "order": 2,
+        "transaction_type": "expense",
+        "document": "example__unique__identifier",
+    },
+    {
+        "description": "Gas Station",
+        "amount": 40.0,
+        "category": "Fuel",
+        "order": 3,
+        "transaction_type": "expense",
+        "document": "example__unique__identifier",
+    },
+    {
+        "description": "Movie Theater",
+        "amount": 15.5,
+        "category": "Movies",
+        "order": 4,
+        "transaction_type": "expense",
+        "document": "example__unique__identifier",
+    },
+]

@@ -6,54 +6,64 @@ Orchestrates the flow of processing a PDF and creating a document
 import logging
 
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
+from src.Denterprise.entities import UserEntity
 from src.Capplication.DTO.document_dto import (
     DTOPdfProcessingResponse,
     DTOPdfProcessingRequest,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
-from src.Capplication.gateway.pdf_extractor import IPDFExtractorGateway
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
+from src.Capplication.gateway.content_extractor import IContentExtractorGateway
+from src.Capplication.gateway.file_extractor import IFileExtractorGateway
+from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
 
 logger = logging.getLogger(__name__)
 
 
-class PDFProcessingUseCase:
+class CreateDocumentUseCase:
     """Use case for processing PDF and creating document"""
 
     def __init__(
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        pdf_extractor_gateway: IPDFExtractorGateway,
-        document_type_gateway: DocumentTypeDbGateway,
+        content_extractor_gateway: IContentExtractorGateway,
+        document_type_gateway: IDocumentTypeDbGateway,
+        file_extractor_gateway: IFileExtractorGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
-        self.pdf_extractor_gateway = pdf_extractor_gateway
+        self.content_extractor_gateway = content_extractor_gateway
         self.document_type_gateway = document_type_gateway
+        self.file_extractor_gateway = file_extractor_gateway
 
     def execute(self, request: DTOPdfProcessingRequest) -> DTOPdfProcessingResponse:
         """
         Process PDF file: get/create user, extract transactions, and create document
 
         Args:
-            pdf_file: Binary PDF file content
-            user_email: Email of the user
-            document_type: Type of document (default: BCP_STATEMENT)
-            pdf_filename: Optional filename for logging purposes only
+            request: DTOPdfProcessingRequest containing:
+                - pdf_filepath: Path to the PDF file
+                - user_email: Email of the user
+                - document_type: Type of document
 
         Returns:
             DTOPdfProcessingResponse (DTO for controller response)
 
         Raises:
             ValueError: If validation fails
+            FileNotFoundError: If PDF file not found
             UnsupportedDocumentTypeException: If document type is not supported
         """
 
-        pdf_file = request.pdf_file
+        pdf_filepath = request.pdf_filepath
         user_email = request.user_email
         document_type = request.document_type
+
         try:
+            # Check if file exists using file system gateway
+            if not self.file_extractor_gateway.file_exists(pdf_filepath):
+                raise FileNotFoundError(f"File '{pdf_filepath}' not found")
+
             # Validate document type (business rule)
             self._validate_document_type(document_type)
 
@@ -67,9 +77,12 @@ class PDFProcessingUseCase:
                     f"Document type '{document_type}' not found in database"
                 )
 
-            # Extract document from PDF (returns DocumentEntity with data)
-            document = self.pdf_extractor_gateway.extract_document(
-                pdf_file, document_type=doc_type.name
+            # Read PDF file using file system gateway
+            pdf_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
+
+            # Extract document from PDF content
+            document = self.content_extractor_gateway.extract_document(
+                pdf_binary, document_type=doc_type.name
             )
 
             # Validate document has data
@@ -149,14 +162,13 @@ class PDFProcessingUseCase:
         """
         user = self.user_gateway.get_by_email(user_email)
         if not user:
-            from models import UserCreate, CustomerType
 
-            user_create = UserCreate(
+            user_create = UserEntity(
                 email=user_email,
                 name="Admin User",
-                customer_type=CustomerType.INDIVIDUAL,
+                is_active=True,
             )
             user = self.user_gateway.create(user_create)
             logger.info(f"Created new user with email: {user_email}")
-
+        logger.info(f"Using user with email: {user_email}")
         return user

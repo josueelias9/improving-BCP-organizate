@@ -1,9 +1,9 @@
 # this directories contains private information
 
-data/
 __pycache__/
 new-service/output/
 files/*
-!files/examples/
 
 .pnpm-store/
+
+data

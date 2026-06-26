@@ -7,17 +7,17 @@ erDiagram
     USER {
         _ name
         _ is_active
-        _ customer_type
     }
 
     TRANSACTION {
-        _ order
         _ description
-        _ history
         _ amount
-        _ type
+        _ transaction_type
         _ date
-        _ unique_identifier
+        _ currency
+        _ unique_identifier 
+        _ history
+        _ order
     }
 
     CATEGORY {
@@ -33,10 +33,11 @@ erDiagram
 
 
     DOCUMENT {
-        _ currency
         json data
         _ unique_identifier
         bool processed
+        _ time_range
+        _ plain_text
     }
 
 

@@ -18,13 +18,13 @@ Accept: application/json
 
 # Get all documents from the database with their properties
 # @name getAllDocuments
-GET {{baseUrl}}/api/documents/?skip=0&limit=100
+GET {{baseUrl}}/document/documents/?skip=0&limit=100
 Accept: application/json
 
 ###
 
 # Extract data from PDF and save it as JSON in the Documents table
-# @name pdfProcessing
+# @name pdfProcessing_debit
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
@@ -37,7 +37,7 @@ Content-Type: application/json
 ###
 
 # Extract data from PDF and save it as JSON in the Documents table
-# @name pdfProcessing
+# @name pdfProcessing_credit
 POST {{baseUrl}}/api/pdf-processing
 Content-Type: application/json
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 # Migrate data from the 'data' column of the document to the transactions table
 # @name loadTransactionsFromDocument
-POST {{baseUrl}}/api/load-from-document/{{pdfProcessing.response.body.$.document_id}}
+POST {{baseUrl}}/api/load-from-document/{{pdfProcessing_debit.response.body.$.document_id}}
 Accept: application/json
 
 ### =================================================================== category.py

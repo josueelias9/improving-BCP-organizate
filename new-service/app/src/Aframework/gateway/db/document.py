@@ -58,11 +58,13 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Map domain entity to database model
         db_document = DocumentModel(
             data=document.data,
-            currency=document.currency,
             unique_identifier=document.unique_identifier,
             processed=document.processed,
+            start_date=document.start_date,
+            end_date=document.end_date,
             user_id=document.user_id,
             document_type_id=document.document_type_id,
+            plain_text=document.plain_text,  # Store the plain text in the database
         )
 
         self.session.add(db_document)
@@ -82,6 +84,14 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Map all documents to domain entities
         return [self._map_to_entity(doc) for doc in documents]
 
+    def delete(self, document_id: uuid.UUID) -> None:
+        """Delete document by ID"""
+        db_document = self.session.get(DocumentModel, document_id)
+        if db_document:
+            self.session.delete(db_document)
+            self.session.commit()
+            logger.info(f"Document {document_id} deleted")
+
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""
         # Extract transactions from nested JSON structure
@@ -89,9 +99,10 @@ class DocumentDbGateway(IDocumentDbGateway):
         return DocumentEntity(
             id=db_document.id,
             data=db_document.data,
-            currency=db_document.currency,
             unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
+            start_date=db_document.start_date,
+            end_date=db_document.end_date,
             user_id=db_document.user_id,
             document_type_id=db_document.document_type_id,
         )

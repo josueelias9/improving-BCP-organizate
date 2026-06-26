@@ -11,17 +11,15 @@ from enum import Enum
 
 
 # Enums
-class CustomerType(str, Enum):
-    INDIVIDUAL = "individual"
-    BUSINESS = "business"
-
-
 class TransactionType(str, Enum):
     INCOME = "income"
     EXPENSE = "expense"
 
 
-# ============================================================================= entities
+# ============================================================================= base models
+# 1. it was decided to delete all classes that behave as DTOs and are not used for persistence. They were moved to the src.Capplication.DTO module.
+# 2. this block was names as "entities", but it is not correct, because these classes are not domain entities, they are base database models. Base because it helped to avoid code duplication in table models and DTO models
+# 3. It seems that the best final approach is to delete all these base models and move the features inside the table models
 
 
 class DocumentTypeBase(SQLModel):
@@ -32,7 +30,6 @@ class UserBase(SQLModel):
     email: str = Field(unique=True, index=True, max_length=255)
     name: str = Field(max_length=255)
     is_active: bool = Field(default=True)
-    customer_type: CustomerType = Field(default=CustomerType.INDIVIDUAL)
 
 
 class CategoryBase(SQLModel):
@@ -44,9 +41,11 @@ class DocumentBase(SQLModel):
     data: Optional[Dict[str, Any]] = Field(
         default=None, sa_column=Column(JSON)
     )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
-    currency: str = Field(default="")
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
+    start_date: Optional[date] = Field(default=None)
+    end_date: Optional[date] = Field(default=None)
+    plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 
 class TransactionBase(SQLModel):
@@ -56,6 +55,7 @@ class TransactionBase(SQLModel):
     amount: float
     transaction_type: TransactionType
     transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
+    currency: str = Field(default="")
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
 
 
@@ -130,66 +130,3 @@ class Transaction(TransactionBase, table=True):
     # Relationships
     document: Document = Relationship(back_populates="transactions")
     category: Optional[Category] = Relationship(back_populates="transactions")
-
-
-# ============================================================================= DTO
-
-
-class UserCreate(UserBase):
-    pass
-
-
-class DocumentCreate(DocumentBase):
-    user_id: uuid.UUID
-    document_type_id: uuid.UUID
-
-
-class UserUpdate(SQLModel):
-    email: Optional[str] = None
-    name: Optional[str] = None
-    is_active: Optional[bool] = None
-    customer_type: Optional[CustomerType] = None
-
-
-class DocumentUpdate(SQLModel):
-    data: Optional[Dict[str, Any]] = None
-    currency: Optional[str] = None
-    document_type_id: Optional[uuid.UUID] = None
-    processed: Optional[bool] = None
-
-
-class TransactionUpdate(SQLModel):
-    """Model for updating transaction fields - only history and category are editable"""
-
-    history: Optional[str] = Field(default=None)
-    category_name: Optional[str] = Field(default=None, max_length=255)
-
-
-class TransactionBatchUpdateItem(SQLModel):
-    """Model for a single transaction update in a batch"""
-
-    transaction_id: uuid.UUID
-    history: Optional[str] = Field(default=None)
-    category_name: Optional[str] = Field(default=None, max_length=255)
-
-
-class TransactionBatchUpdate(SQLModel):
-    """Model for batch updating multiple transactions"""
-
-    updates: List[TransactionBatchUpdateItem] = Field(min_length=1)
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "updates": [
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                        "history": "Gasto en supermercado - alimentación",
-                    },
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174001",
-                        "history": "Pago de servicios - electricidad",
-                    },
-                ]
-            }
-        }

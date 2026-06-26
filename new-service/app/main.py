@@ -14,7 +14,21 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="BCP PDF Extractor",
     version="2.0.0",
-    description="Servicio para extraer transacciones de PDFs del BCP usando Clean Architecture",
+    description="Extracts transactions from PDF documents and manages document types.",
+    openapi_tags=[
+        {
+            "name": "health check",
+            "description": "Endpoints for health checks and service information",
+        },
+        {
+            "name": "document management",
+            "description": "Load data from documents. Extract transactions from PDF documents and manage document types.",
+        },
+        {
+            "name": "document types",
+            "description": "Endpoints for managing document types",
+        },
+    ],
 )
 
 # Include API router
