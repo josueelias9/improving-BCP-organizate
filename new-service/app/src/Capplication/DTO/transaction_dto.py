@@ -11,54 +11,6 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 
-class DTOBatchUpdateRequest(BaseModel):
-    """Single transaction update item - DTO for batch update request"""
-
-    transaction_id: uuid.UUID
-    history: str
-    category_name: str = None
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                "history": "Gasto en supermercado - alimentación",
-                "category_name": "Food & Dining",
-            }
-        }
-    }
-
-
-class DTOBatchUpdateResponse(BaseModel):
-    """Result DTO for batch update operation - returned from use case to controller"""
-
-    total: int
-    updated: int
-    failed: int
-    errors: List[Dict[str, Any]]
-    message: Optional[str] = None
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "total": 3,
-                "updated": 2,
-                "failed": 1,
-                "errors": [
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174002",
-                        "error": "Category not found",
-                    }
-                ],
-                "message": "Successfully updated 2/3 transactions",
-            }
-        }
-    }
-
-
-# ===========================================================
-
-
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
@@ -218,6 +170,51 @@ class DTOUpdateTransactionResponse(BaseModel):
 # ===========================================================
 
 
+class DTOBatchUpdateRequest(BaseModel):
+    """Single transaction update item - DTO for batch update request"""
+
+    transaction_id: uuid.UUID
+    history: str
+    category_name: str = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+                "history": "Gasto en supermercado - alimentación",
+                "category_name": "Food & Dining",
+            }
+        }
+    }
+
+
+class DTOUpdateTransactionsResponse(BaseModel):
+    """Result DTO for batch update operation - returned from use case to controller"""
+
+    total: int
+    updated: int
+    failed: int
+    errors: List[Dict[str, Any]]
+    message: Optional[str] = None
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "total": 3,
+                "updated": 2,
+                "failed": 1,
+                "errors": [
+                    {
+                        "transaction_id": "123e4567-e89b-12d3-a456-426614174002",
+                        "error": "Category not found",
+                    }
+                ],
+                "message": "Successfully updated 2/3 transactions",
+            }
+        }
+    }
+
+
 class DTOBatchUpdateListRequest(BaseModel):
     """Wrapper DTO for batch update list request - input from controller"""
 
@@ -246,7 +243,6 @@ class DTOBatchUpdateListRequest(BaseModel):
 # ==========================================================
 
 
-# TODO: move to transaction_dto.py
 class DTOCreateTransactionsRequest(BaseModel):
     document_id: uuid.UUID
 

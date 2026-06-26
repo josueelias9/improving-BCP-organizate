@@ -18,7 +18,7 @@ from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOBatchUpdateListRequest,
-    DTOBatchUpdateResponse,
+    DTOUpdateTransactionsResponse,
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
     DTOImportTransactionsFromCsvRequest,
@@ -31,7 +31,7 @@ from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
 )
 from src.Capplication.use_cases.transaction.batch_update_transactions import (
-    BatchUpdateTransactionsUseCase,
+    UpdateTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
@@ -209,13 +209,8 @@ def update_transaction(
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-# other endpoints
-
-
-@router.patch("/batch", response_model=DTOBatchUpdateResponse)
-def batch_update_transactions(
-    batch_update: DTOBatchUpdateListRequest, session: SessionDep
-):
+@router.put("/batch", response_model=DTOUpdateTransactionsResponse)
+def update_transactions(batch_update: DTOBatchUpdateListRequest, session: SessionDep):
     """
     Update multiple transactions simultaneously.
 
@@ -237,17 +232,10 @@ def batch_update_transactions(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        use_case = BatchUpdateTransactionsUseCase(transaction_gateway, category_gateway)
-
-        # Convert Pydantic models to domain objects
-        updates = batch_update.updates
+        use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
 
         # Execute use case
-        result = use_case.execute(updates)
-        # TODO: it seems that this message will always be the same, maybe we can move it to the use case
-        result.message = (
-            f"Successfully updated {result.updated}/{result.total} transactions"
-        )
+        result = use_case.execute(batch_update)
         return result
 
     except Exception as e:

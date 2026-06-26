@@ -4,18 +4,17 @@ Handles the business logic for updating multiple transactions simultaneously
 """
 
 import logging
-from typing import List
 
 from src.Capplication.DTO.transaction_dto import (
-    DTOBatchUpdateRequest,
-    DTOBatchUpdateResponse,
+    DTOUpdateTransactionsResponse,
+    DTOBatchUpdateListRequest,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 
 
-class BatchUpdateTransactionsUseCase:
+class UpdateTransactionsUseCase:
     """Use case for updating multiple transactions simultaneously"""
 
     def __init__(
@@ -26,16 +25,20 @@ class BatchUpdateTransactionsUseCase:
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway
 
-    def execute(self, updates: List[DTOBatchUpdateRequest]) -> DTOBatchUpdateResponse:
+    def execute(
+        self, batch_update: DTOBatchUpdateListRequest
+    ) -> DTOUpdateTransactionsResponse:
         """
         Update multiple transactions simultaneously
 
         Args:
-            updates: List of transaction updates to apply
+            batch_update: List of transaction updates to apply
 
         Returns:
             BatchUpdateResult with operation summary
         """
+        updates = batch_update.updates
+
         total = len(updates)
         updated = 0
         failed = 0
@@ -105,6 +108,10 @@ class BatchUpdateTransactionsUseCase:
             f"Batch update completed: {updated}/{total} successful, {failed} failed"
         )
 
-        return DTOBatchUpdateResponse(
-            total=total, updated=updated, failed=failed, errors=errors if errors else []
+        return DTOUpdateTransactionsResponse(
+            total=total,
+            updated=updated,
+            failed=failed,
+            message=f"Successfully updated {updated}/{total} transactions",
+            errors=errors if errors else [],
         )
