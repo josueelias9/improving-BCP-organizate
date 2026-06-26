@@ -4,7 +4,13 @@ from core.config import settings
 # Import all models so SQLModel can detect them and create all tables
 from models import User, Category, DocumentType, Transaction, Document
 import logging
-from core.data import default_categories, default_document_types, default_users, default_documents, default_transactions
+from core.data import (
+    default_categories,
+    default_document_types,
+    default_users,
+    default_documents,
+    default_transactions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -74,17 +80,19 @@ def init_db(session: Session) -> None:
         # ================== Create default documents
         logger.info("📄 Creating default documents...")
         for document_data in default_documents:
-            statement = select(DocumentType).where(DocumentType.name == document_data["document_type"])
+            statement = select(DocumentType).where(
+                DocumentType.name == document_data["document_type"]
+            )
             document_type = session.exec(statement).first()
 
             statement = select(User).where(User.email == document_data["user"])
             user = session.exec(statement).first()
-            
+
             document = Document(
                 processed=document_data["processed"],
                 unique_identifier=document_data["unique_identifier"],
                 document_type_id=document_type.id,
-                user_id=user.id
+                user_id=user.id,
             )
             session.add(document)
         session.flush()
@@ -93,10 +101,14 @@ def init_db(session: Session) -> None:
         logger.info("💰 Creating default transactions...")
         for transaction_data in default_transactions:
             # search for the category by name
-            statement = select(Category).where(Category.name == transaction_data["category"])
+            statement = select(Category).where(
+                Category.name == transaction_data["category"]
+            )
             category = session.exec(statement).first()
 
-            statement = select(Document).where(Document.unique_identifier == transaction_data["document"])
+            statement = select(Document).where(
+                Document.unique_identifier == transaction_data["document"]
+            )
             document = session.exec(statement).first()
 
             transaction = Transaction(

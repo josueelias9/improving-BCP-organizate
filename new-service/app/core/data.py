@@ -75,7 +75,7 @@ default_documents = [
         "processed": True,
         "unique_identifier": "bcp_debit_2023-01-01_2023-01-31",
         "document_type": "bcp_debit",
-        "user": "admin@bcpextractor.com"
+        "user": "admin@bcpextractor.com",
     }
 ]
 
@@ -86,7 +86,7 @@ default_transactions = [
         "category": "Groceries",
         "order": 1,
         "transaction_type": "expense",
-        "document": "bcp_debit_2023-01-01_2023-01-31"
+        "document": "bcp_debit_2023-01-01_2023-01-31",
     },
     {
         "description": "Restaurant",
@@ -94,7 +94,7 @@ default_transactions = [
         "category": "Restaurants",
         "order": 2,
         "transaction_type": "expense",
-        "document": "bcp_debit_2023-01-01_2023-01-31"
+        "document": "bcp_debit_2023-01-01_2023-01-31",
     },
     {
         "description": "Gas Station",
@@ -102,7 +102,7 @@ default_transactions = [
         "category": "Fuel",
         "order": 3,
         "transaction_type": "expense",
-        "document": "bcp_debit_2023-01-01_2023-01-31"
+        "document": "bcp_debit_2023-01-01_2023-01-31",
     },
     {
         "description": "Movie Theater",
@@ -110,6 +110,6 @@ default_transactions = [
         "category": "Movies",
         "order": 4,
         "transaction_type": "expense",
-        "document": "bcp_debit_2023-01-01_2023-01-31"
-    }
+        "document": "bcp_debit_2023-01-01_2023-01-31",
+    },
 ]

@@ -16,9 +16,18 @@ app = FastAPI(
     version="2.0.0",
     description="Extracts transactions from PDF documents and manages document types.",
     openapi_tags=[
-        {"name": "health check", "description": "Endpoints for health checks and service information"},
-        {"name": "document management", "description": "Endpoints for managing documents and transactions"},
-        {"name": "document types", "description": "Endpoints for managing document types"},
+        {
+            "name": "health check",
+            "description": "Endpoints for health checks and service information",
+        },
+        {
+            "name": "document management",
+            "description": "Endpoints for managing documents and transactions",
+        },
+        {
+            "name": "document types",
+            "description": "Endpoints for managing document types",
+        },
     ],
 )
 
