@@ -18,7 +18,9 @@ load_dotenv()
 
 
 class ContentExtractorGateway(IContentExtractorGateway):
-    """Gateway implementation for BCP PDF bank statements extraction"""
+    """
+    
+    """
 
     def __init__(self):
         self.parser_debit = BCPDebitParser()

@@ -10,6 +10,7 @@ from src.Capplication.use_cases.document.load_transactions_from_document import 
 )
 from src.Capplication.use_cases.document.get_all_documents import GetAllDocumentsUseCase
 from src.Capplication.use_cases.document.pdf_processing import PDFProcessingUseCase
+from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
 from src.Capplication.DTO.document_dto import (
     DTOGetAllDocumentsRequest,
     DTOGetAllDocumentsResponse,
@@ -36,7 +37,7 @@ router = APIRouter(prefix="/document", tags=["document management"])
 
 
 @router.get("/", response_model=DTOGetAllDocumentsResponse)
-async def get_all_documents(
+async def get_documents(
     session: SessionDep,
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(
@@ -74,11 +75,19 @@ async def get_all_documents(
         )
 
 
-# other
+@router.delete("/{document_id}")
+def delete_document(session: SessionDep, document_id: uuid.UUID):
+    document_db_gateway = DocumentDbGateway(session)
+    delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
+    delete_document_use_case.execute(document_id)
+    return {
+        "message": f"Document {document_id} deleted successfully",
+        "status": "success",
+    }
 
 
-@router.post("/pdf-processing")
-async def pdf_processing(
+@router.post("/")
+async def create_document(
     dto_request: DTOPdfProcessingRequest, session: SessionDep
 ) -> DTOPdfProcessingResponse:
     """
@@ -90,9 +99,6 @@ async def pdf_processing(
     - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
     try:
-        # Delegate to controller with simple data types
-        # Use case will orchestrate file operations via FileExtractorGateway
-
         # Initialize all gateways (infrastructure layer)
         document_gateway = DocumentDbGateway(session)
         user_gateway = UserDbGateway(session)
@@ -124,6 +130,7 @@ async def pdf_processing(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
+# other
 
 @router.post(
     "/load-from-document/{document_id}",

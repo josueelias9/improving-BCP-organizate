@@ -49,6 +49,16 @@ class IDocumentDbGateway(ABC):
         pass
 
     @abstractmethod
+    def delete(self, document_id: uuid.UUID) -> None:
+        """
+        Delete document by ID
+
+        Args:
+            document_id: UUID of the document to delete
+        """
+        pass
+
+    @abstractmethod
     def create(self, document: DocumentEntity) -> DocumentEntity:
         """
         Create a new document from domain entity
