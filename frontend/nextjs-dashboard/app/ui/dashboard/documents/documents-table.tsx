@@ -153,7 +153,9 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                     })}
                                     <td className='whitespace-nowrap px-3 py-3'>
                                         <button
-                                            onClick={() => handleProcessDocument(document.id)}
+                                            onClick={() =>
+                                                handleProcessDocument(document.id as string)
+                                            }
                                             disabled={processingId === document.id}
                                             className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                                                 processingId === document.id

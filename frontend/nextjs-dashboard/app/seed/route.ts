@@ -5,8 +5,7 @@ import { users } from '@/app/lib/placeholder-data'
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
 
 async function seedUsers() {
-
-  // TODO: not sure if this is necessary, since the backend creates the user table. validate
+    // TODO: not sure if this is necessary, since the backend creates the user table. validate
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`
     await sql`
     CREATE TABLE IF NOT EXISTS users (

@@ -1,20 +1,11 @@
 import postgres from 'postgres'
 import {
     CustomerField,
-    CustomersTableType,
-    InvoiceForm,
-    InvoicesTable,
-    LatestInvoiceRaw,
-    Revenue,
-    TransactionTable,
-    Category,
     DocumentTable,
     DocumentType
 } from './definitions'
-import { formatCurrency } from './utils'
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
-
 
 export async function fetchCustomers() {
     try {
@@ -33,62 +24,6 @@ export async function fetchCustomers() {
     }
 }
 
-
-export async function fetchTransactions(skip: number = 0, limit: number = 1000) {
-    try {
-        const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/transactions/?skip=${skip}&limit=${limit}`
-
-        console.log('Fetching transactions from:', url)
-
-        const response = await fetch(url, {
-            headers: {
-                Accept: 'application/json'
-            },
-            cache: 'no-store',
-            next: { revalidate: 0 }
-        })
-
-        if (!response.ok) {
-            console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`)
-            return []
-        }
-
-        const data: { transactions: TransactionTable[] } = await response.json()
-        return data.transactions
-    } catch (error) {
-        console.error('API Error:', error)
-        return []
-    }
-}
-
-export async function fetchCategories() {
-    try {
-        const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/categories/`
-
-        console.log('Fetching categories from:', url)
-
-        const response = await fetch(url, {
-            headers: {
-                Accept: 'application/json'
-            },
-            cache: 'no-store',
-            next: { revalidate: 0 }
-        })
-
-        if (!response.ok) {
-            console.error(`Failed to fetch categories: ${response.status} ${response.statusText}`)
-            return []
-        }
-
-        const data: { categories: Category[]; total_count: number } = await response.json()
-        return data.categories
-    } catch (error) {
-        console.error('API Error:', error)
-        return []
-    }
-}
 
 export async function fetchDocuments(skip: number = 0, limit: number = 100) {
     try {
