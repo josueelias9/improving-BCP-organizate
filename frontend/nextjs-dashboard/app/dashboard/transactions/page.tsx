@@ -19,8 +19,8 @@ export default async function TransactionsPage() {
                         // execute this only when response is successful
                         transactionsResponse.status === 200 && categoriesResponse.status === 200 ? (
                             <TransactionsTable
-                                transactions={transactionsResponse.data.transactions}
-                                categories={categoriesResponse.data.categories}
+                                transactionsData={transactionsResponse.data}
+                                categoriesData={categoriesResponse.data}
                             />
                         ) : null
                     }

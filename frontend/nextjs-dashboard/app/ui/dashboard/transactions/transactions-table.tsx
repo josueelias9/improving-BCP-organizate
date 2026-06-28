@@ -1,13 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
+
 import { formatCurrency } from '@/app/lib/utils'
+import type { Category } from '@/app/lib/definitions'
+import { DTOGetAllTransactionsResponse, DTOGetCategoriesResponse, TransactionEntity } from '@/app/lib/orval/src/bcp.schemas'
+import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
+
 import { lusitana } from '@/app/ui/fonts'
 import EditTransactionModal from '@/app/ui/dashboard/transactions/edit-transaction-modal'
 import FilterSelect from '@/app/ui/dashboard/transactions/filter-select'
-import type { Category } from '@/app/lib/definitions'
-import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
-import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 function formatTransactionDate(dateString: string) {
     try {
@@ -26,13 +29,16 @@ function formatTransactionDate(dateString: string) {
 }
 
 export default function TransactionsTable({
-    transactions,
-    categories
+    transactionsData,
+    categoriesData
 }: {
-    transactions: any[]
-    categories: Category[]
+    transactionsData: DTOGetAllTransactionsResponse
+    categoriesData: DTOGetCategoriesResponse
 }) {
-    const [selectedTransaction, setSelectedTransaction] = useState<any>(null)
+    const { transactions } = transactionsData
+    const { categories } = categoriesData
+
+    const [selectedTransaction, setSelectedTransaction] = useState<TransactionEntity | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)

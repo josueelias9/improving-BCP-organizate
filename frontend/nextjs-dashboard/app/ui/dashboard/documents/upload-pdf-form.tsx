@@ -5,13 +5,11 @@ import { processPDF, ProcessPDFState } from '@/app/lib/actions'
 import { DocumentType } from '@/app/lib/definitions'
 import { DocumentPlusIcon } from '@heroicons/react/24/outline'
 import { lusitana } from '@/app/ui/fonts'
+import { DTOGetAllDocumentTypesResponse } from '@/app/lib/orval/src/bcp.schemas'
 
-interface UploadPDFFormProps {
-    documentTypes: DocumentType[]
-}
-
-export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
-    const initialState: ProcessPDFState = { message: null, errors: {} }
+export default function UploadPDFForm({ data }: { data: DTOGetAllDocumentTypesResponse }) {
+    const { document_types } = data
+    const initialState: ProcessPDFState = { message: '', errors: {} }
     const [state, dispatch] = useActionState(processPDF, initialState)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
@@ -74,7 +72,7 @@ export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
                         <option value='' disabled>
                             Select type
                         </option>
-                        {documentTypes.map(docType => (
+                        {document_types.map(docType => (
                             <option key={docType.id} value={docType.name}>
                                 {docType.name}
                             </option>

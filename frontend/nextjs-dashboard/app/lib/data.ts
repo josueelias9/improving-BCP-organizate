@@ -1,9 +1,5 @@
 import postgres from 'postgres'
-import {
-    CustomerField,
-    DocumentTable,
-    DocumentType
-} from './definitions'
+import { CustomerField, DocumentTable, DocumentType } from './definitions'
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
 
@@ -23,7 +19,6 @@ export async function fetchCustomers() {
         throw new Error('Failed to fetch all customers.')
     }
 }
-
 
 export async function fetchDocuments(skip: number = 0, limit: number = 100) {
     try {

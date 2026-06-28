@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { lusitana } from '@/app/ui/fonts'
-import type { DocumentTable } from '@/app/lib/definitions'
 import { processDocument } from '@/app/lib/actions'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { DTOGetDocumentsResponse } from '@/app/lib/orval/src/bcp.schemas'
 
 function formatDocumentDate(dateString: string) {
     try {
@@ -24,7 +24,8 @@ function formatDocumentDate(dateString: string) {
     }
 }
 
-export default function DocumentsTable({ documents }: { documents: DocumentTable[] }) {
+export default function DocumentsTable({ data }: { data: DTOGetDocumentsResponse }) {
+    const { documents } = data
     const [processingId, setProcessingId] = useState<string | null>(null)
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
@@ -91,7 +92,13 @@ export default function DocumentsTable({ documents }: { documents: DocumentTable
                                 >
                                     {columns.map(column => {
                                         const value = document[column as keyof typeof document]
-                                        let displayValue: React.ReactNode = value || 'N/A'
+                                        const primitiveValue =
+                                            value === null || value === undefined
+                                                ? null
+                                                : typeof value === 'object'
+                                                  ? JSON.stringify(value)
+                                                  : value
+                                        let displayValue: React.ReactNode = primitiveValue ?? 'N/A'
 
                                         // Special formatting for specific columns
                                         if (column === 'document_type_name') {

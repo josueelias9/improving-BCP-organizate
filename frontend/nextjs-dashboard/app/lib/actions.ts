@@ -122,10 +122,10 @@ export type ProcessPDFState = {
         user_email?: string[]
         file?: string[]
     }
-    message?: string | null
+    message: string
 }
 
-export async function processPDF(prevState: ProcessPDFState, formData: FormData) {
+export async function processPDF(prevState: ProcessPDFState, formData: FormData): Promise<ProcessPDFState> {
     const validatedFields = ProcessPDFSchema.safeParse({
         type: formData.get('type'),
         user_email: formData.get('user_email')
