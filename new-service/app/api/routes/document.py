@@ -55,10 +55,7 @@ async def get_documents(
         # Inject gateways into use case
         use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
 
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
-
-        return dto_response
+        return use_case.execute(dto_request)
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -96,9 +93,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         )
 
         # Use case returns DTO for controller response
-        dto_response = use_case.execute(dto_request)
-
-        return dto_response
+        return use_case.execute(dto_request)
 
     except UnsupportedDocumentTypeException as e:
         # Adapt business exception to HTTP response

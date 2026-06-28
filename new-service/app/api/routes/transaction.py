@@ -88,9 +88,8 @@ def get_transactions(
             document_gateway,
             document_type_gateway,
         )
-        dto_response = use_case.execute(skip=skip, limit=limit)
 
-        return dto_response
+        return use_case.execute(skip=skip, limit=limit)
 
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")
@@ -129,10 +128,8 @@ def create_transactions(document_id: uuid.UUID, session: SessionDep):
         use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
 
         dto_request = DTOCreateTransactionsRequest(document_id=document_id)
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
 
-        return dto_response
+        return use_case.execute(dto_request)
 
     except ValueError as e:
         # Business validation errors
@@ -192,6 +189,7 @@ def update_transaction(
         # Execute use case
         result = use_case.execute(transaction_id, update_data)
 
+        # TODO: fix this
         return DTOUpdateTransactionResponse(**result)
 
     except ValueError as e:
@@ -211,7 +209,7 @@ def update_transaction(
 
 @router.put("/batch", response_model=DTOUpdateTransactionsResponse)
 def update_transactions(
-    batch_update: DTOUpdateTransactionsRequest, session: SessionDep
+    dto_request: DTOUpdateTransactionsRequest, session: SessionDep
 ):
     """
     Update multiple transactions simultaneously.
@@ -236,9 +234,7 @@ def update_transactions(
         category_gateway = CategoryDbGateway(session)
         use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
 
-        # Execute use case
-        result = use_case.execute(batch_update)
-        return result
+        return use_case.execute(dto_request)
 
     except Exception as e:
         # Unexpected errors
@@ -288,13 +284,14 @@ def export_transactions(
         )
 
         # Create filter object with output_dir
-        filters = DTOExportTransactionsRequest(
+        dto_request = DTOExportTransactionsRequest(
             month=month, document_id=document_id, output_dir=output_dir
         )
 
         # Execute use case
-        dto_response = use_case.execute(filters)
+        dto_response = use_case.execute(dto_request)
 
+        # TODO: fix this
         if not dto_response.success:
             raise HTTPException(
                 status_code=400 if "Invalid" in dto_response.error_message else 404,
@@ -356,9 +353,7 @@ def import_transactions_from_csv(
         dto_request = DTOImportTransactionsFromCsvRequest(
             csv_filename=csv_filename, input_dir=input_dir
         )
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
-        return dto_response
+        return use_case.execute(dto_request)
 
     except HTTPException:
         raise
