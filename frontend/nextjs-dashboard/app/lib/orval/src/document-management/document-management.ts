@@ -46,7 +46,7 @@ export const getGetDocumentsDocumentGetUrl = (params?: GetDocumentsDocumentGetPa
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `http://localhost:8000/document/?${stringifiedParams}` : `http://localhost:8000/document/`
+  return stringifiedParams.length > 0 ? `http://new-service:8000/document/?${stringifiedParams}` : `http://new-service:8000/document/`
 }
 
 /**
@@ -101,7 +101,7 @@ export const getCreateDocumentDocumentPostUrl = () => {
 
 
 
-  return `http://localhost:8000/document/`
+  return `http://new-service:8000/document/`
 }
 
 /**
@@ -156,7 +156,7 @@ export const getDeleteDocumentDocumentDocumentIdDeleteUrl = (documentId: string,
 
 
 
-  return `http://localhost:8000/document/${documentId}`
+  return `http://new-service:8000/document/${documentId}`
 }
 
 /**

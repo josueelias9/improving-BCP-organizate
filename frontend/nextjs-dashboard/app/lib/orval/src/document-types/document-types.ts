@@ -27,7 +27,7 @@ export const getGetAllDocumentTypesDocumentTypesGetUrl = () => {
 
 
 
-  return `http://localhost:8000/document-types/`
+  return `http://new-service:8000/document-types/`
 }
 
 /**

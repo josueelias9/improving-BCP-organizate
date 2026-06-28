@@ -52,7 +52,7 @@ export const getGetTransactionsTransactionsGetUrl = (params?: GetTransactionsTra
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `http://localhost:8000/transactions/?${stringifiedParams}` : `http://localhost:8000/transactions/`
+  return stringifiedParams.length > 0 ? `http://new-service:8000/transactions/?${stringifiedParams}` : `http://new-service:8000/transactions/`
 }
 
 /**
@@ -112,7 +112,7 @@ export const getCreateTransactionsTransactionsDocumentIdPostUrl = (documentId: s
 
 
 
-  return `http://localhost:8000/transactions/${documentId}`
+  return `http://new-service:8000/transactions/${documentId}`
 }
 
 /**
@@ -174,7 +174,7 @@ export const getUpdateTransactionTransactionsTransactionIdPutUrl = (transactionI
 
 
 
-  return `http://localhost:8000/transactions/${transactionId}`
+  return `http://new-service:8000/transactions/${transactionId}`
 }
 
 /**
@@ -238,7 +238,7 @@ export const getUpdateTransactionsTransactionsBatchPutUrl = () => {
 
 
 
-  return `http://localhost:8000/transactions/batch`
+  return `http://new-service:8000/transactions/batch`
 }
 
 /**
@@ -309,7 +309,7 @@ export const getExportTransactionsTransactionsExportCsvGetUrl = (params?: Export
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `http://localhost:8000/transactions/export/csv?${stringifiedParams}` : `http://localhost:8000/transactions/export/csv`
+  return stringifiedParams.length > 0 ? `http://new-service:8000/transactions/export/csv?${stringifiedParams}` : `http://new-service:8000/transactions/export/csv`
 }
 
 /**
@@ -380,7 +380,7 @@ export const getImportTransactionsFromCsvTransactionsImportCsvPostUrl = (params?
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `http://localhost:8000/transactions/import/csv?${stringifiedParams}` : `http://localhost:8000/transactions/import/csv`
+  return stringifiedParams.length > 0 ? `http://new-service:8000/transactions/import/csv?${stringifiedParams}` : `http://new-service:8000/transactions/import/csv`
 }
 
 /**

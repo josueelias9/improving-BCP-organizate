@@ -23,7 +23,7 @@ export const getRootApiGetUrl = () => {
 
 
 
-  return `http://localhost:8000/api`
+  return `http://new-service:8000/api`
 }
 
 /**

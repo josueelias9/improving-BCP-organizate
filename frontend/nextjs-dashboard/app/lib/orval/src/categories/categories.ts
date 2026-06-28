@@ -27,7 +27,7 @@ export const getGetCategoriesCategoriesGetUrl = () => {
 
 
 
-  return `http://localhost:8000/categories/`
+  return `http://new-service:8000/categories/`
 }
 
 /**

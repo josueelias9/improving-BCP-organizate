@@ -1,6 +1,3 @@
-
-
-
 We are using Orval to autogenerate interfaces based on the openapi documentation created on the FastAPI end (https://orval.dev/docs/installation)
 
 This is the official command:
