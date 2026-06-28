@@ -257,8 +257,9 @@ export default function TransactionsTable({
                                     : 'hover:bg-green-100'
 
                                 return (
+                                    // TODO: evaluate if we can also send the id from the backend as an identifier because it is required for JSX keys
                                     <tr
-                                        key={transaction.id}
+                                        key={transaction.order}
                                         onClick={() => handleRowClick(transaction)}
                                         onMouseEnter={() => handleMouseEnter(transaction.id)}
                                         onMouseLeave={handleMouseLeave}
