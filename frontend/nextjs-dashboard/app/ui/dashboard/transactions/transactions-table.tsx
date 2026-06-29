@@ -5,7 +5,11 @@ import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 import { formatCurrency } from '@/app/lib/utils'
 import type { Category } from '@/app/lib/definitions'
-import { DTOGetAllTransactionsResponse, DTOGetCategoriesResponse, TransactionEntity } from '@/app/lib/orval/src/bcp.schemas'
+import {
+    DTOGetAllTransactionsResponse,
+    DTOGetCategoriesResponse,
+    TransactionEntity
+} from '@/app/lib/orval/src/bcp.schemas'
 import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
 
 import { lusitana } from '@/app/ui/fonts'
@@ -52,19 +56,25 @@ export default function TransactionsTable({
     // Get unique values for combo boxes
     const uniqueDocumentTypes = Array.from(
         new Set(
-            transactions.map(t => t.document_type_name).filter(name => name) // Remove null/undefined values
+            transactions
+                .map(t => t.document_type_name)
+                .filter(name => name !== null && name !== undefined)
         )
     ).sort()
 
     const uniqueTransactionTypes = Array.from(
         new Set(
-            transactions.map(t => t.transaction_type).filter(type => type) // Remove null/undefined values
+            transactions
+                .map(t => t.transaction_type)
+                .filter(type => type !== null && type !== undefined) // Remove null/undefined values
         )
     ).sort()
 
     const uniqueCategoryNames = Array.from(
         new Set(
-            transactions.map(t => t.category_name).filter(name => name) // Remove null/undefined values
+            transactions
+                .map(t => t.category_name)
+                .filter(name => name !== null && name !== undefined) // Remove null/undefined values
         )
     ).sort()
 

@@ -95,6 +95,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         # Use case returns DTO for controller response
         return use_case.execute(dto_request)
 
+    # TODO: maybe we can use just the internal error, but it depends if these errors can response using http
     except UnsupportedDocumentTypeException as e:
         # Adapt business exception to HTTP response
         raise HTTPException(status_code=501, detail=str(e))
