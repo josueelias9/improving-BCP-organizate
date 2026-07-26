@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 import { formatCurrency } from '@/app/lib/utils'
-import type { Category } from '@/app/lib/definitions'
 import {
     DTOGetAllTransactionsResponse,
     DTOGetCategoriesResponse,
@@ -86,12 +85,11 @@ export default function TransactionsTable({
         return true
     })
 
-    // Sort transactions by 'order' column if it exists
+    // Sort transactions by transaction_date
     const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-        if (a.order !== undefined && b.order !== undefined) {
-            return a.order - b.order
-        }
-        return 0
+        const dateA = a.transaction_date ? new Date(a.transaction_date).getTime() : 0
+        const dateB = b.transaction_date ? new Date(b.transaction_date).getTime() : 0
+        return dateA - dateB
     })
 
     const handleRowClick = (transaction: any) => {
@@ -273,11 +271,12 @@ export default function TransactionsTable({
                                     : 'hover:bg-green-100'
 
                                 return (
-                                    // TODO: evaluate if we can also send the id from the backend as an identifier because it is required for JSX keys
                                     <tr
-                                        key={transaction.order}
+                                        key={transaction.id}
                                         onClick={() => handleRowClick(transaction)}
-                                        onMouseEnter={() => handleMouseEnter(transaction.id)}
+                                        onMouseEnter={() =>
+                                            handleMouseEnter(transaction.id as string)
+                                        }
                                         onMouseLeave={handleMouseLeave}
                                         className={`w-full border-b py-3 text-sm last-of-type:border-none cursor-pointer transition-colors ${
                                             hoveredRow === transaction.id

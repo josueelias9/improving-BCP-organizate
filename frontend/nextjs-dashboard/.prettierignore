@@ -4,3 +4,5 @@ dist
 build
 .out
 orval
+
+bcp-api.json

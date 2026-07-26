@@ -95,6 +95,7 @@ export interface TransactionEntity {
   id?: string | null;
   category_name?: string | null;
   document_type_name?: string | null;
+  document_unique_identifier?: string | null;
 }
 
 /**

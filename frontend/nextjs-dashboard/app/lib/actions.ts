@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
 import { createDocumentDocumentPost } from './orval/src/document-management/document-management'
+import { createTransactionsTransactionsDocumentIdPost } from './orval/src/transactions/transactions'
 
 export type State = {
     message?: string | null
@@ -105,36 +106,18 @@ export async function createDocument(prevState: State, formData: FormData) {
     }
 }
 
-export async function processDocument(documentId: string) {
+export async function createTransactions(formData:FormData) {
     try {
-        const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/transactions/${documentId}`
+        const documentId = formData.get('documentId') as string
+        const response = await createTransactionsTransactionsDocumentIdPost(documentId)
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json'
-            },
-            cache: 'no-store'
-        })
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}))
-            throw new Error(
-                errorData.detail || `Failed to process document: ${response.statusText}`
-            )
-        }
-
-        const result = await response.json()
         revalidatePath('/dashboard/documents')
         return {
-            success: true,
-            message: `Document processed successfully! ${result.message || ''}`
+            message: `Document processed successfully!`
         }
     } catch (error) {
         console.error('API Error:', error)
         return {
-            success: false,
             message:
                 error instanceof Error ? error.message : 'API Error: Failed to Process Document.'
         }

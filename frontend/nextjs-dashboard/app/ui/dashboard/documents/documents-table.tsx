@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { lusitana } from '@/app/ui/fonts'
-import { processDocument } from '@/app/lib/actions'
+import { createTransactions } from '@/app/lib/actions'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { DTOGetDocumentsResponse } from '@/app/lib/orval/src/bcp.schemas'
 
@@ -28,22 +28,6 @@ export default function DocumentsTable({ data }: { data: DTOGetDocumentsResponse
     const { documents } = data
     const [processingId, setProcessingId] = useState<string | null>(null)
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
-
-    const handleProcessDocument = async (documentId: string) => {
-        setProcessingId(documentId)
-        setMessage(null)
-
-        const result = await processDocument(documentId)
-
-        setProcessingId(null)
-        setMessage({
-            text: result.message,
-            type: result.success ? 'success' : 'error'
-        })
-
-        // Clear message after 5 seconds
-        setTimeout(() => setMessage(null), 5000)
-    }
 
     const not_included_columns = ['user_id', 'id', 'document_type_id', 'data', 'plain_text']
 
@@ -159,25 +143,14 @@ export default function DocumentsTable({ data }: { data: DTOGetDocumentsResponse
                                         )
                                     })}
                                     <td className='whitespace-nowrap px-3 py-3'>
-                                        <button
-                                            onClick={() =>
-                                                handleProcessDocument(document.id as string)
-                                            }
-                                            disabled={processingId === document.id}
-                                            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                                                processingId === document.id
-                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                                            }`}
-                                            title='Process document and load to transactions'
-                                        >
-                                            <ArrowPathIcon
-                                                className={`h-4 w-4 ${processingId === document.id ? 'animate-spin' : ''}`}
+                                        <form action={createTransactions}>
+                                            <input
+                                                type='hidden'
+                                                name='documentId'
+                                                value={document.id as string}
                                             />
-                                            {processingId === document.id
-                                                ? 'Processing...'
-                                                : 'Process'}
-                                        </button>
+                                            <button type='submit'>Process</button>
+                                        </form>
                                     </td>
                                 </tr>
                             ))}
