@@ -9,12 +9,11 @@
       "extensions": [
         "tomoki1207.pdf",
         "ms-python.python",
-        "humao.rest-client",
         "mechatroner.rainbow-csv",
         "bierner.markdown-mermaid",
         "stateful.runme",
         "eamodio.gitlens",
-        "esbenp.prettier-vscode"
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"
