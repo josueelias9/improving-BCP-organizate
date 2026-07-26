@@ -2,11 +2,17 @@
 
 frontend/
 
-[ ] remove all response examples
-[ ] use the endpoints documentations to update the frontend
+[ ] fix bug on show transactions page 
+[ ] use a simple transactions table
+[ ] change icon (soles instead of dolars) 
 
 new-service/
 
-[ ] define layer names
-[ ] one to one relationship withing endpoint and use cases
-[ ] since we changed the names of use cases (CRUD), we need to change the DTO's name also
+[ ] move export endpoints
+[ ] define if these two endpoints are actually important
+[ ] rename "get_all_transactions" to "get_transactions"
+[ ] move data extraction from document to transaction endpoints
+[ ] when a document is deleted, so its transactions should be too
+
+
+[ ] install git inside the backend container

@@ -13,6 +13,7 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_PORT
       - POSTGRES_SERVER
+      - PDF_PASSWORD
     depends_on:
       new-service-init:
         condition: service_completed_successfully
@@ -25,6 +26,12 @@ services:
     command: bash scripts/prestart.sh
     env_file:
       - .env
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_PORT
+      - POSTGRES_SERVER
     container_name: new-service-init-container
     depends_on:
       db:
