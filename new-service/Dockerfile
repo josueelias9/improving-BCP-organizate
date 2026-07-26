@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # install python dependencies globally
+# TODO: Use poetry for consistency among projects and to avoid dependency hell with the poetry.lock file
 RUN <<EOF
 pip install vulture
 pip install "fastapi[standard]"

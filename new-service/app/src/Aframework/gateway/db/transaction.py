@@ -83,19 +83,26 @@ class TransactionDbGateway(ITransactionDbGateway):
         # Map to domain entities
         entities = []
 
-        for db_transaction in transactions:
-            entity = TransactionEntity(
-                order=db_transaction.order,
-                description=db_transaction.description,
-                history=db_transaction.history,
-                amount=db_transaction.amount,
-                transaction_type=db_transaction.transaction_type,
-                transaction_date=db_transaction.transaction_date,
-                currency=db_transaction.currency,
-                category_name=db_transaction.category.name,
-                document_type_name=db_transaction.document.document_type.name,
-            )
-            entities.append(entity)
+        for transaction in transactions:
+            try:
+                entity = TransactionEntity(
+                    id=transaction.id,
+                    order=transaction.order,
+                    description=transaction.description,
+                    history=transaction.history,
+                    amount=transaction.amount,
+                    transaction_type=transaction.transaction_type,
+                    transaction_date=transaction.transaction_date,
+                    currency=transaction.currency,
+                    # category_name=transaction.category.name,
+                    document_type_name=transaction.document.document_type.name if transaction.document else "",
+                    document_unique_identifier=transaction.document.unique_identifier
+                )
+                entities.append(entity)
+            except Exception as e:
+                logger.error(
+                    f"Error mapping transaction {transaction.id} to entity: {str(e)}"
+                )
 
         return entities
 

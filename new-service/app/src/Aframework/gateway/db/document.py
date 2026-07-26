@@ -8,7 +8,7 @@ import logging
 from sqlmodel import Session, select
 from typing import Optional
 
-from models import Document as DocumentModel
+from models import Document as DocumentModel, Transaction as TransactionModel
 from src.Denterprise.entities import DocumentEntity
 from src.Capplication.gateway.db import IDocumentDbGateway
 
@@ -28,7 +28,16 @@ class DocumentDbGateway(IDocumentDbGateway):
             raise ValueError("Document not found")
 
         # Map to domain entity
-        return self._map_to_entity(db_document)
+        return DocumentEntity(
+            data=db_document.data,
+            id=db_document.id,
+            unique_identifier=db_document.unique_identifier,
+            processed=db_document.processed,
+            start_date=db_document.start_date,
+            end_date=db_document.end_date,
+            user_id=db_document.user_id,
+            document_type_name=db_document.document_type.name,
+        )
 
     def mark_as_processed(self, document_id: uuid.UUID) -> None:
         """Mark document as processed"""
@@ -85,12 +94,14 @@ class DocumentDbGateway(IDocumentDbGateway):
         return [self._map_to_entity(doc) for doc in documents]
 
     def delete(self, document_id: uuid.UUID) -> None:
-        """Delete document by ID"""
+        """Delete document and its associated transactions by ID"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:
+            for transaction in db_document.transactions:
+                self.session.delete(transaction)
             self.session.delete(db_document)
             self.session.commit()
-            logger.info(f"Document {document_id} deleted")
+            logger.info(f"Document {document_id} and its transactions deleted")
 
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""

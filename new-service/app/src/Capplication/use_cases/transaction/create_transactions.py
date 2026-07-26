@@ -15,7 +15,7 @@ from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGatewa
 
 logger = logging.getLogger(__name__)
 
-
+# TODO: Where is the interface?
 class CreateTransactionsUseCase:
     """Use case for loading transactions from document data into transaction table"""
 
@@ -60,7 +60,7 @@ class CreateTransactionsUseCase:
             self.validate_document_for_processing(document)
 
             # 3. Transform data to transaction entities (business logic)
-            transaction_entities = self.transform_document_data_to_transactions(
+            transaction_entities = self._transform_document_data_to_transactions(
                 document
             )
 
@@ -93,7 +93,7 @@ class CreateTransactionsUseCase:
                 document_id=str(request.document_id),
             )
 
-    def transform_document_data_to_transactions(
+    def _transform_document_data_to_transactions(
         self,
         document: DocumentEntity,
     ) -> List[TransactionEntity]:

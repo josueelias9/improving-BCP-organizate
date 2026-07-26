@@ -82,7 +82,7 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
 
 class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
-
+    # TODO: maybe we can limit the fields returned to only those needed by the controller, instead of returning full entities
     transactions: List[TransactionEntity]
 
 
