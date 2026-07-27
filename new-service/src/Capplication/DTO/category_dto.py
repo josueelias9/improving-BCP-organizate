@@ -24,4 +24,3 @@ class DTOGetCategoriesResponse(BaseModel):
 
     categories: List[DTOCategory]
     total_count: int
-

@@ -16,7 +16,9 @@ from src.Capplication.DTO.document_dto import (
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
-from src.Aframework.gateway.content_extractor import ContentExtractorGateway
+from src.Aframework.gateway.content_extractor.content_extractor import (
+    ContentExtractorGateway,
+)
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 

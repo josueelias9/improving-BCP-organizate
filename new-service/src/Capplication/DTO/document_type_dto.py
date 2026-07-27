@@ -15,4 +15,3 @@ class DTOGetAllDocumentTypesResponse(BaseModel):
 
     document_types: List[Dict[str, Any]]
     total_count: int
-

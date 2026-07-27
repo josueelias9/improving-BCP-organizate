@@ -11,6 +11,8 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 from ...Denterprise.entities import TransactionEntity
+
+
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
@@ -44,7 +46,6 @@ class DTOExportTransactionsResponse(BaseModel):
     error_message: Optional[str] = None
 
 
-
 # ===========================================================
 
 
@@ -75,13 +76,12 @@ class DTOImportTransactionsFromCsvResponse(BaseModel):
     message: str
 
 
-
-
 # ===========================================================
 
 
 class DTOGetAllTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
+
     # TODO: maybe we can limit the fields returned to only those needed by the controller, instead of returning full entities
     transactions: List[TransactionEntity]
 
@@ -113,7 +113,6 @@ class DTOUpdateTransactionResponse(BaseModel):
     message: str
 
 
-
 # ===========================================================
 
 
@@ -143,7 +142,6 @@ class DTOUpdateTransactionsResponse(BaseModel):
     failed: int
     errors: List[Dict[str, Any]]
     message: Optional[str] = None
-
 
 
 class DTOUpdateTransactionsRequest(BaseModel):
@@ -195,4 +193,3 @@ class DTOCreateTransactionsResponse(BaseModel):
     errors: List[str]
     total_records: int
     document_id: str
-

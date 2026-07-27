@@ -95,8 +95,12 @@ class TransactionDbGateway(ITransactionDbGateway):
                     transaction_date=transaction.transaction_date,
                     currency=transaction.currency,
                     # category_name=transaction.category.name,
-                    document_type_name=transaction.document.document_type.name if transaction.document else "",
-                    document_unique_identifier=transaction.document.unique_identifier
+                    document_document_type_name=(
+                        transaction.document.document_type.name
+                        if transaction.document
+                        else ""
+                    ),
+                    document_unique_identifier=transaction.document.unique_identifier,
                 )
                 entities.append(entity)
             except Exception as e:
@@ -115,7 +119,7 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         if not db_transaction:
             return None
-        
+
         # TODO: create a single model -> entity mapper for all functions
         # Map to domain entity
         return TransactionEntity(
