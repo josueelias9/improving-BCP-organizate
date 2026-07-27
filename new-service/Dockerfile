@@ -15,9 +15,9 @@ COPY . .
 # TODO: Use poetry for consistency among projects and to avoid dependency hell with the poetry.lock file
 RUN pip install poetry
 
-RUN poetry install
+RUN poetry install --without dev
 
-EXPOSE 8000
+# EXPOSE 8000
 
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 CMD ["fastapi", "run", "app/main.py"]

@@ -8,8 +8,8 @@ from typing import Optional
 import logging
 import os
 from dotenv import load_dotenv
-from src.Aframework.parser.bcp_debit_parser import BCPDebitParser
-from src.Aframework.parser.bcp_credit_parser import BCPCreditParser
+from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
+from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Capplication.gateway.content_extractor import IContentExtractorGateway
 from src.Denterprise.entities import DocumentEntity
 

@@ -16,6 +16,12 @@ class TransactionType(str, Enum):
     EXPENSE = "expense"
 
 
+class Currency(str, Enum):
+    USD = "USD"
+    EUR = "EUR"
+    SOL = "SOL"
+
+
 # ============================================================================= base models
 # 1. it was decided to delete all classes that behave as DTOs and are not used for persistence. They were moved to the src.Capplication.DTO module.
 # 2. this block was names as "entities", but it is not correct, because these classes are not domain entities, they are base database models. Base because it helped to avoid code duplication in table models and DTO models
@@ -55,7 +61,7 @@ class TransactionBase(SQLModel):
     amount: float
     transaction_type: TransactionType
     transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
-    currency: str = Field(default="")
+    currency: Currency
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
 
 
