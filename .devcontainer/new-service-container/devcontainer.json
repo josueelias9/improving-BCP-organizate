@@ -13,7 +13,8 @@
         "bierner.markdown-mermaid",
         "stateful.runme",
         "eamodio.gitlens",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"

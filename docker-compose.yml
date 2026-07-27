@@ -23,9 +23,7 @@ services:
 
   new-service-init:
     build: ./new-service
-    command: bash scripts/prestart.sh
-    env_file:
-      - .env
+    command: poetry run bash scripts/prestart.sh
     environment:
       - POSTGRES_DB
       - POSTGRES_USER
