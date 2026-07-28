@@ -43,7 +43,6 @@ This project is highly integrated with vs code. Thus, you can take advantage of 
 This is the design of the application and de database
 
 ```mermaid
-
 erDiagram
     USER {
         _ name

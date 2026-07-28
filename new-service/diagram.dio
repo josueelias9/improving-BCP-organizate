@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="je3UX2dg0hWaCzer_vL5" name="Page-1">
-        <mxGraphModel dx="985" dy="1022" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1182" dy="814" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -46,8 +46,49 @@
                 <mxCell id="17" value="if it happens to have access directly to an API endpoint, this should be managed here also (review)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="240" y="720" width="120" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="&lt;div&gt;need to be defined:&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;two types of content extraction:&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;extract content from text&lt;/li&gt;&lt;li&gt;extract content from binary as is&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="19" value="&lt;div&gt;need to be defined:&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;two types of content extraction:&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;extract content from text&lt;/li&gt;&lt;li&gt;extract content from binary as is&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="240" y="840" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="document&lt;div&gt;extract:&lt;/div&gt;&lt;div&gt;- currency&lt;/div&gt;&lt;div&gt;- plain text&lt;/div&gt;&lt;div&gt;- etc...&lt;/div&gt;&lt;div&gt;- type&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="1000" y="800" width="80" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="transaction" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="1160" y="800" width="80" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" style="edgeStyle=none;html=1;" parent="1" source="23" target="24" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="FileExtractorGateway&lt;div&gt;todo lo que tiene que ver con extraccion de binary&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="680" y="360" width="120" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="ParserGateway&lt;div&gt;se elimina el ContentExtractor. Ahora la hay distintos parser y se pasan segun el tipo de documento al caso de uso. El caso de uso desconoce el parser y solo usa la interfaz&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="880" y="360" width="120" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="26" target="27">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="file extractor" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="27" target="29">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="content extractor" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="830" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="parser" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1030" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="32" target="35">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="830" y="280" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="32" value="file extractor" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="250" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="parser" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="1030" y="250" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

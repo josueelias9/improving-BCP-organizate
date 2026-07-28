@@ -3,29 +3,25 @@ Defines contracts for data access without implementation details
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
-from src.Denterprise.entities import DocumentEntity
+from datetime import date
+from typing import Any, Optional
 
 
-class IContentExtractorGateway(ABC):
-    """Abstract gateway for PDF extraction operations"""
+class IStatementParser(ABC):
+    """Abstract interface for parsing document text into structured data."""
 
     @abstractmethod
-    def extract_document(
+    def get_data(
         self,
-        pdf_content: bytes,
-        document_type: Optional[str] = None,
-    ) -> DocumentEntity:
-        """Extract document from PDF content and return DocumentEntity with data
+        full_text: str,
+    ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
+        """Parse document text and return extracted data.
 
         Args:
-            pdf_content: Binary PDF file content as bytes
-            document_type: Type of document (e.g., 'bcp_credit', 'bcp_debit')
+            full_text: Extracted text from the source document
 
         Returns:
-            DocumentEntity with extracted transaction data
-
-        Raises:
-            ValueError: If PDF cannot be processed
+            Tuple with extracted data, unique identifier, start date and end date
         """
         pass
+

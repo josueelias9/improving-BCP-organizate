@@ -11,12 +11,14 @@ This is an INPUT ADAPTER that:
 import re
 import logging
 from datetime import date
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
+
+from src.Capplication.gateway.content_extractor import IStatementParser
 
 logger = logging.getLogger(__name__)
 
 
-class BCPDebitParser:
+class BCPDebitParser(IStatementParser):
     """
     Parser for BCP bank statements - Interface Adapter
 
@@ -42,8 +44,8 @@ class BCPDebitParser:
     }
 
     def get_data(
-        self, full_text
-    ) -> Tuple[dict[str, any], str, Optional[date], Optional[date]]:
+        self, full_text: str
+    ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
         """Parse BCP debit PDF text and extract transaction data
 
         Returns:
@@ -59,6 +61,7 @@ class BCPDebitParser:
             "account_code": account_code,
             "currency": currency,
             "saldo_anterior": saldo_anterior,
+            # TODO: delete initial_day and final_day from data, they are already returned separately
             "initial_day": initial_day.isoformat() if initial_day else None,
             "final_day": final_day.isoformat() if final_day else None,
             "transactions": [],

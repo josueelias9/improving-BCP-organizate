@@ -4,17 +4,23 @@ Orchestrates the flow of processing a PDF and creating a document
 """
 
 import logging
+import os
+
+import fitz
+from dotenv import load_dotenv
 
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
-from src.Denterprise.entities import UserEntity
+from src.Denterprise.entities import DocumentEntity, UserEntity
 from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
     DTOCreateDocumentRequest,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
-from src.Capplication.gateway.content_extractor import IContentExtractorGateway
+from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +32,15 @@ class CreateDocumentUseCase:
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        content_extractor_gateway: IContentExtractorGateway,
         document_type_gateway: IDocumentTypeDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
+        parser_gateway: IStatementParser,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
-        self.content_extractor_gateway = content_extractor_gateway
         self.document_type_gateway = document_type_gateway
         self.file_extractor_gateway = file_extractor_gateway
+        self.parser_gateway = parser_gateway
 
     def execute(self, request: DTOCreateDocumentRequest) -> DTOCreateDocumentResponse:
         """
@@ -77,12 +83,28 @@ class CreateDocumentUseCase:
                     f"Document type '{document_type}' not found in database"
                 )
 
-            # Read PDF file using file system gateway
+            # extract text from PDF file using file system gateway
             pdf_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
 
-            # Extract document from PDF content
-            document = self.content_extractor_gateway.extract_document(
-                pdf_binary, document_type=doc_type.name
+            password = os.getenv("PDF_PASSWORD")
+            full_text = self._extract_text_from_binary(pdf_binary, password)
+
+            # TODO: I think we can return data, unique_identifier, start_date, end_date independantly from the parser and use them to create the document entity
+            # this will allow use to have a more consistent use of the interface
+            
+            # Use parser_gateway to extract data from text
+            data, unique_identifier, start_date, end_date = self.parser_gateway.get_data(
+                full_text
+            )
+
+            document = DocumentEntity(
+                data=data,
+                unique_identifier=unique_identifier or "",
+                processed=False,
+                start_date=start_date,
+                end_date=end_date,
+                plain_text=full_text,
+                document_type_name=doc_type.name,
             )
 
             # Validate document has data
@@ -130,6 +152,37 @@ class CreateDocumentUseCase:
             logger.error(f"Error processing PDF: {str(e)}")
             raise
 
+    def _extract_text_from_binary(self, pdf_content: bytes, password: str = None) -> str:
+        """Extract text from PDF using PyMuPDF"""
+        logger.info("Extracting text from PDF")
+
+        try:
+            text = ""
+            pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+
+            if pdf_document.is_encrypted:
+                if password:
+                    if pdf_document.authenticate(password):
+                        logger.info("PDF decrypted successfully")
+                    else:
+                        raise Exception("Incorrect password for PDF")
+                else:
+                    raise Exception("PDF is encrypted but no password provided")
+
+            logger.info(f"PDF has {pdf_document.page_count} pages")
+
+            for page_num in range(pdf_document.page_count):
+                page = pdf_document[page_num]
+                page_text = page.get_text()
+                if page_text:
+                    text += f"\n\n--- PAGE {page_num + 1} ---\n\n{page_text}\n"
+
+            pdf_document.close()
+            return text
+        except Exception as e:
+            logger.error(f"Error with PyMuPDF: {str(e)}")
+            raise
+
     def _validate_document_type(self, document_type: str) -> None:
         """
         Validate that the document type is supported (business rule)
@@ -150,6 +203,7 @@ class CreateDocumentUseCase:
                 document_type=document_type, supported_types=supported_types
             )
 
+    # TODO: isnt this a user_gateway method?
     def _get_or_create_user(self, user_email: str):
         """
         Get existing user entity or create new one

@@ -16,9 +16,8 @@ from src.Capplication.DTO.document_dto import (
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
-from src.Aframework.gateway.content_extractor.content_extractor import (
-    ContentExtractorGateway,
-)
+from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
+from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
@@ -82,16 +81,23 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         document_gateway = DocumentDbGateway(session)
         user_gateway = UserDbGateway(session)
         document_type_gateway = DocumentTypeDbGateway(session)
-        content_extractor_gateway = ContentExtractorGateway()
         file_extractor_gateway = FileExtractorGateway()
+
+        doc_type = document_type_gateway.get_by_name(dto_request.document_type)
+        document_type_name = doc_type.name if doc_type else dto_request.document_type
+        parser_gateway = (
+            BCPCreditParser()
+            if document_type_name == "bcp_credit"
+            else BCPDebitParser()
+        )
 
         # Delegate all processing to application layer use case
         use_case = CreateDocumentUseCase(
             document_gateway,
             user_gateway,
-            content_extractor_gateway,
             document_type_gateway,
             file_extractor_gateway,
+            parser_gateway,
         )
 
         # Use case returns DTO for controller response

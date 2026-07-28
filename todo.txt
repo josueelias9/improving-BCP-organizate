@@ -10,9 +10,12 @@ new-service/
 
 [ ] move export endpoints
 [ ] define if these two endpoints are actually important
-[ ] rename "get_all_transactions" to "get_transactions"
-[ ] move data extraction from document to transaction endpoints
-[ ] when a document is deleted, so its transactions should be too
 
 
 [ ] install git inside the backend container
+
+
+
+
+[ ] move logic
+[ ] move data extraction from document to transaction endpoints

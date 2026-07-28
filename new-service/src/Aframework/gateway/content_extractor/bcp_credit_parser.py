@@ -14,10 +14,12 @@ import logging
 from datetime import date
 from typing import List, Optional, Dict, Any
 
+from src.Capplication.gateway.content_extractor import IStatementParser
+
 logger = logging.getLogger(__name__)
 
 
-class BCPCreditParser:
+class BCPCreditParser(IStatementParser):
     """
     Parser for BCP credit card statements - Interface Adapter
 
@@ -41,7 +43,9 @@ class BCPCreditParser:
         "DIC": "12",
     }
 
-    def get_data(self, full_text: str) -> tuple[dict[str, Any], str, str]:
+    def get_data(
+        self, full_text: str
+    ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
         """Parse BCP credit card PDF text and extract transaction data
 
         Returns:
