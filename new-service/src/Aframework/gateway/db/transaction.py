@@ -95,12 +95,8 @@ class TransactionDbGateway(ITransactionDbGateway):
                     transaction_date=transaction.transaction_date,
                     currency=transaction.currency,
                     unique_identifier=transaction.unique_identifier,
-                    # category_name=transaction.category.name,
-                    document_document_type_name=(
-                        transaction.document.document_type.name
-                        if transaction.document
-                        else ""
-                    ),
+                    category_name=transaction.category.name,
+                    document_document_type_name=transaction.document.document_type.name,
                     document_unique_identifier=transaction.document.unique_identifier,
                 )
                 entities.append(entity)

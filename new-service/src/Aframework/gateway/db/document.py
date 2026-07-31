@@ -67,7 +67,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Map domain entity to database model
 
         document.generate_unique_identifier()
-        
+
         db_document = DocumentModel(
             data=document.data,
             unique_identifier=document.unique_identifier,

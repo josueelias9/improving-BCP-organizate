@@ -10,3 +10,6 @@ data = response.json()
 df = pd.DataFrame(data["transactions"])
 
 st.dataframe(df, use_container_width=True)
+
+
+st.bar_chart(df, x="category_name", y="amount", stack=False)

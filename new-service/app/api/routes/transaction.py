@@ -23,7 +23,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsResponse,
     DTOImportTransactionsFromCsvRequest,
     DTOImportTransactionsFromCsvResponse,
-    DTOGetAllTransactionsResponse,
+    DTOGetTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
 )
@@ -36,8 +36,8 @@ from src.Capplication.use_cases.transaction.update_transactions import (
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.get_all_transactions import (
-    GetAllTransactionsUseCase,
+from src.Capplication.use_cases.transaction.get_transactions import (
+    GetTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
     ImportTransactionsFromCsvUseCase,
@@ -58,12 +58,12 @@ logger = logging.getLogger(__name__)
 # CRUD
 
 
-@router.get("/", response_model=DTOGetAllTransactionsResponse)
+@router.get("/", response_model=DTOGetTransactionsResponse)
 def get_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 100,
-) -> DTOGetAllTransactionsResponse:
+) -> DTOGetTransactionsResponse:
     """
     Get all transactions with pagination
 
@@ -79,17 +79,12 @@ def get_transactions(
     """
     try:
         transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        document_gateway = DocumentDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        use_case = GetAllTransactionsUseCase(
+        use_case = GetTransactionsUseCase(
             transaction_gateway,
-            category_gateway,
-            document_gateway,
-            document_type_gateway,
         )
 
-        return use_case.execute(skip=skip, limit=limit)
+        a = use_case.execute(skip=skip, limit=limit)
+        return a
 
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")

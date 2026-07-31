@@ -1,5 +1,5 @@
 default_categories = [
-    # Food & Dining
+    # ================================== Food & Dining
     {
         "id": "00000000-0000-0000-0000-000000000001",
         "name": "Food & Dining",
@@ -24,7 +24,7 @@ default_categories = [
         "description": "Home delivery orders",
         "parent_id": "00000000-0000-0000-0000-000000000001",
     },
-    # Transportation
+    # ================================== Transportation
     {
         "id": "00000000-0000-0000-0000-000000000005",
         "name": "Transportation",
@@ -49,7 +49,7 @@ default_categories = [
         "description": "Bus, metro, train",
         "parent_id": "00000000-0000-0000-0000-000000000005",
     },
-    # Entertainment
+    # ================================== Entertainment
     {
         "id": "00000000-0000-0000-0000-000000000009",
         "name": "Entertainment",
@@ -74,7 +74,7 @@ default_categories = [
         "description": "Video games and entertainment",
         "parent_id": "00000000-0000-0000-0000-000000000009",
     },
-    # Health
+    # ================================== Health
     {
         "id": "00000000-0000-0000-0000-000000000013",
         "name": "Health",
@@ -99,7 +99,7 @@ default_categories = [
         "description": "Health insurance",
         "parent_id": "00000000-0000-0000-0000-000000000013",
     },
-    # Utilities
+    # ================================== Utilities
     {
         "id": "00000000-0000-0000-0000-000000000017",
         "name": "Utilities",
@@ -130,6 +130,7 @@ default_categories = [
         "description": "Phone services",
         "parent_id": "00000000-0000-0000-0000-000000000017",
     },
+    # ================================== Other
     {
         "id": "00000000-0000-0000-0000-000000000022",
         "name": "Other",
@@ -186,7 +187,7 @@ default_transactions = [
         "document_id": "00000000-0000-0000-0000-000000000001",
         "currency": "SOL",
         "history": "This is something that happened first.",
-        "unique_identifier": "example__unique__identifier",
+        "unique_identifier": "example__unique__identifier__1",
     },
     {
         "id": "00000000-0000-0000-0000-000000000002",
@@ -198,7 +199,7 @@ default_transactions = [
         "document_id": "00000000-0000-0000-0000-000000000001",
         "currency": "SOL",
         "history": "This is something that happened second.",
-        "unique_identifier": "example__unique__identifier",
+        "unique_identifier": "example__unique__identifier__2",
     },
     {
         "id": "00000000-0000-0000-0000-000000000003",
@@ -210,7 +211,7 @@ default_transactions = [
         "document_id": "00000000-0000-0000-0000-000000000001",
         "currency": "SOL",
         "history": "This is something that happened third.",
-        "unique_identifier": "example__unique__identifier",
+        "unique_identifier": "example__unique__identifier__3",
     },
     {
         "id": "00000000-0000-0000-0000-000000000004",
@@ -222,6 +223,6 @@ default_transactions = [
         "document_id": "00000000-0000-0000-0000-000000000001",
         "currency": "SOL",
         "history": "This is something that happened fourth.",
-        "unique_identifier": "example__unique__identifier",
+        "unique_identifier": "example__unique__identifier__4",
     },
 ]

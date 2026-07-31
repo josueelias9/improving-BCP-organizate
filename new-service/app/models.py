@@ -131,7 +131,10 @@ class Transaction(TransactionBase, table=True):
         default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
     )
     document_id: uuid.UUID = Field(foreign_key="documents.id")
-    category_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
+    category_id: Optional[uuid.UUID] = Field(
+        default=uuid.UUID("00000000-0000-0000-0000-000000000022"),
+        foreign_key="categories.id",
+    )
 
     # Relationships
     document: Document = Relationship(back_populates="transactions")

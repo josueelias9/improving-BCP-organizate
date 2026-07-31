@@ -154,3 +154,11 @@ sequenceDiagram
 The idea is instead of using a pdf, use an API directly to consume information form BCP directly.
 
 https://www.viabcp.com/empresas/open-economy
+
+
+
+```
+docker compose down db -v
+docker compose up db -d
+docker compose up new-service-init --build
+```

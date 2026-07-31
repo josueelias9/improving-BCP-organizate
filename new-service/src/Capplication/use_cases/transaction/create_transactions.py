@@ -115,10 +115,7 @@ class CreateTransactionsUseCase:
         # one workaround could be to have a fixed dict structure for all document_types.
         currency = document.data.get("currency", "")
 
-        temp_mapper = {
-            "SOLES":"SOL",
-            "DOLARES": "USD"
-        }
+        temp_mapper = {"SOLES": "SOL", "DOLARES": "USD"}
 
         for idx, transaction_dict in enumerate(document.data["transactions"]):
             try:

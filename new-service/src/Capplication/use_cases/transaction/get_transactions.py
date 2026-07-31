@@ -1,6 +1,6 @@
 # TODO: rename file and class and DTO
 
-from src.Capplication.DTO.transaction_dto import DTOGetAllTransactionsResponse
+from src.Capplication.DTO.transaction_dto import DTOGetTransactionsResponse
 from src.Capplication.gateway.db import (
     ITransactionDbGateway,
     ICategoryDbGateway,
@@ -9,21 +9,15 @@ from src.Capplication.gateway.db import (
 )
 
 
-class GetAllTransactionsUseCase:
+class GetTransactionsUseCase:
 
     def __init__(
         self,
         transaction_gateway: ITransactionDbGateway,
-        category_gateway: ICategoryDbGateway,
-        document_gateway: IDocumentDbGateway,
-        document_type_gateway: IDocumentTypeDbGateway,
     ):
         self.transaction_gateway = transaction_gateway
-        self.category_gateway = category_gateway
-        self.document_gateway = document_gateway
-        self.document_type_gateway = document_type_gateway
 
-    def execute(self, skip: int = 0, limit: int = 100) -> DTOGetAllTransactionsResponse:
+    def execute(self, skip: int = 0, limit: int = 100) -> DTOGetTransactionsResponse:
         """Get all transactions with pagination
 
         Args:
@@ -31,7 +25,7 @@ class GetAllTransactionsUseCase:
             limit: Maximum number of records to return
 
         Returns:
-            DTOGetAllTransactionsResponse with transactions including category_name
+            DTOGetTransactionsResponse with transactions including category_name
         """
         # Validate limit
         if limit > 1000:
@@ -40,4 +34,4 @@ class GetAllTransactionsUseCase:
         # Get transactions via gateway
         entities = self.transaction_gateway.get_all(skip=skip, limit=limit)
 
-        return DTOGetAllTransactionsResponse(transactions=entities)
+        return DTOGetTransactionsResponse(transactions=entities)
