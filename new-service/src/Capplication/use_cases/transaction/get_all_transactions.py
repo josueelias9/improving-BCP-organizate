@@ -1,3 +1,5 @@
+# TODO: rename file and class and DTO
+
 from src.Capplication.DTO.transaction_dto import DTOGetAllTransactionsResponse
 from src.Capplication.gateway.db import (
     ITransactionDbGateway,

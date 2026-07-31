@@ -115,6 +115,11 @@ class CreateTransactionsUseCase:
         # one workaround could be to have a fixed dict structure for all document_types.
         currency = document.data.get("currency", "")
 
+        temp_mapper = {
+            "SOLES":"SOL",
+            "DOLARES": "USD"
+        }
+
         for idx, transaction_dict in enumerate(document.data["transactions"]):
             try:
                 # Parse date strings from JSON back to date objects
@@ -140,7 +145,7 @@ class CreateTransactionsUseCase:
                     amount=amount,
                     transaction_type=transaction_type,
                     transaction_date=fecha_valor,
-                    currency=currency,
+                    currency=temp_mapper[currency],
                     unique_identifier=None,  # Will be set by gateway
                 )
                 transactions.append(transaction)

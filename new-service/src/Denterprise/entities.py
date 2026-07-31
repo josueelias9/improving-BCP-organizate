@@ -12,6 +12,12 @@ class TransactionType(str, Enum):
     EXPENSE = "expense"
 
 
+class Currency(str, Enum):
+    USD = "USD"
+    EUR = "EUR"
+    SOL = "SOL"
+
+
 # ==============================================
 # Domain Entities - Enterprise Business Rules
 # ==============================================
@@ -45,18 +51,14 @@ class TransactionEntity:
     amount: float = 0.0
     transaction_type: str = ""
     transaction_date: Optional[date] = None
-    currency: str = ""
+    currency: Currency = None
     unique_identifier: Optional[str] = None
     category_id: Optional[uuid.UUID] = None
     document_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
-    category_name: Optional[str] = None  # Added to store the category name
-    document_document_type_name: Optional[str] = (
-        None  # Added to store the document type name  # TODO: rename to document_document_type_name
-    )
-    document_unique_identifier: Optional[str] = (
-        None  # Added to store the document unique identifier
-    )
+    category_name: Optional[str] = None
+    document_document_type_name: Optional[str] = None
+    document_unique_identifier: Optional[str] = None
 
     def generate_unique_identifier(self) -> str:
         """Generate unique identifier for the transaction
@@ -69,7 +71,7 @@ class TransactionEntity:
         date_str = (
             self.transaction_date.strftime("%Y-%m-%d") if self.transaction_date else ""
         )
-        return f"{self.order}__{date_str}__{self.amount}__{self.transaction_type}__{self.description}"
+        self.unique_identifier = f"{self.order}__{date_str}__{self.amount}__{self.transaction_type}__{self.description}"
 
 
 @dataclass
@@ -94,5 +96,5 @@ class DocumentEntity:
     user_id: Optional[uuid.UUID] = None
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[uuid.UUID] = None
-    plain_text: Optional[str] = None  # Added to store the plain text of the document
-    document_type_name: Optional[str] = None  # Added to store the document type name
+    plain_text: Optional[str] = None
+    document_type_name: Optional[str] = None

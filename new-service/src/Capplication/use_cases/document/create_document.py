@@ -89,20 +89,12 @@ class CreateDocumentUseCase:
             password = os.getenv("PDF_PASSWORD")
             full_text = self._extract_text_from_binary(pdf_binary, password)
 
-            # TODO: I think we can return data, unique_identifier, start_date, end_date independantly from the parser and use them to create the document entity
-            # this will allow use to have a more consistent use of the interface
-            
-            # Use parser_gateway to extract data from text
-            data, unique_identifier, start_date, end_date = self.parser_gateway.get_data(
-                full_text
-            )
-
             document = DocumentEntity(
-                data=data,
-                unique_identifier=unique_identifier or "",
+                data=self.parser_gateway.get_data(full_text),
+                unique_identifier=self.parser_gateway.get_unique_identifier(),
+                start_date=self.parser_gateway.get_initial_day(full_text),
+                end_date=self.parser_gateway.get_final_day(full_text),
                 processed=False,
-                start_date=start_date,
-                end_date=end_date,
                 plain_text=full_text,
                 document_type_name=doc_type.name,
             )
@@ -152,7 +144,9 @@ class CreateDocumentUseCase:
             logger.error(f"Error processing PDF: {str(e)}")
             raise
 
-    def _extract_text_from_binary(self, pdf_content: bytes, password: str = None) -> str:
+    def _extract_text_from_binary(
+        self, pdf_content: bytes, password: str = None
+    ) -> str:
         """Extract text from PDF using PyMuPDF"""
         logger.info("Extracting text from PDF")
 

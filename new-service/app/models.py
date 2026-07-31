@@ -63,9 +63,11 @@ class TransactionBase(SQLModel):
     transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
     currency: Currency
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-# ============================================================================= db
+# ============================================================================= db (PK, FK, and relationships)
 
 
 class DocumentType(DocumentTypeBase, table=True):
@@ -130,8 +132,6 @@ class Transaction(TransactionBase, table=True):
     )
     document_id: uuid.UUID = Field(foreign_key="documents.id")
     category_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
     document: Document = Relationship(back_populates="transactions")

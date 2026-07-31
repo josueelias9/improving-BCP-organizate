@@ -43,6 +43,52 @@ class BCPCreditParser(IStatementParser):
         "DIC": "12",
     }
 
+    def get_unique_identifier(self) -> Optional[str]:
+        """Extract unique identifier from the document text.
+
+        Returns:
+            Unique identifier as a string, or None if not found
+        """
+        # This method should be implemented to extract a unique identifier from the document text.
+        # For example, it could extract the account number or statement ID.
+        # Placeholder implementation:
+        return ""
+
+    def get_initial_day(self, full_text: str) -> Optional[date]:
+
+        # Extract date range
+        date_range_match = re.search(
+            r"Del\s+(\d{2})/(\d{2})/(\d{4})\s+al\s+(\d{2})/(\d{2})/(\d{4})",
+            full_text,
+        )
+
+        if date_range_match:
+            day1, month1, year1 = (
+                int(date_range_match.group(1)),
+                int(date_range_match.group(2)),
+                int(date_range_match.group(3)),
+            )
+
+            start_date = date(year1, month1, day1)
+
+            return start_date
+        return None
+
+    def get_final_day(self, full_text: str) -> Optional[date]:
+        # Extract date range
+        date_range_match = re.search(
+            r"Del\s+(\d{2})/(\d{2})/(\d{4})\s+al\s+(\d{2})/(\d{2})/(\d{4})",
+            full_text,
+        )
+        if date_range_match:
+            day2, month2, year2 = (
+                int(date_range_match.group(4)),
+                int(date_range_match.group(5)),
+                int(date_range_match.group(6)),
+            )
+            return date(year2, month2, day2)
+        return None
+
     def get_data(
         self, full_text: str
     ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
@@ -55,32 +101,6 @@ class BCPCreditParser(IStatementParser):
             # Extract account code
             account_code_match = re.search(r"Cuenta:\s+(\d{20})", full_text)
             account_code = account_code_match.group(1) if account_code_match else ""
-
-            # Extract date range
-            date_range_match = re.search(
-                r"Del\s+(\d{2})/(\d{2})/(\d{4})\s+al\s+(\d{2})/(\d{2})/(\d{4})",
-                full_text,
-            )
-            start_date = None
-            end_date = None
-            initial_day_str = ""
-            final_day_str = ""
-
-            if date_range_match:
-                day1, month1, year1 = (
-                    int(date_range_match.group(1)),
-                    int(date_range_match.group(2)),
-                    int(date_range_match.group(3)),
-                )
-                day2, month2, year2 = (
-                    int(date_range_match.group(4)),
-                    int(date_range_match.group(5)),
-                    int(date_range_match.group(6)),
-                )
-                start_date = date(year1, month1, day1)
-                end_date = date(year2, month2, day2)
-                initial_day_str = start_date.strftime("%d/%m/%Y")
-                final_day_str = end_date.strftime("%d/%m/%Y")
 
             # Extract currency
             currency_match = re.search(r"Moneda:\s+([A-Z]{3})", full_text)
@@ -96,20 +116,13 @@ class BCPCreditParser(IStatementParser):
 
             data = {
                 "account_code": account_code,
-                "initial_day": initial_day_str,
-                "final_day": final_day_str,
                 "currency": currency,
                 "saldo_anterior_soles": saldo_anterior_soles,
                 "saldo_anterior_dolares": saldo_anterior_dolares,
                 "transactions": transactions,
             }
             # TODO: this should be done by the Entity itself.
-            return (
-                data,
-                f"{account_code}__{initial_day_str}__{final_day_str}__{saldo_anterior_soles}",
-                start_date,
-                end_date,
-            )
+            return data
 
         except Exception as e:
             logger.error(f"Error parsing BCP credit PDF: {e}")
@@ -198,8 +211,8 @@ class BCPCreditParser(IStatementParser):
                     amount_str = match.group(7).strip()
 
                     # Convert dates
-                    fecha_transaccion = self.convert_bcp_date(fecha_transaccion_str)
-                    fecha_proceso = self.convert_bcp_date(fecha_proceso_str)
+                    fecha_transaccion = self._convert_bcp_date(fecha_transaccion_str)
+                    fecha_proceso = self._convert_bcp_date(fecha_proceso_str)
 
                     # Parse amount
                     amount = float(amount_str.replace(",", ""))
@@ -232,7 +245,7 @@ class BCPCreditParser(IStatementParser):
         logger.info(f"Total credit transactions found: {len(transactions)}")
         return transactions
 
-    def convert_bcp_date(self, date_str: str) -> Optional[date]:
+    def _convert_bcp_date(self, date_str: str) -> Optional[date]:
         """Convert BCP date format DDMMM to Python date object"""
         if not date_str or len(date_str) < 4:
             return None

@@ -43,27 +43,30 @@ class BCPDebitParser(IStatementParser):
         "SET": "09",  # Setiembre
     }
 
-    def get_data(
-        self, full_text: str
-    ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
+    def get_unique_identifier(self) -> Optional[str]:
+        return ""
+
+    def get_initial_day(self, full_text: str) -> Optional[date]:
+        return self._extract_period(full_text)[0]
+
+    def get_final_day(self, full_text: str) -> Optional[date]:
+        return self._extract_period(full_text)[1]
+
+    def get_data(self, full_text: str) -> dict[str, Any]:
         """Parse BCP debit PDF text and extract transaction data
 
         Returns:
-            tuple: (data_dict, unique_identifier, start_date, end_date)
+            dict: Parsed transaction data
         """
         # Use parser from Denterprise layer for business logic
-        account_code, currency = self.extract_account_code(full_text)
-        saldo_anterior = self.extract_saldo_anterior(full_text)
-        initial_day, final_day = self.extract_period(full_text)
-        transactions = self.parse_transactions(full_text)
+        account_code, currency = self._extract_account_code(full_text)
+        saldo_anterior = self._extract_saldo_anterior(full_text)
+        transactions = self._parse_transactions(full_text)
 
         data = {
             "account_code": account_code,
             "currency": currency,
             "saldo_anterior": saldo_anterior,
-            # TODO: delete initial_day and final_day from data, they are already returned separately
-            "initial_day": initial_day.isoformat() if initial_day else None,
-            "final_day": final_day.isoformat() if final_day else None,
             "transactions": [],
         }
         for transaction in transactions:
@@ -85,15 +88,10 @@ class BCPDebitParser(IStatementParser):
                     "internal_transaction": transaction["internal_transaction"],
                 }
             )
-        return (
-            data,
-            f"{account_code}__{initial_day}__{final_day}",
-            initial_day,
-            final_day,
-        )
+        return data
 
     @staticmethod
-    def parse_transactions(text: str) -> List[dict[str, any]]:
+    def _parse_transactions(text: str) -> List[dict[str, any]]:
         """
         Parse transactions from BCP PDF text using fixed positions
 
@@ -154,8 +152,10 @@ class BCPDebitParser(IStatementParser):
                     continue
 
                 # Convert dates
-                fecha_proceso_formatted = BCPDebitParser.convert_bcp_date(fecha_proceso)
-                fecha_valor_formatted = BCPDebitParser.convert_bcp_date(fecha_valor)
+                fecha_proceso_formatted = BCPDebitParser._convert_bcp_date(
+                    fecha_proceso
+                )
+                fecha_valor_formatted = BCPDebitParser._convert_bcp_date(fecha_valor)
 
                 # Parse amounts
                 egreso = 0.0
@@ -193,7 +193,7 @@ class BCPDebitParser(IStatementParser):
         return transactions
 
     @staticmethod
-    def convert_bcp_date(date_str: str) -> Optional[date]:
+    def _convert_bcp_date(date_str: str) -> Optional[date]:
         """Convert BCP date format DDMMM to Python date object"""
         if not date_str or len(date_str) < 5:
             return None
@@ -217,7 +217,7 @@ class BCPDebitParser(IStatementParser):
             return None
 
     @staticmethod
-    def extract_account_code(text: str) -> Optional[tuple[str, str]]:
+    def _extract_account_code(text: str) -> Optional[tuple[str, str]]:
         """
         Extract account code and currency from BCP PDF text
 
@@ -262,7 +262,7 @@ class BCPDebitParser(IStatementParser):
             return None
 
     @staticmethod
-    def extract_saldo_anterior(text: str) -> Optional[float]:
+    def _extract_saldo_anterior(text: str) -> Optional[float]:
         """
         Extract previous balance from BCP PDF text
 
@@ -296,7 +296,7 @@ class BCPDebitParser(IStatementParser):
             return None
 
     @staticmethod
-    def extract_period(text: str) -> Tuple[Optional[date], Optional[date]]:
+    def _extract_period(text: str) -> Tuple[Optional[date], Optional[date]]:
         """
         Extract statement period from BCP PDF text
 

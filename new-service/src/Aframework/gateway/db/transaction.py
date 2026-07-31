@@ -35,7 +35,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         for transaction_entity in transactions:
             try:
                 # Generate unique_identifier using entity method
-                unique_id = transaction_entity.generate_unique_identifier()
+                transaction_entity.generate_unique_identifier()
 
                 # Map domain entity to database model
                 db_transaction = TransactionModel(
@@ -46,7 +46,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     transaction_type=transaction_entity.transaction_type,
                     transaction_date=transaction_entity.transaction_date,
                     currency=transaction_entity.currency,
-                    unique_identifier=unique_id,
+                    unique_identifier=transaction_entity.unique_identifier,
                     document_id=document_id,
                 )
 
@@ -94,6 +94,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     transaction_type=transaction.transaction_type,
                     transaction_date=transaction.transaction_date,
                     currency=transaction.currency,
+                    unique_identifier=transaction.unique_identifier,
                     # category_name=transaction.category.name,
                     document_document_type_name=(
                         transaction.document.document_type.name
