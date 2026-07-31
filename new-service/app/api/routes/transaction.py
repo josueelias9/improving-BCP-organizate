@@ -63,6 +63,9 @@ def get_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 100,
+    document_id: Optional[uuid.UUID] = Query(
+        default=None, description="Filter by document UUID"
+    ),
 ) -> DTOGetTransactionsResponse:
     """
     Get all transactions with pagination
@@ -83,7 +86,7 @@ def get_transactions(
             transaction_gateway,
         )
 
-        a = use_case.execute(skip=skip, limit=limit)
+        a = use_case.execute(skip=skip, limit=limit, document_id=document_id)
         return a
 
     except Exception as e:

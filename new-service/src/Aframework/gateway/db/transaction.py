@@ -71,13 +71,18 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         return loaded_count, skipped_count, errors
 
-    def get_all(self, skip: int = 0, limit: int = 100) -> List[TransactionEntity]:
-        """Get all transactions with pagination
+    def get_all(
+        self,
+        skip: int = 0,
+        limit: int = 100,
+        document_id: Optional[uuid.UUID] = None,
+    ) -> List[TransactionEntity]:
+        """Get all transactions with pagination and optional document filter"""
 
-        Returns:
-            List of TransactionEntity
-        """
-        statement = select(TransactionModel).offset(skip).limit(limit)
+        if document_id:
+            statement = select(TransactionModel).where(TransactionModel.document_id == document_id).offset(skip).limit(limit)
+        else:
+            statement = select(TransactionModel).offset(skip).limit(limit)
         transactions = self.session.exec(statement).all()
 
         # Map to domain entities
