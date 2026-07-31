@@ -274,12 +274,13 @@ def export_transactions(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         file_extractor_gateway = FileExtractorGateway()
+        document_gateway = DocumentDbGateway(session)
         use_case = ExportTransactionsUseCase(
             transaction_gateway=transaction_gateway,
             file_extractor_gateway=file_extractor_gateway,
+            document_gateway=document_gateway,
         )
-
-        # Create filter object with output_dir
+        # TODO: remove month, because we are only filtering by document_id. The month filter is not being used in the use case.
         dto_request = DTOExportTransactionsRequest(
             month=month, document_id=document_id, output_dir=output_dir
         )
@@ -293,7 +294,6 @@ def export_transactions(
                 status_code=400 if "Invalid" in dto_response.error_message else 404,
                 detail=dto_response.error_message,
             )
-        # Presenter:
         return dto_response
 
     except HTTPException:

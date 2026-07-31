@@ -13,7 +13,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
 )
-from src.Capplication.gateway.db import ITransactionDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway, IDocumentDbGateway
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 
 logger = logging.getLogger(__name__)
@@ -26,16 +26,11 @@ class ExportTransactionsUseCase:
         self,
         transaction_gateway: ITransactionDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
+        document_gateway: IDocumentDbGateway,
     ):
-        """
-        Initialize use case with gateway dependencies
-
-        Args:
-            transaction_gateway: Transaction gateway interface
-            file_extractor_gateway: File system gateway interface
-        """
         self.transaction_gateway = transaction_gateway
         self.file_extractor_gateway = file_extractor_gateway
+        self.document_gateway = document_gateway
 
     def execute(
         self, filters: DTOExportTransactionsRequest
@@ -69,7 +64,8 @@ class ExportTransactionsUseCase:
             csv_content = self._generate_csv(transactions)
 
             # 4. Generate filename
-            filename = self._generate_filename(filters, len(transactions))
+            doc = self.document_gateway.get_by_id(filters.document_id)
+            filename = f"{doc.unique_identifier}.csv"
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(
@@ -154,19 +150,3 @@ class ExportTransactionsUseCase:
                 )
 
         return output.getvalue()
-
-    def _generate_filename(
-        self, filters: DTOExportTransactionsRequest, count: int
-    ) -> str:
-        """
-        Generate descriptive filename for export
-
-        Args:
-            filters: Export filters used
-            count: Number of transactions exported
-
-        Returns:
-            Generated filename (always the same name)
-        """
-        # Always return the same filename
-        return "transactions.csv"

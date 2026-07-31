@@ -97,7 +97,7 @@ class DocumentEntity:
     document_type_name: Optional[str] = None
 
     def generate_unique_identifier(self):
-        self.unique_identifier = f"{self.plain_text.strip()[:100]}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
+        self.unique_identifier = f"{self.plain_text.strip().replace(' ', '')[:20]}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
 
 
 # con respecto al unique identifier

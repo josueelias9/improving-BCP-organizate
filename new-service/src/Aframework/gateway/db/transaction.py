@@ -80,7 +80,12 @@ class TransactionDbGateway(ITransactionDbGateway):
         """Get all transactions with pagination and optional document filter"""
 
         if document_id:
-            statement = select(TransactionModel).where(TransactionModel.document_id == document_id).offset(skip).limit(limit)
+            statement = (
+                select(TransactionModel)
+                .where(TransactionModel.document_id == document_id)
+                .offset(skip)
+                .limit(limit)
+            )
         else:
             statement = select(TransactionModel).offset(skip).limit(limit)
         transactions = self.session.exec(statement).all()
