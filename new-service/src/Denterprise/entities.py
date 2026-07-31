@@ -68,10 +68,7 @@ class TransactionEntity:
         Returns:
             Unique identifier string
         """
-        date_str = (
-            self.transaction_date.strftime("%Y-%m-%d") if self.transaction_date else ""
-        )
-        self.unique_identifier = f"{self.order}__{date_str}__{self.amount}__{self.transaction_type}__{self.description}"
+        self.unique_identifier = f"{self.transaction_type}__{self.transaction_date.strftime('%Y-%m-%d')}__{self.order}__{self.amount}__{self.description}"
 
 
 @dataclass
@@ -98,3 +95,11 @@ class DocumentEntity:
     id: Optional[uuid.UUID] = None
     plain_text: Optional[str] = None
     document_type_name: Optional[str] = None
+
+    def generate_unique_identifier(self):
+        self.unique_identifier = f"{self.plain_text.strip()[:10]}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
+
+# con respecto al unique identifier
+# - es algo que caracteriza al doucmento/transaccion
+# - no puede ser sacado en base al id porque es es autogenerado y puede variar para un mismo doucmento/transaccion
+# - tiene que contener informacion propia del doucmento/transaccion

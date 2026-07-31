@@ -43,9 +43,6 @@ class BCPDebitParser(IStatementParser):
         "SET": "09",  # Setiembre
     }
 
-    def get_unique_identifier(self) -> Optional[str]:
-        return ""
-
     def get_initial_day(self, full_text: str) -> Optional[date]:
         return self._extract_period(full_text)[0]
 

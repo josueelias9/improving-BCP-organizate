@@ -43,16 +43,6 @@ class BCPCreditParser(IStatementParser):
         "DIC": "12",
     }
 
-    def get_unique_identifier(self) -> Optional[str]:
-        """Extract unique identifier from the document text.
-
-        Returns:
-            Unique identifier as a string, or None if not found
-        """
-        # This method should be implemented to extract a unique identifier from the document text.
-        # For example, it could extract the account number or statement ID.
-        # Placeholder implementation:
-        return ""
 
     def get_initial_day(self, full_text: str) -> Optional[date]:
 

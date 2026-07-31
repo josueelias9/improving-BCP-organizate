@@ -91,7 +91,6 @@ class CreateDocumentUseCase:
 
             document = DocumentEntity(
                 data=self.parser_gateway.get_data(full_text),
-                unique_identifier=self.parser_gateway.get_unique_identifier(),
                 start_date=self.parser_gateway.get_initial_day(full_text),
                 end_date=self.parser_gateway.get_final_day(full_text),
                 processed=False,

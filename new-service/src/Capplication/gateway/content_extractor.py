@@ -23,15 +23,6 @@ class IStatementParser(ABC):
         pass
 
     @abstractmethod
-    def get_unique_identifier(self) -> Optional[str]:
-        """Extract unique identifier from the document text.
-
-        Returns:
-            Unique identifier as a string, or None if not found
-        """
-        pass
-
-    @abstractmethod
     def get_initial_day(self, full_text: str) -> Optional[date]:
         pass
 

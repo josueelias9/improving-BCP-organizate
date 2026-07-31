@@ -65,6 +65,9 @@ class DocumentDbGateway(IDocumentDbGateway):
     def create(self, document: DocumentEntity) -> DocumentEntity:
         """Create a new document from domain entity"""
         # Map domain entity to database model
+
+        document.generate_unique_identifier()
+        
         db_document = DocumentModel(
             data=document.data,
             unique_identifier=document.unique_identifier,
