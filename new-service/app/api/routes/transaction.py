@@ -21,8 +21,8 @@ from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsResponse,
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
-    DTOImportTransactionsFromCsvRequest,
-    DTOImportTransactionsFromCsvResponse,
+    DTOImportTransactionsRequest,
+    DTOImportTransactionsResponse,
     DTOGetTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
@@ -39,8 +39,8 @@ from src.Capplication.use_cases.transaction.export_transactions import (
 from src.Capplication.use_cases.transaction.get_transactions import (
     GetTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
-    ImportTransactionsFromCsvUseCase,
+from src.Capplication.use_cases.transaction.import_transactions import (
+    ImportTransactionsUseCase,
 )
 
 
@@ -305,8 +305,8 @@ def export_transactions(
         )
 
 
-@router.post("/import/csv", response_model=DTOImportTransactionsFromCsvResponse)
-def import_transactions_from_csv(
+@router.post("/import/csv", response_model=DTOImportTransactionsResponse)
+def import_transactions(
     session: SessionDep,
     csv_filename: Optional[str] = Query(
         None,
@@ -340,13 +340,13 @@ def import_transactions_from_csv(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        use_case = ImportTransactionsFromCsvUseCase(
+        use_case = ImportTransactionsUseCase(
             transaction_gateway,
             category_gateway,
         )
 
         # Create DTO request with input_dir
-        dto_request = DTOImportTransactionsFromCsvRequest(
+        dto_request = DTOImportTransactionsRequest(
             csv_filename=csv_filename, input_dir=input_dir
         )
         return use_case.execute(dto_request)

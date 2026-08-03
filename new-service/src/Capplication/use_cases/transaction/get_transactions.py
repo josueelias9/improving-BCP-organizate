@@ -1,4 +1,3 @@
-# TODO: rename file and class and DTO
 
 import uuid
 from typing import Optional

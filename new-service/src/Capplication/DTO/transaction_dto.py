@@ -49,7 +49,7 @@ class DTOExportTransactionsResponse(BaseModel):
 # ===========================================================
 
 
-class DTOImportTransactionsFromCsvRequest(BaseModel):
+class DTOImportTransactionsRequest(BaseModel):
     """DTO for import transactions request - from controller to use case"""
 
     csv_filename: Optional[str] = None  # Specific CSV filename to import
@@ -65,7 +65,7 @@ class DTOImportTransactionsFromCsvRequest(BaseModel):
     }
 
 
-class DTOImportTransactionsFromCsvResponse(BaseModel):
+class DTOImportTransactionsResponse(BaseModel):
     """Result DTO for import transactions operation - returned from use case to controller"""
 
     success: bool

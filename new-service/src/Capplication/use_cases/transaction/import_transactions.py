@@ -9,15 +9,15 @@ from pathlib import Path
 from typing import Optional, List
 
 from src.Capplication.DTO.transaction_dto import (
-    DTOImportTransactionsFromCsvResponse,
-    DTOImportTransactionsFromCsvRequest,
+    DTOImportTransactionsResponse,
+    DTOImportTransactionsRequest,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 
 
-class ImportTransactionsFromCsvUseCase:
+class ImportTransactionsUseCase:
     """Use case for importing and updating transactions from CSV file"""
 
     def __init__(
@@ -36,8 +36,8 @@ class ImportTransactionsFromCsvUseCase:
         self.category_gateway = category_gateway
 
     def execute(
-        self, dto_request: DTOImportTransactionsFromCsvRequest
-    ) -> DTOImportTransactionsFromCsvResponse:
+        self, dto_request: DTOImportTransactionsRequest
+    ) -> DTOImportTransactionsResponse:
         """
         Execute the use case: import and update transactions from CSV
 
@@ -104,7 +104,7 @@ class ImportTransactionsFromCsvUseCase:
 
             logger.info(message)
 
-            return DTOImportTransactionsFromCsvResponse(
+            return DTOImportTransactionsResponse(
                 success=success,
                 updated_count=updated_count,
                 skipped_count=skipped_count,
@@ -115,7 +115,7 @@ class ImportTransactionsFromCsvUseCase:
 
         except Exception as e:
             logger.error(f"Unexpected error during import: {str(e)}")
-            return DTOImportTransactionsFromCsvResponse(
+            return DTOImportTransactionsResponse(
                 success=False,
                 updated_count=0,
                 skipped_count=0,
