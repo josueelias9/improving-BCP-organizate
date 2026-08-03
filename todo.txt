@@ -8,14 +8,4 @@ frontend/
 
 new-service/
 
-[ ] move export endpoints
-[ ] define if these two endpoints are actually important
-
-
 [ ] install git inside the backend container
-
-
-
-
-[ ] move logic
-[ ] move data extraction from document to transaction endpoints
