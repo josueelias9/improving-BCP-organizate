@@ -7,19 +7,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from sqlmodel import Field, Relationship, SQLModel, Column, Text
 from sqlalchemy import JSON
-from enum import Enum
-
-
-# Enums
-class TransactionType(str, Enum):
-    INCOME = "income"
-    EXPENSE = "expense"
-
-
-class Currency(str, Enum):
-    USD = "USD"
-    EUR = "EUR"
-    SOL = "SOL"
+from src.Denterprise.entities import TransactionType, Currency
 
 
 # ============================================================================= base models
@@ -132,7 +120,7 @@ class Transaction(TransactionBase, table=True):
     )
     document_id: uuid.UUID = Field(foreign_key="documents.id")
     category_id: Optional[uuid.UUID] = Field(
-        default=uuid.UUID("00000000-0000-0000-0000-000000000022"),
+        default=uuid.UUID("00000000-0000-0000-0000-000000000013"),
         foreign_key="categories.id",
     )
 

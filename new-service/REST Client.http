@@ -1,0 +1,22 @@
+# Flow to create new document and extract transactions from it
+
+@host = localhost:8000
+@fileName = EECC102025_07750301.PDF
+
+
+###
+
+# @name postDocument
+POST http://{{host}}/document HTTP/1.1
+content-type: application/json
+
+{
+  "document_type": "bcp_debit",
+  "pdf_filepath": "/shared_files/examples/EECC102025_07750301.PDF",
+  "user_email": "admin@bcpextractor.com"
+}
+
+###
+
+POST http://{{host}}/transactions/{{postDocument.response.body.$.document_id}} HTTP/1.1
+content-type: application/json

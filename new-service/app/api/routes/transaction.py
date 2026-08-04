@@ -3,8 +3,7 @@ Transaction Routes - HTTP Interface
 Delegates to application layer use cases
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session
+from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 import uuid
 import logging
@@ -15,7 +14,6 @@ from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,
@@ -85,7 +83,7 @@ def get_transactions(
         use_case = GetTransactionsUseCase(
             transaction_gateway,
         )
-
+        # TODO: You should pass a DTO
         a = use_case.execute(skip=skip, limit=limit, document_id=document_id)
         return a
 
@@ -117,6 +115,8 @@ def create_transactions(document_id: uuid.UUID, session: SessionDep):
         HTTPException: 404 if document not found, 400 for validation errors
     """
     try:
+
+        temp_mapper = {"SOLES": "SOL", "DOLARES": "USD"}
 
         # Instantiate concrete gateways
         document_gateway = DocumentDbGateway(session)
@@ -248,9 +248,6 @@ def export_transactions(
         None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
     ),
     document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
-    output_dir: str = Query(
-        "./exports", description="Output directory for exported CSV files"
-    ),
 ) -> DTOExportTransactionsResponse:
     """
     Export transactions to CSV format and save to file
@@ -282,7 +279,7 @@ def export_transactions(
         )
         # TODO: remove month, because we are only filtering by document_id. The month filter is not being used in the use case.
         dto_request = DTOExportTransactionsRequest(
-            month=month, document_id=document_id, output_dir=output_dir
+            month=month, document_id=document_id
         )
 
         # Execute use case
