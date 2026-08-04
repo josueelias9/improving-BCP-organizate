@@ -1,6 +1,6 @@
 # How to use this container
 
-- Althought the Dockerfile have the `poetry install` instruction, this is applied in another directory. Since we are going to act as developer, we neer to install the dependancies in the workspace
+- Althought the Dockerfile have the `poetry install` instruction, this is applied in another directory. Since we are going to work in this workspace, we need to install the dependancies here.
 
 ```sh
 poetry install
@@ -26,10 +26,7 @@ poetry run streamlit run app.py
 ```
 
 - be sure you have downloaded the file to analyze in you download directory (in Windows)
-- go to `./REST/README.md` and read the file
-- go to `./REST/case 1.http` and replace `@fileName = EECC062026_05628441.PDF` with the name of the file you want to analize. Then, apply the endpoints in order
-- go to `localhost:8501` and start updating the transactions
-- save the latest changes with `./REST/case 1.http` - export transactions
+- go to `./REST/README.md` and follow the `final flow` step. This consolites the complete process you need to follow.
 
 ### other options
 

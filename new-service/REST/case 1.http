@@ -3,11 +3,10 @@
 @host = localhost:8000
 @path = /downloads
 @fileName = EECC062026_05628441.PDF
-@documentUniqueIdentifier = ---PAGE1---EstadodeC__2025-10-01__bcp_debit
 
 ### 1. Create a new document
 
-# @name postDocument
+# @name createDocument
 POST http://{{host}}/document HTTP/1.1
 content-type: application/json
 
@@ -19,10 +18,12 @@ content-type: application/json
 
 ### 2. Create transactions from the created document
 
-POST http://{{host}}/transactions/{{postDocument.response.body.$.document_id}} HTTP/1.1
+# @name createTransactions
+POST http://{{host}}/transactions/{{createDocument.response.body.$.document_id}} HTTP/1.1
 content-type: application/json
 
 ### 3. Export transactions to CSV
 
-GET http://{{host}}/transactions/export?document_id={{postDocument.response.body.$.document_id}} HTTP/1.1
+# @name exportTransactions
+GET http://{{host}}/transactions/export?document_id={{createDocument.response.body.$.document_id}} HTTP/1.1
 content-type: application/json
