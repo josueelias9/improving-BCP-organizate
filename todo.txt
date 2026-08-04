@@ -10,24 +10,8 @@ new-service/
 
 [ ] install git inside the backend container
 
-[ ] every time we build the project all the content is restarted. fix
-[ ] document the previous process
-
-
-
 [ ] streamlit always requires a gmail. when on production it will be an issue. fix
 
+[ ] update document unique identifier logic to get the charaters located at the center of the plain text
 
-
-
-save table with document id also and save in files
-
-
-add controller (this can be done by pyndantic, analize)
-can we use pyndantic in entity layer? what is the benefit?
-
-
-
-create new endpoint to export using unique_identifier. the return DTO must say how many elements were found with this unique_identifier
-
-separate transactions by expense or income
+[ ] why not use a hash for the documents unique identifiers???

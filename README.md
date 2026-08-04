@@ -4,51 +4,20 @@ This project is meant to replace the BCP-Organizate app that was removed by BCP.
 
 The idea on the feature is to integrate this with other banks and currency platform.s
 
-## Start Project
-in order to run this project, you need to have the following features on you side:
-- docker
-- docker compose
-
-Once you have it, you can run the application:
-
-```sh
-docker compose up --build
-```
-
-This command will create the complete setup
-- a db to store the transactions
-- a frontend to interact with
-- a backend that do all the clean architecture logic
-- an init container that will populate the db with intial data
-
-
-Go to `localhost:8000/docs` and load a file. Execute the endpoints:
-- `create_document`
-- `create_transactions`
-
-![alt text](image-1.png)
-
-go to the `localhost:8501` and start working on your budget
-
-Once you are done, it is recommended to stop the process
-
-```sh
-docker compose down
-```
-
-# developer guide
+# How to use
 
 This project is highly integrated with vs code. Thus, you can take advantage of the dev container features to start upgrading the code.
 
-![alt text](image.png)
+Start dev container and follow `README.md` file inside it
 
+![alt text](image.png)
 
 
 ## DB design
 
 This is the design of the application and de database
 
-
+- Document: the representation of a place that stores money
 
 ```mermaid
 erDiagram
@@ -80,17 +49,18 @@ erDiagram
 
 
     DOCUMENT {
-        json data
-        _ unique_identifier
+        json data "all meaningfull data that can be extracted"
+        _ unique_identifier "this is created concatenating other attributes"
         bool processed
-        _ time_range
+        _ time_range "not sure about this. It can be inferred from the first and last transaction date"
         _ plain_text
+        float balance "net amount"
     }
 
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
     DOCUMENT ||--o{ TRANSACTION : "has"
-    USER ||--o{ TRANSACTION : "realiza"
+    USER ||--o{ TRANSACTION : "realize"
     TRANSACTION }o--|| CATEGORY : "pertenece a"
     CATEGORY ||--o| CATEGORY : "may have"
     DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"
@@ -144,7 +114,9 @@ sequenceDiagram
     route->>FastAPI: 
 
 ```
+
 The original architecture: For this project the `Interface Adapters` layer was removed to take advantage of FastAPI and swagger. the idea was to use the DTO directly in the routes to generate the documentation automatically, otherwise, and aditional layer of DTO (FastAPI DTO) would have been required.
+
 ```mermaid
 sequenceDiagram
     box rgb(141, 173, 241) frameworks & drivers

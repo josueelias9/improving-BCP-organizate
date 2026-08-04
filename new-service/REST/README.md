@@ -1,3 +1,4 @@
+### case 1
 
 when you start the project, you are not going to have nothing, so populate with the files and then export
 
@@ -16,6 +17,7 @@ s5 : Update Transaction
         s5 --> s1
 
 ```
+### case 2
 
 if the project is restarted, and you already have the .csv files, you can use them to update the transaction table. You will have to update all the files that you need to work, then import all the csv files
 
@@ -26,13 +28,17 @@ if the project is restarted, and you already have the .csv files, you can use th
 stateDiagram
 s0 : Create Document
 s4 : Import Transactions
+s1 : Get Documents
 
         [*] --> s0
         s0 --> s0
-        s0 --> s4
+        s0 --> s1
+        s1 --> s4
         s4 --> s4
 
 ```
+
+### case 3
 
 to update the transactions, you will necesarily must know the category names to select the one that fits that specific transaction. Then take that category id and update the transaction
 
