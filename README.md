@@ -22,7 +22,13 @@ This command will create the complete setup
 - an init container that will populate the db with intial data
 
 
-go to the `localhost:8000/dashboard/documents` and start working on your budget
+Go to `localhost:8000/docs` and load a file. Execute the endpoints:
+- `create_document`
+- `create_transactions`
+
+![alt text](image-1.png)
+
+go to the `localhost:8501` and start working on your budget
 
 Once you are done, it is recommended to stop the process
 
@@ -41,6 +47,8 @@ This project is highly integrated with vs code. Thus, you can take advantage of 
 ## DB design
 
 This is the design of the application and de database
+
+
 
 ```mermaid
 erDiagram
@@ -71,7 +79,6 @@ erDiagram
     }
 
 
-
     DOCUMENT {
         json data
         _ unique_identifier
@@ -92,7 +99,6 @@ erDiagram
 
 
 
-
 ## project architecture
 
 Example with db 
@@ -103,9 +109,11 @@ sequenceDiagram
     participant FastAPI
     participant DbDocument
     end
+    
     box rgb(248, 131, 131) application layer
     participant DocumentUseCase
     end
+    
     FastAPI->>DocumentUseCase: DTORequest
     DbDocument<<->>DocumentUseCase: DocumentEntity
     DocumentUseCase->>FastAPI: DTOResponse
@@ -117,15 +125,23 @@ in general, this is the pattern we are using for this project:
 ```mermaid
 sequenceDiagram
     box rgb(141, 173, 241) frameworks and drivers layer
-    participant Framework
+    participant FastAPI
     participant Driver
     end
+
+    box rgb(127, 176, 134) FastAPI routes
+    participant route
+    end
+
     box rgb(248, 131, 131) application layer
     participant UseCase
     end
-    Framework->>UseCase: DTORequest
-    Driver<<->>UseCase: Entity
-    UseCase->>Framework: DTOResponse
+    
+    FastAPI->>route: 
+    route->>UseCase: creates DTORequest
+    Driver<<->>UseCase: Entities and primitives
+    UseCase->>route: DTOResponse
+    route->>FastAPI: 
 
 ```
 The original architecture: For this project the `Interface Adapters` layer was removed to take advantage of FastAPI and swagger. the idea was to use the DTO directly in the routes to generate the documentation automatically, otherwise, and aditional layer of DTO (FastAPI DTO) would have been required.
@@ -135,17 +151,21 @@ sequenceDiagram
     participant Framework
     participant Driver
     end
+
     box rgb(127, 176, 134) Interface Adapters 
     participant Controller
+    participant Presenter
     end
+    
     box rgb(248, 131, 131) application
     participant UseCase
     end
-    Framework->>Controller:
+    
+    Framework->>Controller: calls the controller
     Controller->>UseCase: DTORequest
-    Driver<<->>UseCase: Entity
-    UseCase->>Controller: DTOResponse
-    Controller->>Framework:
+    Driver<<->>UseCase: Entities and primitives
+    UseCase->>Presenter: DTOResponse
+    Presenter->>Framework: adapt data
     
 ```
 
@@ -162,3 +182,4 @@ docker compose down db -v
 docker compose up db -d
 docker compose up new-service-init --build
 ```
+

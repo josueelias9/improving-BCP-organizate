@@ -14,7 +14,8 @@
         "stateful.runme",
         "eamodio.gitlens",
         "tamasfe.even-better-toml",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "humao.rest-client"
       ],
       "settings": {
         "workbench.colorTheme": "Monokai"

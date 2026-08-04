@@ -9,3 +9,19 @@ frontend/
 new-service/
 
 [ ] install git inside the backend container
+
+[ ] every time we build the project all the content is restarted. fix
+[ ] document the previous process
+
+
+
+[ ] streamlit always requires a gmail. when on production it will be an issue. fix
+
+
+
+
+save table with document id also and save in files
+
+
+add controller (this can be done by pyndantic, analize)
+can we use pyndantic in entity layer? what is the benefit?
