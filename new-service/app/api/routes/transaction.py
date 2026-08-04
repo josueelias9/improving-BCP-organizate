@@ -3,8 +3,7 @@ Transaction Routes - HTTP Interface
 Delegates to application layer use cases
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session
+from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 import uuid
 import logging
@@ -15,15 +14,14 @@ from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
-    DTOImportTransactionsFromCsvRequest,
-    DTOImportTransactionsFromCsvResponse,
-    DTOGetAllTransactionsResponse,
+    DTOImportTransactionsRequest,
+    DTOImportTransactionsResponse,
+    DTOGetTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
 )
@@ -36,11 +34,11 @@ from src.Capplication.use_cases.transaction.update_transactions import (
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.get_all_transactions import (
-    GetAllTransactionsUseCase,
+from src.Capplication.use_cases.transaction.get_transactions import (
+    GetTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.import_transactions_from_csv import (
-    ImportTransactionsFromCsvUseCase,
+from src.Capplication.use_cases.transaction.import_transactions import (
+    ImportTransactionsUseCase,
 )
 
 
@@ -58,12 +56,15 @@ logger = logging.getLogger(__name__)
 # CRUD
 
 
-@router.get("/", response_model=DTOGetAllTransactionsResponse)
+@router.get("/", response_model=DTOGetTransactionsResponse)
 def get_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 100,
-) -> DTOGetAllTransactionsResponse:
+    document_id: Optional[uuid.UUID] = Query(
+        default=None, description="Filter by document UUID"
+    ),
+) -> DTOGetTransactionsResponse:
     """
     Get all transactions with pagination
 
@@ -79,18 +80,12 @@ def get_transactions(
     """
     try:
         transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        document_gateway = DocumentDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        use_case = GetAllTransactionsUseCase(
+        use_case = GetTransactionsUseCase(
             transaction_gateway,
-            category_gateway,
-            document_gateway,
-            document_type_gateway,
         )
-        dto_response = use_case.execute(skip=skip, limit=limit)
-
-        return dto_response
+        # TODO: You should pass a DTO
+        a = use_case.execute(skip=skip, limit=limit, document_id=document_id)
+        return a
 
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")
@@ -121,6 +116,8 @@ def create_transactions(document_id: uuid.UUID, session: SessionDep):
     """
     try:
 
+        temp_mapper = {"SOLES": "SOL", "DOLARES": "USD"}
+
         # Instantiate concrete gateways
         document_gateway = DocumentDbGateway(session)
         transaction_gateway = TransactionDbGateway(session)
@@ -129,10 +126,8 @@ def create_transactions(document_id: uuid.UUID, session: SessionDep):
         use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
 
         dto_request = DTOCreateTransactionsRequest(document_id=document_id)
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
 
-        return dto_response
+        return use_case.execute(dto_request)
 
     except ValueError as e:
         # Business validation errors
@@ -192,6 +187,7 @@ def update_transaction(
         # Execute use case
         result = use_case.execute(transaction_id, update_data)
 
+        # TODO: fix this
         return DTOUpdateTransactionResponse(**result)
 
     except ValueError as e:
@@ -210,9 +206,7 @@ def update_transaction(
 
 
 @router.put("/batch", response_model=DTOUpdateTransactionsResponse)
-def update_transactions(
-    batch_update: DTOUpdateTransactionsRequest, session: SessionDep
-):
+def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: SessionDep):
     """
     Update multiple transactions simultaneously.
 
@@ -236,9 +230,7 @@ def update_transactions(
         category_gateway = CategoryDbGateway(session)
         use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
 
-        # Execute use case
-        result = use_case.execute(batch_update)
-        return result
+        return use_case.execute(dto_request)
 
     except Exception as e:
         # Unexpected errors
@@ -256,9 +248,6 @@ def export_transactions(
         None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
     ),
     document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
-    output_dir: str = Query(
-        "./exports", description="Output directory for exported CSV files"
-    ),
 ) -> DTOExportTransactionsResponse:
     """
     Export transactions to CSV format and save to file
@@ -282,25 +271,26 @@ def export_transactions(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         file_extractor_gateway = FileExtractorGateway()
+        document_gateway = DocumentDbGateway(session)
         use_case = ExportTransactionsUseCase(
             transaction_gateway=transaction_gateway,
             file_extractor_gateway=file_extractor_gateway,
+            document_gateway=document_gateway,
         )
-
-        # Create filter object with output_dir
-        filters = DTOExportTransactionsRequest(
-            month=month, document_id=document_id, output_dir=output_dir
+        # TODO: remove month, because we are only filtering by document_id. The month filter is not being used in the use case.
+        dto_request = DTOExportTransactionsRequest(
+            month=month, document_id=document_id
         )
 
         # Execute use case
-        dto_response = use_case.execute(filters)
+        dto_response = use_case.execute(dto_request)
 
+        # TODO: fix this
         if not dto_response.success:
             raise HTTPException(
                 status_code=400 if "Invalid" in dto_response.error_message else 404,
                 detail=dto_response.error_message,
             )
-        # Presenter:
         return dto_response
 
     except HTTPException:
@@ -312,8 +302,8 @@ def export_transactions(
         )
 
 
-@router.post("/import/csv", response_model=DTOImportTransactionsFromCsvResponse)
-def import_transactions_from_csv(
+@router.post("/import/csv", response_model=DTOImportTransactionsResponse)
+def import_transactions(
     session: SessionDep,
     csv_filename: Optional[str] = Query(
         None,
@@ -347,18 +337,16 @@ def import_transactions_from_csv(
         # Instantiate gateways and inject into use case
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        use_case = ImportTransactionsFromCsvUseCase(
+        use_case = ImportTransactionsUseCase(
             transaction_gateway,
             category_gateway,
         )
 
         # Create DTO request with input_dir
-        dto_request = DTOImportTransactionsFromCsvRequest(
+        dto_request = DTOImportTransactionsRequest(
             csv_filename=csv_filename, input_dir=input_dir
         )
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
-        return dto_response
+        return use_case.execute(dto_request)
 
     except HTTPException:
         raise

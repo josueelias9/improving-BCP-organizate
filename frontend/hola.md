@@ -29,4 +29,5 @@ sequenceDiagram
 
     C->>C: 11. Convert Entity to Response DTO (Presentation Mapping)
     C-->>User: 12. Send Response DTO
+
 ```

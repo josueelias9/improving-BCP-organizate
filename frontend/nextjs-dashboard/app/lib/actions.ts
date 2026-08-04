@@ -1,111 +1,14 @@
 'use server'
 
 import { z } from 'zod'
-import postgres from 'postgres'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { signIn } from '@/auth'
 import { AuthError } from 'next-auth'
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
-
-const FormSchema = z.object({
-    id: z.string(),
-    customerId: z.string({
-        invalid_type_error: 'Please select a customer.'
-    }),
-    amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
-    status: z.enum(['pending', 'paid'], {
-        invalid_type_error: 'Please select an invoice status.'
-    }),
-    date: z.string()
-})
-
-const CreateInvoice = FormSchema.omit({ id: true, date: true })
-const UpdateInvoice = FormSchema.omit({ date: true, id: true })
+import { createDocumentDocumentPost } from './orval/src/document-management/document-management'
+import { createTransactionsTransactionsDocumentIdPost } from './orval/src/transactions/transactions'
 
 export type State = {
-    errors?: {
-        customerId?: string[]
-        amount?: string[]
-        status?: string[]
-    }
     message?: string | null
-}
-
-export async function createInvoice(prevState: State, formData: FormData) {
-    // Validate form fields using Zod
-    const validatedFields = CreateInvoice.safeParse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status')
-    })
-
-    // If form validation fails, return errors early. Otherwise, continue.
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Invoice.'
-        }
-    }
-
-    // Prepare data for insertion into the database
-    const { customerId, amount, status } = validatedFields.data
-    const amountInCents = amount * 100
-    const date = new Date().toISOString().split('T')[0]
-
-    // Insert data into the database
-    try {
-        await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-    `
-    } catch (error) {
-        // If a database error occurs, return a more specific error.
-        return {
-            message: 'Database Error: Failed to Create Invoice.'
-        }
-    }
-
-    // Revalidate the cache for the invoices page and redirect the user.
-    revalidatePath('/dashboard/invoices')
-    redirect('/dashboard/invoices')
-}
-
-export async function updateInvoice(id: string, prevState: State, formData: FormData) {
-    const validatedFields = UpdateInvoice.safeParse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status')
-    })
-
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Update Invoice.'
-        }
-    }
-
-    const { customerId, amount, status } = validatedFields.data
-    const amountInCents = amount * 100
-
-    try {
-        await sql`
-      UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-      WHERE id = ${id}
-    `
-    } catch (error) {
-        return { message: 'Database Error: Failed to Update Invoice.' }
-    }
-
-    revalidatePath('/dashboard/invoices')
-    redirect('/dashboard/invoices')
-}
-
-export async function deleteInvoice(id: string) {
-    await sql`DELETE FROM invoices WHERE id = ${id}`
-    revalidatePath('/dashboard/invoices')
 }
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
@@ -184,122 +87,37 @@ export async function updateTransaction(
     return { message: 'Transaction updated successfully!' }
 }
 
-const ProcessPDFSchema = z.object({
-    type: z.string().min(1, {
-        message: 'Please select a document type.'
-    }),
-    user_email: z.string().email({ message: 'Please enter a valid email.' })
-})
-
-export type ProcessPDFState = {
-    errors?: {
-        type?: string[]
-        user_email?: string[]
-        file?: string[]
-    }
-    message?: string | null
-}
-
-export async function processPDF(prevState: ProcessPDFState, formData: FormData) {
-    const validatedFields = ProcessPDFSchema.safeParse({
-        type: formData.get('type'),
-        user_email: formData.get('user_email')
-    })
-
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Process PDF.'
-        }
-    }
-
+export async function createDocument(prevState: State, formData: FormData) {
+    const document_type = formData.get('type')
+    const user_email = formData.get('user_email')
     const file = formData.get('file') as File
-    if (!file || file.size === 0) {
-        return {
-            errors: { file: ['Please select a PDF file.'] },
-            message: 'No file selected.'
-        }
-    }
-
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-        return {
-            errors: { file: ['Only PDF files are allowed.'] },
-            message: 'Invalid file type.'
-        }
-    }
-
-    const { type, user_email } = validatedFields.data
 
     try {
-        const baseUrl = process.env.API_URL || 'http://new-service:8000'
-
-        // Save file to /shared_files/only_one_file
-        const fileBuffer = await file.arrayBuffer()
-        const fileName = file.name
-        const filePath = `${process.env.PATH_TO_SHARED_FILES}${fileName}`
-
-        // Send to API for processing
-        const response = await fetch(`${baseUrl}/document/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                pdf_filepath: filePath,
-                document_type: type,
-                user_email
-            }),
-            cache: 'no-store'
+        const value = await createDocumentDocumentPost({
+            pdf_filepath: `${process.env.PATH_TO_SHARED_FILES}${file.name}`,
+            document_type: document_type as string,
+            user_email: user_email as string
         })
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}))
-            throw new Error(errorData.detail || `Failed to process PDF: ${response.statusText}`)
-        }
-
-        const result = await response.json()
         revalidatePath('/dashboard/documents')
-        return {
-            message: `PDF processed successfully! Document ID: ${result.document_id || 'N/A'}`
-        }
     } catch (error) {
         console.error('API Error:', error)
-        return {
-            message: error instanceof Error ? error.message : 'API Error: Failed to Process PDF.'
-        }
+        return { message: 'API Error: Failed to Create Document.' }
     }
 }
 
-export async function processDocument(documentId: string) {
+export async function createTransactions(formData:FormData) {
     try {
-        const baseUrl = process.env.API_URL || 'http://new-service:8000'
-        const url = `${baseUrl}/transactions/${documentId}`
+        const documentId = formData.get('documentId') as string
+        const response = await createTransactionsTransactionsDocumentIdPost(documentId)
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json'
-            },
-            cache: 'no-store'
-        })
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}))
-            throw new Error(
-                errorData.detail || `Failed to process document: ${response.statusText}`
-            )
-        }
-
-        const result = await response.json()
         revalidatePath('/dashboard/documents')
         return {
-            success: true,
-            message: `Document processed successfully! ${result.message || ''}`
+            message: `Document processed successfully!`
         }
     } catch (error) {
         console.error('API Error:', error)
         return {
-            success: false,
             message:
                 error instanceof Error ? error.message : 'API Error: Failed to Process Document.'
         }

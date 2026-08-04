@@ -8,27 +8,16 @@ RUN apt-get update && apt-get install -y \
     poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# install python dependencies globally
-RUN <<EOF
-pip install vulture
-pip install "fastapi[standard]"
-pip install sqlmodel
-pip install pydantic_settings
-pip install psycopg[binary]
-pip install pymupdf
-pip install tenacity
-pip install black
-EOF
+WORKDIR /josues_app
 
-# Expose port
-EXPOSE 8000
-
-# Set working directory
-WORKDIR /app
-
-# Copy application code
 COPY . .
 
-# Run the application
+# TODO: Use poetry for consistency among projects and to avoid dependency hell with the poetry.lock file
+RUN pip install poetry
+
+RUN poetry install --without dev
+
+# EXPOSE 8000
+
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 CMD ["fastapi", "run", "app/main.py"]

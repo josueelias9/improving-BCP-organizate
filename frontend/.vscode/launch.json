@@ -11,7 +11,12 @@
         "pattern": "- Local:.+(https?://[^\\s]+)",
         "uriFormat": "%s/dashboard/transactions",
         "action": "debugWithChrome"
-      }
+      },
+       "skipFiles": [
+    "<node_internals>/**",
+    "**/node_modules/**",
+    "**/.next/**"
+  ]
     },
     {
       "name": "Next.js: debug client-side",

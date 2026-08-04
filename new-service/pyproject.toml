@@ -1,8 +1,32 @@
-[tool.ruff]
-line-length = 88
-select = ["E", "F", "I"]
-fix = true
-ignore = ["E501"]
+[project]
+name = "ai-developer"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Josue",email = "josueeliashuaman@gmail.com"}
+]
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "fastapi[standard]",
+    "sqlmodel",
+    "pydantic_settings",
+    "psycopg[binary]",
+    "pymupdf",
+    "tenacity",
+    "streamlit"
+]
 
-[tool.ruff.lint.isort]
-combine-as-imports = true
+[dependency-groups]
+dev = [
+    "vulture",
+    "black",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+package-mode = false

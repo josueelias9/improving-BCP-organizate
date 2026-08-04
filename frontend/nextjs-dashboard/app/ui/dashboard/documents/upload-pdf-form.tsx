@@ -1,18 +1,15 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { processPDF, ProcessPDFState } from '@/app/lib/actions'
-import { DocumentType } from '@/app/lib/definitions'
+import { createDocument, State } from '@/app/lib/actions'
 import { DocumentPlusIcon } from '@heroicons/react/24/outline'
 import { lusitana } from '@/app/ui/fonts'
+import { DTOGetAllDocumentTypesResponse } from '@/app/lib/orval/src/bcp.schemas'
 
-interface UploadPDFFormProps {
-    documentTypes: DocumentType[]
-}
-
-export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
-    const initialState: ProcessPDFState = { message: null, errors: {} }
-    const [state, dispatch] = useActionState(processPDF, initialState)
+export default function UploadPDFForm({ data }: { data: DTOGetAllDocumentTypesResponse }) {
+    const { document_types } = data
+    const initialState: State = { message: null }
+    const [state, formAction] = useActionState(createDocument, initialState)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +25,7 @@ export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
                 Upload PDF Document
             </h2>
 
-            <form action={dispatch} className='space-y-4'>
+            <form action={formAction} className='space-y-4'>
                 <div>
                     <label htmlFor='file' className='mb-2 block text-sm font-medium text-gray-700'>
                         PDF File *
@@ -51,13 +48,6 @@ export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
                             aria-describedby='file-error'
                         />
                     </div>
-                    {state.errors?.file && (
-                        <div id='file-error' className='mt-2 text-sm text-red-500'>
-                            {state.errors.file.map((error: string) => (
-                                <p key={error}>{error}</p>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 <div>
@@ -74,19 +64,12 @@ export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
                         <option value='' disabled>
                             Select type
                         </option>
-                        {documentTypes.map(docType => (
-                            <option key={docType.id} value={docType.name}>
-                                {docType.name}
+                        {document_types.map(docType => (
+                            <option key={String(docType.id)} value={String(docType.name)}>
+                                {String(docType.name)}
                             </option>
                         ))}
                     </select>
-                    {state.errors?.type && (
-                        <div id='type-error' className='mt-2 text-sm text-red-500'>
-                            {state.errors.type.map((error: string) => (
-                                <p key={error}>{error}</p>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 <div>
@@ -104,27 +87,12 @@ export default function UploadPDFForm({ documentTypes }: UploadPDFFormProps) {
                         className='block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
                         aria-describedby='user_email-error'
                     />
-                    {state.errors?.user_email && (
-                        <div id='user_email-error' className='mt-2 text-sm text-red-500'>
-                            {state.errors.user_email.map((error: string) => (
-                                <p key={error}>{error}</p>
-                            ))}
-                        </div>
-                    )}
                 </div>
-
-                {state.message && (
-                    <div
-                        className={`rounded-md px-4 py-3 text-sm ${
-                            state.errors && Object.keys(state.errors).length > 0
-                                ? 'bg-red-50 text-red-800'
-                                : 'bg-green-50 text-green-800'
-                        }`}
-                    >
+                {state?.message ? (
+                    <div className='mt-2 rounded-md bg-red-100 p-2 text-sm text-red-700'>
                         {state.message}
                     </div>
-                )}
-
+                ) : null}
                 <button
                     type='submit'
                     className='w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'

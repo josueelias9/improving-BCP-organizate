@@ -7,13 +7,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from sqlmodel import Field, Relationship, SQLModel, Column, Text
 from sqlalchemy import JSON
-from enum import Enum
-
-
-# Enums
-class TransactionType(str, Enum):
-    INCOME = "income"
-    EXPENSE = "expense"
+from src.Denterprise.entities import TransactionType, Currency
 
 
 # ============================================================================= base models
@@ -55,11 +49,13 @@ class TransactionBase(SQLModel):
     amount: float
     transaction_type: TransactionType
     transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
-    currency: str = Field(default="")
+    currency: Currency
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-# ============================================================================= db
+# ============================================================================= db (PK, FK, and relationships)
 
 
 class DocumentType(DocumentTypeBase, table=True):
@@ -123,9 +119,10 @@ class Transaction(TransactionBase, table=True):
         default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
     )
     document_id: uuid.UUID = Field(foreign_key="documents.id")
-    category_id: Optional[uuid.UUID] = Field(default=None, foreign_key="categories.id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    category_id: Optional[uuid.UUID] = Field(
+        default=uuid.UUID("00000000-0000-0000-0000-000000000013"),
+        foreign_key="categories.id",
+    )
 
     # Relationships
     document: Document = Relationship(back_populates="transactions")

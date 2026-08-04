@@ -1,4 +1,6 @@
 {
     "files.autoSave": "afterDelay",
-    "explorer.autoReveal": false
+    "explorer.autoReveal": false,
+    "python-envs.defaultEnvManager": "ms-python.python:poetry",
+    "python-envs.defaultPackageManager": "ms-python.python:poetry"
 }

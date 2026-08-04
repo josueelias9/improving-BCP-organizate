@@ -1,0 +1,213 @@
+"""
+Process PDF Use Case - Application Layer
+Orchestrates the flow of processing a PDF and creating a document
+"""
+
+import logging
+import os
+
+import fitz
+from dotenv import load_dotenv
+
+from src.Denterprise.exceptions import UnsupportedDocumentTypeException
+from src.Denterprise.entities import DocumentEntity, UserEntity
+from src.Capplication.DTO.document_dto import (
+    DTOCreateDocumentResponse,
+    DTOCreateDocumentRequest,
+)
+from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
+from src.Capplication.gateway.content_extractor import IStatementParser
+from src.Capplication.gateway.file_extractor import IFileExtractorGateway
+from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+
+class CreateDocumentUseCase:
+    """Use case for processing PDF and creating document"""
+
+    def __init__(
+        self,
+        document_gateway: IDocumentDbGateway,
+        user_gateway: IUserDbGateway,
+        document_type_gateway: IDocumentTypeDbGateway,
+        file_extractor_gateway: IFileExtractorGateway,
+        parser_gateway: IStatementParser,
+    ):
+        self.document_gateway = document_gateway
+        self.user_gateway = user_gateway
+        self.document_type_gateway = document_type_gateway
+        self.file_extractor_gateway = file_extractor_gateway
+        self.parser_gateway = parser_gateway
+
+    def execute(self, request: DTOCreateDocumentRequest) -> DTOCreateDocumentResponse:
+        """
+        Process PDF file: get/create user, extract transactions, and create document
+
+        Args:
+            request: DTOCreateDocumentRequest containing:
+                - pdf_filepath: Path to the PDF file
+                - user_email: Email of the user
+                - document_type: Type of document
+
+        Returns:
+            DTOCreateDocumentRequest (DTO for controller response)
+
+        Raises:
+            ValueError: If validation fails
+            FileNotFoundError: If PDF file not found
+            UnsupportedDocumentTypeException: If document type is not supported
+        """
+
+        pdf_filepath = request.pdf_filepath
+        user_email = request.user_email
+        document_type = request.document_type
+
+        try:
+            # Check if file exists using file system gateway
+            if not self.file_extractor_gateway.file_exists(pdf_filepath):
+                raise FileNotFoundError(f"File '{pdf_filepath}' not found")
+
+            # Validate document type (business rule)
+            self._validate_document_type(document_type)
+
+            # Get or create user entity
+            user = self._get_or_create_user(user_email)
+
+            doc_type = self.document_type_gateway.get_by_name(document_type)
+
+            if not doc_type:
+                raise ValueError(
+                    f"Document type '{document_type}' not found in database"
+                )
+
+            # extract text from PDF file using file system gateway
+            pdf_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
+
+            password = os.getenv("PDF_PASSWORD")
+            full_text = self._extract_text_from_binary(pdf_binary, password)
+
+            document = DocumentEntity(
+                data=self.parser_gateway.get_data(full_text),
+                start_date=self.parser_gateway.get_initial_day(full_text),
+                end_date=self.parser_gateway.get_final_day(full_text),
+                processed=False,
+                plain_text=full_text,
+                document_type_name=doc_type.name,
+            )
+
+            # Validate document has data
+            if not document.data:
+                raise ValueError("No transactions extracted from PDF")
+
+            # Set user_id and document_type_id on the entity
+            document.user_id = user.id
+            document.document_type_id = doc_type.id
+
+            # Create document via gateway
+            created_document = self.document_gateway.create(document)
+
+            if not created_document:
+                return DTOCreateDocumentResponse(
+                    success=True,
+                    document_id=None,
+                    unique_identifier=document.unique_identifier,
+                    already_exists=True,
+                    transactions_count=len(document.data),
+                    message=f"Document with unique identifier '{document.unique_identifier}' already exists.",
+                )
+
+            logger.info(f"Created new document with ID: {created_document.id}")
+
+            # Return DTO for controller
+            return DTOCreateDocumentResponse(
+                success=True,
+                document_id=str(created_document.id),
+                unique_identifier=document.unique_identifier,
+                already_exists=False,
+                transactions_count=len(document.data),
+                message=f"PDF processed successfully. {len(document.data)} transactions saved.",
+            )
+
+        except Exception as e:
+            logger.error(f"Error processing PDF: {str(e)}")
+            raise
+
+    def _extract_text_from_binary(
+        self, pdf_content: bytes, password: str = None
+    ) -> str:
+        """Extract text from PDF using PyMuPDF"""
+        logger.info("Extracting text from PDF")
+
+        try:
+            text = ""
+            pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+
+            if pdf_document.is_encrypted:
+                if password:
+                    if pdf_document.authenticate(password):
+                        logger.info("PDF decrypted successfully")
+                    else:
+                        raise Exception("Incorrect password for PDF")
+                else:
+                    raise Exception("PDF is encrypted but no password provided")
+
+            logger.info(f"PDF has {pdf_document.page_count} pages")
+
+            for page_num in range(pdf_document.page_count):
+                page = pdf_document[page_num]
+                page_text = page.get_text()
+                if page_text:
+                    text += f"\n\n--- PAGE {page_num + 1} ---\n\n{page_text}\n"
+
+            pdf_document.close()
+            return text
+        except Exception as e:
+            logger.error(f"Error with PyMuPDF: {str(e)}")
+            raise
+
+    def _validate_document_type(self, document_type: str) -> None:
+        """
+        Validate that the document type is supported (business rule)
+
+        Args:
+            document_type: Type of document to validate
+
+        Raises:
+            UnsupportedDocumentTypeException: If document type is not supported
+        """
+        # Get all document types from database
+        all_doc_types = self.document_type_gateway.get_all()
+        supported_types = [dt.name for dt in all_doc_types]
+
+        # Validate against database types
+        if document_type not in supported_types:
+            raise UnsupportedDocumentTypeException(
+                document_type=document_type, supported_types=supported_types
+            )
+
+    # TODO: isnt this a user_gateway method?
+    def _get_or_create_user(self, user_email: str):
+        """
+        Get existing user entity or create new one
+
+        Args:
+            user_email: Email of the user
+
+        Returns:
+            UserEntity
+        """
+        user = self.user_gateway.get_by_email(user_email)
+        if not user:
+
+            user_create = UserEntity(
+                email=user_email,
+                name="Admin User",
+                is_active=True,
+            )
+            user = self.user_gateway.create(user_create)
+            logger.info(f"Created new user with email: {user_email}")
+        logger.info(f"Using user with email: {user_email}")
+        return user

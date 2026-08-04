@@ -2,11 +2,26 @@
 
 frontend/
 
-[ ] remove all response examples
-[ ] use the endpoints documentations to update the frontend
+[ ] fix bug on show transactions page 
+[ ] use a simple transactions table
+[ ] change icon (soles instead of dolars) 
 
 new-service/
 
-[ ] define layer names
-[ ] one to one relationship withing endpoint and use cases
-[ ] since we changed the names of use cases (CRUD), we need to change the DTO's name also
+[ ] install git inside the backend container
+
+[ ] every time we build the project all the content is restarted. fix
+[ ] document the previous process
+
+
+
+[ ] streamlit always requires a gmail. when on production it will be an issue. fix
+
+
+
+
+save table with document id also and save in files
+
+
+add controller (this can be done by pyndantic, analize)
+can we use pyndantic in entity layer? what is the benefit?

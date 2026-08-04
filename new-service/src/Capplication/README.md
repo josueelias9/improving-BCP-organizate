@@ -1,0 +1,57 @@
+#### CreateDocumentUseCase
+
+```mermaid
+sequenceDiagram
+    box rgb(141, 173, 241) external layer
+    participant FileExtractor
+    participant Parser
+    participant DocumentGateway
+    end
+
+    box rgb(248, 131, 131) application layer
+    participant DocumentUseCase
+    end
+    
+    DocumentUseCase->>+FileExtractor: location of any source of data
+    FileExtractor-->>-DocumentUseCase: get the binary
+
+    DocumentUseCase->>+Parser: extract content
+    Parser-->>-DocumentUseCase: get data, unique_identifier, start_date, end_date
+
+    DocumentUseCase->>+DocumentGateway: save document
+    DocumentGateway->>DocumentGateway: generate unique identifier
+    alt document already exist
+    DocumentGateway->>DocumentUseCase: return None
+    else new document
+    DocumentGateway->>-DocumentUseCase: DocumentEntity
+
+    end
+
+```
+
+#### CreateTransactionsUseCase
+
+if a document is already processed, this is nonsense, because it will overlap information already stored
+
+```mermaid
+sequenceDiagram
+    box rgb(141, 173, 241) external layer
+    participant DocumentGateway
+    participant TransactionGateway
+    end
+
+    box rgb(248, 131, 131) application layer
+    participant TransactionUseCase
+    end
+    
+    TransactionUseCase->>+DocumentGateway: get document by id
+    DocumentGateway-->>-TransactionUseCase: document
+    TransactionUseCase->>TransactionUseCase: raise error if document already exists (processed)
+    TransactionUseCase->>TransactionUseCase: data attribute to list of TransactionEntity
+    TransactionUseCase->>+TransactionGateway: save Transactions
+    TransactionGateway->>TransactionGateway: create unique identifier
+    TransactionGateway-->>-TransactionUseCase: saved
+    TransactionUseCase->>+DocumentGateway: mark document as processed
+    DocumentGateway-->>-TransactionUseCase: processed
+
+```

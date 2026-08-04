@@ -1,13 +1,19 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
+
 import { formatCurrency } from '@/app/lib/utils'
+import {
+    DTOGetAllTransactionsResponse,
+    DTOGetCategoriesResponse,
+    TransactionEntity
+} from '@/app/lib/orval/src/bcp.schemas'
+import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
+
 import { lusitana } from '@/app/ui/fonts'
 import EditTransactionModal from '@/app/ui/dashboard/transactions/edit-transaction-modal'
 import FilterSelect from '@/app/ui/dashboard/transactions/filter-select'
-import type { Category } from '@/app/lib/definitions'
-import { exportTransactionsToCSV, importTransactionsFromCSV } from '@/app/lib/actions'
-import { ArrowDownTrayIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
 
 function formatTransactionDate(dateString: string) {
     try {
@@ -26,13 +32,16 @@ function formatTransactionDate(dateString: string) {
 }
 
 export default function TransactionsTable({
-    transactions,
-    categories
+    transactionsData,
+    categoriesData
 }: {
-    transactions: any[]
-    categories: Category[]
+    transactionsData: DTOGetAllTransactionsResponse
+    categoriesData: DTOGetCategoriesResponse
 }) {
-    const [selectedTransaction, setSelectedTransaction] = useState<any>(null)
+    const { transactions } = transactionsData
+    const { categories } = categoriesData
+
+    const [selectedTransaction, setSelectedTransaction] = useState<TransactionEntity | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [hoveredRow, setHoveredRow] = useState<string | null>(null)
     const [showEditTooltip, setShowEditTooltip] = useState(false)
@@ -46,19 +55,25 @@ export default function TransactionsTable({
     // Get unique values for combo boxes
     const uniqueDocumentTypes = Array.from(
         new Set(
-            transactions.map(t => t.document_type_name).filter(name => name) // Remove null/undefined values
+            transactions
+                .map(t => t.document_type_name)
+                .filter(name => name !== null && name !== undefined)
         )
     ).sort()
 
     const uniqueTransactionTypes = Array.from(
         new Set(
-            transactions.map(t => t.transaction_type).filter(type => type) // Remove null/undefined values
+            transactions
+                .map(t => t.transaction_type)
+                .filter(type => type !== null && type !== undefined) // Remove null/undefined values
         )
     ).sort()
 
     const uniqueCategoryNames = Array.from(
         new Set(
-            transactions.map(t => t.category_name).filter(name => name) // Remove null/undefined values
+            transactions
+                .map(t => t.category_name)
+                .filter(name => name !== null && name !== undefined) // Remove null/undefined values
         )
     ).sort()
 
@@ -70,12 +85,11 @@ export default function TransactionsTable({
         return true
     })
 
-    // Sort transactions by 'order' column if it exists
+    // Sort transactions by transaction_date
     const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-        if (a.order !== undefined && b.order !== undefined) {
-            return a.order - b.order
-        }
-        return 0
+        const dateA = a.transaction_date ? new Date(a.transaction_date).getTime() : 0
+        const dateB = b.transaction_date ? new Date(b.transaction_date).getTime() : 0
+        return dateA - dateB
     })
 
     const handleRowClick = (transaction: any) => {
@@ -260,7 +274,9 @@ export default function TransactionsTable({
                                     <tr
                                         key={transaction.id}
                                         onClick={() => handleRowClick(transaction)}
-                                        onMouseEnter={() => handleMouseEnter(transaction.id)}
+                                        onMouseEnter={() =>
+                                            handleMouseEnter(transaction.id as string)
+                                        }
                                         onMouseLeave={handleMouseLeave}
                                         className={`w-full border-b py-3 text-sm last-of-type:border-none cursor-pointer transition-colors ${
                                             hoveredRow === transaction.id
