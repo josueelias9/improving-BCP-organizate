@@ -182,4 +182,3 @@ docker compose down db -v
 docker compose up db -d
 docker compose up new-service-init --build
 ```
-

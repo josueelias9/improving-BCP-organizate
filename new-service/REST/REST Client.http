@@ -3,7 +3,7 @@
 @host = localhost:8000
 @path = /shared_files/examples
 @fileName = EECC102025_07750301.PDF
-
+@documentUniqueIdentifier = ---PAGE1---EstadodeC__2025-10-01__bcp_debit
 
 ### 1. Create a new document
 
@@ -24,5 +24,13 @@ content-type: application/json
 
 ### 3. Export transactions to CSV
 
-GET http://{{host}}/transactions/export/csv?document_id={{postDocument.response.body.$.document_id}} HTTP/1.1
+GET http://{{host}}/transactions/export?document_id={{postDocument.response.body.$.document_id}} HTTP/1.1
 content-type: application/json
+
+### 3. Export transactions to CSV
+
+GET http://{{host}}/transactions/export?document_unique_identifier={{documentUniqueIdentifier}} HTTP/1.1
+content-type: application/json
+
+
+
