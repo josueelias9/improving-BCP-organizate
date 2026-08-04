@@ -1,0 +1,39 @@
+@host = localhost:8000
+@path = /downloads
+@fileName = EECC062026_05628441.PDF
+@uniqueIdentifier = ---PAGE1---EstadodeC__2026-06-01__bcp_debit
+###
+
+# @name createDocument
+POST http://{{host}}/document HTTP/1.1
+content-type: application/json
+
+{
+  "document_type": "bcp_debit",
+  "pdf_filepath": "{{path}}/{{fileName}}",
+  "user_email": "admin@bcpextractor.com"
+}
+
+###
+
+# @name createTransactions
+POST http://{{host}}/transactions/{{createDocument.response.body.$.document_id}} HTTP/1.1
+content-type: application/json
+
+###
+
+# @name getDocuments
+GET http://{{host}}/document/ HTTP/1.1
+content-type: application/json
+
+###
+
+# @name importTransactions
+POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[1].unique_identifier}} HTTP/1.1
+content-type: application/json
+
+###
+
+# @name exportTransactions
+GET http://{{host}}/transactions/export?document_unique_identifier={{uniqueIdentifier}} HTTP/1.1
+content-type: application/json

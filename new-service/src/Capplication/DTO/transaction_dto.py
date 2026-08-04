@@ -127,17 +127,15 @@ class DTOUpdateTransactionResponse(BaseModel):
 
 
 class DTOBatchUpdateRequest(BaseModel):
-    """Single transaction update item - DTO for batch update request"""
+    """Single transaction update item - DTO for batch category update"""
 
     transaction_id: uuid.UUID
-    history: str
-    category_name: str = None
+    category_name: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                "history": "Gasto en supermercado - alimentación",
                 "category_name": "Food & Dining",
             }
         }
@@ -165,12 +163,10 @@ class DTOUpdateTransactionsRequest(BaseModel):
                 "updates": [
                     {
                         "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                        "history": "Gasto en supermercado - alimentación",
                         "category_name": "Food & Dining",
                     },
                     {
                         "transaction_id": "123e4567-e89b-12d3-a456-426614174001",
-                        "history": "Pago de servicios - electricidad",
                         "category_name": "Utilities",
                     },
                 ]

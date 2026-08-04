@@ -83,6 +83,12 @@ default_categories = [
         "description": "Uncategorized expenses",
         "parent_id": None,
     },
+    {
+        "id": "00000000-0000-0000-0000-000000000014",
+        "name": "Dad",
+        "description": "All transactions related to my dad",
+        "parent_id": None,
+    },
 ]
 
 

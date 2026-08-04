@@ -15,3 +15,6 @@ new-service/
 [ ] update document unique identifier logic to get the charaters located at the center of the plain text
 
 [ ] why not use a hash for the documents unique identifiers???
+
+
+[ ] batch only for multiple categories (not history)

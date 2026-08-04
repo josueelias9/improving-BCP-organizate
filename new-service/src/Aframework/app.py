@@ -29,46 +29,88 @@ df = pd.DataFrame(transactions)
 if "order" in df.columns:
     df = df.sort_values("order").reset_index(drop=True)
 
-# Row selection
-event = st.dataframe(
-    df,
-    use_container_width=True,
-    selection_mode="single-row",
-    on_select="rerun",
-    key="tx_table",
-)
+tab_single, tab_batch = st.tabs(["Edit single", "Batch update categories"])
 
-selected_rows = event.selection.get("rows", [])
+# --- Single-row edit ---
+with tab_single:
+    event = st.dataframe(
+        df,
+        use_container_width=True,
+        selection_mode="single-row",
+        on_select="rerun",
+        key="tx_table_single",
+    )
 
-# Edit form appears when a row is selected
-if selected_rows:
-    row_idx = selected_rows[0]
-    row = df.iloc[row_idx]
-    transaction_id = row["id"]
+    selected_rows = event.selection.get("rows", [])
 
-    st.subheader("Edit transaction")
-    with st.form("edit_form"):
-        new_history = st.text_area("History", value=row.get("history") or "")
-        current_category = row.get("category_name") or ""
-        default_idx = (
-            category_names.index(current_category)
-            if current_category in category_names
-            else 0
-        )
-        new_category = st.selectbox(
-            "Category", options=category_names, index=default_idx
-        )
+    if selected_rows:
+        row_idx = selected_rows[0]
+        row = df.iloc[row_idx]
+        transaction_id = row["id"]
 
-        if st.form_submit_button("Save"):
-            payload = {"history": new_history, "category_name": new_category}
-            put_response = requests.put(
-                f"{BASE_URL}/transactions/{transaction_id}", json=payload
+        st.subheader("Edit transaction")
+        with st.form("edit_form"):
+            new_history = st.text_area("History", value=row.get("history") or "")
+            current_category = row.get("category_name") or ""
+            default_idx = (
+                category_names.index(current_category)
+                if current_category in category_names
+                else 0
             )
-            if put_response.ok:
-                st.success("Transaction updated successfully.")
-                st.rerun()
-            else:
-                st.error(f"Error: {put_response.text}")
+            new_category = st.selectbox(
+                "Category", options=category_names, index=default_idx
+            )
+
+            if st.form_submit_button("Save"):
+                payload = {"history": new_history, "category_name": new_category}
+                put_response = requests.put(
+                    f"{BASE_URL}/transactions/{transaction_id}", json=payload
+                )
+                if put_response.ok:
+                    st.success("Transaction updated successfully.")
+                    st.rerun()
+                else:
+                    st.error(f"Error: {put_response.text}")
+
+# --- Multi-row batch category update ---
+with tab_batch:
+    event_batch = st.dataframe(
+        df,
+        use_container_width=True,
+        selection_mode="multi-row",
+        on_select="rerun",
+        key="tx_table_batch",
+    )
+
+    selected_batch_rows = event_batch.selection.get("rows", [])
+
+    if selected_batch_rows:
+        st.caption(f"{len(selected_batch_rows)} transaction(s) selected")
+        with st.form("batch_category_form"):
+            new_category_batch = st.selectbox(
+                "Category to assign", options=category_names
+            )
+            if st.form_submit_button("Apply to selected"):
+                updates = [
+                    {
+                        "transaction_id": df.iloc[i]["id"],
+                        "category_name": new_category_batch,
+                    }
+                    for i in selected_batch_rows
+                ]
+                batch_response = requests.put(
+                    f"{BASE_URL}/transactions/batch", json={"updates": updates}
+                )
+                if batch_response.ok:
+                    result = batch_response.json()
+                    st.success(result.get("message", "Batch update completed."))
+                    if result.get("errors"):
+                        st.warning(f"Errors: {result['errors']}")
+                    st.rerun()
+                else:
+                    st.error(f"Error: {batch_response.text}")
+    else:
+        st.info("Select one or more rows to batch-update their category.")
 
 
 st.bar_chart(
@@ -81,3 +123,4 @@ st.bar_chart(
 )
 
 st.bar_chart(df, x="transaction_type", y="amount", stack=False)
+

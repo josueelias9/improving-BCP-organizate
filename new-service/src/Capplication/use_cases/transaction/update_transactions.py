@@ -61,23 +61,18 @@ class UpdateTransactionsUseCase:
                     )
                     continue
 
-                # Update only history
-                update_data = {"history": update_item.history}
-
-                # Handle category if provided
-                if update_item.category_name:
-                    category = self.category_gateway.get_by_name(
-                        update_item.category_name
+                category = self.category_gateway.get_by_name(update_item.category_name)
+                if not category:
+                    failed += 1
+                    errors.append(
+                        {
+                            "transaction_id": str(update_item.transaction_id),
+                            "error": f"Category '{update_item.category_name}' not found",
+                        }
                     )
-                    if category:
-                        update_data["category_id"] = category.id
-                        logger.info(
-                            f"Category '{update_item.category_name}' found for transaction {update_item.transaction_id}"
-                        )
-                    else:
-                        logger.warning(
-                            f"Category '{update_item.category_name}' not found, skipping category update"
-                        )
+                    continue
+
+                update_data = {"category_id": category.id}
 
                 # Execute update
                 success = self.transaction_gateway.update(
