@@ -16,7 +16,7 @@ class GetTransactionsUseCase:
     def execute(
         self,
         skip: int = 0,
-        limit: int = 100,
+        limit: int = 1000,
         document_id: Optional[uuid.UUID] = None,
     ) -> DTOGetTransactionsResponse:
         """Get transactions with pagination and optional document filter

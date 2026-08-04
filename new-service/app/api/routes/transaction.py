@@ -60,7 +60,7 @@ logger = logging.getLogger(__name__)
 def get_transactions(
     session: SessionDep,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     document_id: Optional[uuid.UUID] = Query(
         default=None, description="Filter by document UUID"
     ),
@@ -238,13 +238,13 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-# TODO: it seams to me that this two endpoints belong to the document prefix. That is because its importing and exporting csv files
 
 
-@router.get("/export/csv", response_model=DTOExportTransactionsResponse)
+@router.get("/export", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     session: SessionDep,
-    document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
+    document_id: Optional[uuid.UUID] = Query(None, description="Filter by document UUID"),
+    document_unique_identifier: Optional[str] = Query(None, description="Filter by document unique identifier"),
 ) -> DTOExportTransactionsResponse:
     """
     Export transactions to CSV format and save to file
@@ -274,8 +274,10 @@ def export_transactions(
             file_extractor_gateway=file_extractor_gateway,
             document_gateway=document_gateway,
         )
-        # TODO: remove month, because we are only filtering by document_id. The month filter is not being used in the use case.
-        dto_request = DTOExportTransactionsRequest(document_id=document_id)
+        dto_request = DTOExportTransactionsRequest(
+            document_id=document_id,
+            document_unique_identifier=document_unique_identifier,
+        )
 
         # Execute use case
         dto_response = use_case.execute(dto_request)
@@ -297,7 +299,7 @@ def export_transactions(
         )
 
 
-@router.post("/import/csv", response_model=DTOImportTransactionsResponse)
+@router.post("/import", response_model=DTOImportTransactionsResponse)
 def import_transactions(
     session: SessionDep,
     csv_filename: Optional[str] = Query(

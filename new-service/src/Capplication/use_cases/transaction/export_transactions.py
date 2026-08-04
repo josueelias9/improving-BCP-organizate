@@ -48,10 +48,21 @@ class ExportTransactionsUseCase:
             ValueError: If filters are invalid or no data found
         """
         try:
+            # Resolve document_id from unique_identifier if not provided directly
+            document_id = filters.document_id
+            if document_id is None and filters.document_unique_identifier:
+                doc = self.document_gateway.get_by_unique_identifier(
+                    filters.document_unique_identifier
+                )
+                if not doc:
+                    raise ValueError(
+                        f"Document '{filters.document_unique_identifier}' not found"
+                    )
+                document_id = doc.id
 
             # 2. Retrieve transactions from gateway
             transactions = self.transaction_gateway.get_all_filtered(
-                document_id=filters.document_id
+                document_id=document_id
             )
 
             if not transactions:
@@ -61,7 +72,7 @@ class ExportTransactionsUseCase:
             csv_content = self._generate_csv(transactions)
 
             # 4. Generate filename
-            doc = self.document_gateway.get_by_id(filters.document_id)
+            doc = self.document_gateway.get_by_id(document_id)
             filename = f"{doc.unique_identifier}.csv"
 
             # 5. Save file using file system gateway
