@@ -62,17 +62,15 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         return self._map_to_entity(db_document)
 
-    def create(self, document: DocumentEntity) -> DocumentEntity:
-        """Create a new document from domain entity"""
-        # Map domain entity to database model
-
+    def get_or_create(self, document: DocumentEntity):
+        """Return existing document or create a new one."""
         document.generate_unique_identifier()
 
         statement = select(DocumentModel).where(DocumentModel.unique_identifier == document.unique_identifier)
         db_document = self.session.exec(statement).first()
 
         if db_document:
-            return None
+            return self._map_to_entity(db_document), False
 
         db_document = DocumentModel(
             data=document.data,
@@ -89,8 +87,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         self.session.commit()
         self.session.refresh(db_document)
 
-        # Map back to domain entity with ID
-        return self._map_to_entity(db_document)
+        return self._map_to_entity(db_document), True
 
     def get_all_as_entities(
         self, skip: int = 0, limit: int = 100

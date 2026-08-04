@@ -107,28 +107,28 @@ class CreateDocumentUseCase:
             document.document_type_id = doc_type.id
 
             # Create document via gateway
-            created_document = self.document_gateway.create(document)
+            result_document, created = self.document_gateway.get_or_create(document)
 
-            if not created_document:
+            if not created:
+                logger.info(f"Document already exists with ID: {result_document.id}")
                 return DTOCreateDocumentResponse(
                     success=True,
-                    document_id=None,
-                    unique_identifier=document.unique_identifier,
+                    document_id=str(result_document.id),
+                    unique_identifier=result_document.unique_identifier,
                     already_exists=True,
                     transactions_count=len(document.data),
-                    message=f"Document with unique identifier '{document.unique_identifier}' already exists.",
+                    document_processed=result_document.processed,
                 )
 
-            logger.info(f"Created new document with ID: {created_document.id}")
+            logger.info(f"Created new document with ID: {result_document.id}")
 
-            # Return DTO for controller
             return DTOCreateDocumentResponse(
                 success=True,
-                document_id=str(created_document.id),
-                unique_identifier=document.unique_identifier,
+                document_id=str(result_document.id),
+                unique_identifier=result_document.unique_identifier,
                 already_exists=False,
                 transactions_count=len(document.data),
-                message=f"PDF processed successfully. {len(document.data)} transactions saved.",
+                document_processed=result_document.processed,
             )
 
         except Exception as e:

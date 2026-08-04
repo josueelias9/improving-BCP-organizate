@@ -59,15 +59,12 @@ class IDocumentDbGateway(ABC):
         pass
 
     @abstractmethod
-    def create(self, document: DocumentEntity) -> DocumentEntity:
+    def get_or_create(self, document: DocumentEntity) -> Tuple[DocumentEntity, bool]:
         """
-        Create a new document from domain entity
-
-        Args:
-            document: Domain Document entity
+        Return existing document or create a new one.
 
         Returns:
-            Created domain Document entity with ID
+            (entity, created) — created is False when the document already existed
         """
         pass
 

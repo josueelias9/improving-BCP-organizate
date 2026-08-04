@@ -37,7 +37,7 @@ class DTOCreateDocumentResponse(BaseModel):
     unique_identifier: str
     already_exists: bool
     transactions_count: int
-    message: str
+    document_processed: bool
 
 
 # ===========================================================

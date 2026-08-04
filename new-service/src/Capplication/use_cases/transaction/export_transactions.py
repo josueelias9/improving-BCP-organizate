@@ -78,11 +78,9 @@ class ExportTransactionsUseCase:
 
             return DTOExportTransactionsResponse(
                 success=True,
-                csv_content=csv_content,
                 filename=filename,
                 transaction_count=len(transactions),
                 file_path=file_path,
-                month=filters.month,
                 document_id=filters.document_id,
             )
 
@@ -90,7 +88,6 @@ class ExportTransactionsUseCase:
             logger.error(f"Export validation error: {str(e)}")
             return DTOExportTransactionsResponse(
                 success=False,
-                csv_content="",
                 filename="",
                 transaction_count=0,
                 error_message=str(e),
@@ -99,7 +96,6 @@ class ExportTransactionsUseCase:
             logger.error(f"Unexpected error during export: {str(e)}")
             return DTOExportTransactionsResponse(
                 success=False,
-                csv_content="",
                 filename="",
                 transaction_count=0,
                 error_message=f"Internal error: {str(e)}",

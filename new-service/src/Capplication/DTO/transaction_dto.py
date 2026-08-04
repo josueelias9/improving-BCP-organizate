@@ -33,11 +33,9 @@ class DTOExportTransactionsResponse(BaseModel):
     """Result DTO for export transactions operation - returned from use case to controller"""
 
     success: bool
-    csv_content: str
     filename: str
     transaction_count: int
     file_path: Optional[str] = None
-    month: Optional[str] = None
     document_id: Optional[uuid.UUID] = None
     error_message: Optional[str] = None
 
