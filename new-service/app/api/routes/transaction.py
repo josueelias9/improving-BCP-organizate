@@ -10,8 +10,8 @@ import logging
 
 from api.deps import SessionDep
 
-from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
+from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Capplication.DTO.transaction_dto import (
@@ -24,6 +24,8 @@ from src.Capplication.DTO.transaction_dto import (
     DTOGetTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
+    DTOCreateTransactionsRequest,
+    DTOCreateTransactionsResponse,
 )
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
@@ -40,14 +42,8 @@ from src.Capplication.use_cases.transaction.get_transactions import (
 from src.Capplication.use_cases.transaction.import_transactions import (
     ImportTransactionsUseCase,
 )
-
-
 from src.Capplication.use_cases.transaction.create_transactions import (
     CreateTransactionsUseCase,
-)
-from src.Capplication.DTO.transaction_dto import (
-    DTOCreateTransactionsRequest,
-    DTOCreateTransactionsResponse,
 )
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -92,6 +88,83 @@ def get_transactions(
         raise HTTPException(
             status_code=500, detail=f"Error retrieving transactions: {str(e)}"
         )
+
+
+@router.get("/export", response_model=DTOExportTransactionsResponse)
+def export_transactions(
+    session: SessionDep,
+    document_id: Optional[uuid.UUID] = Query(
+        None, description="Filter by document UUID"
+    ),
+    document_unique_identifier: Optional[str] = Query(
+        None, description="Filter by document unique identifier"
+    ),
+) -> DTOExportTransactionsResponse:
+    try:
+        transaction_gateway = TransactionDbGateway(session)
+        file_extractor_gateway = FileExtractorGateway()
+        document_gateway = DocumentDbGateway(session)
+        use_case = ExportTransactionsUseCase(
+            transaction_gateway=transaction_gateway,
+            file_extractor_gateway=file_extractor_gateway,
+            document_gateway=document_gateway,
+        )
+        dto_request = DTOExportTransactionsRequest(
+            document_id=document_id,
+            document_unique_identifier=document_unique_identifier,
+        )
+        dto_response = use_case.execute(dto_request)
+        if not dto_response.success:
+            raise HTTPException(
+                status_code=400 if "Invalid" in dto_response.error_message else 404,
+                detail=dto_response.error_message,
+            )
+        return dto_response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error exporting transactions to CSV: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error exporting transactions: {str(e)}"
+        )
+
+
+@router.post("/import", response_model=DTOImportTransactionsResponse)
+def import_transactions(
+    session: SessionDep,
+    csv_filename: Optional[str] = Query(
+        None,
+        description="Specific CSV filename to import (optional, uses latest if not provided)",
+    ),
+):
+    try:
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
+        use_case = ImportTransactionsUseCase(
+            transaction_gateway,
+            category_gateway,
+        )
+        dto_request = DTOImportTransactionsRequest(csv_filename=csv_filename)
+        return use_case.execute(dto_request)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error importing transactions from CSV: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error importing transactions: {str(e)}"
+        )
+
+
+@router.put("/batch", response_model=DTOUpdateTransactionsResponse)
+def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: SessionDep):
+    try:
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
+        use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
+        return use_case.execute(dto_request)
+    except Exception as e:
+        logger.error(f"Unexpected error in batch update: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.post(
@@ -203,152 +276,3 @@ def update_transaction(
         # Unexpected errors
         logger.error(f"Unexpected error updating transaction: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.put("/batch", response_model=DTOUpdateTransactionsResponse)
-def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: SessionDep):
-    """
-    Update multiple transactions simultaneously.
-
-    Only 'history' and 'category_name' fields can be updated for each transaction.
-    If category_name is provided, it will be validated against existing categories.
-    This endpoint processes all updates and returns a summary of the operation.
-
-    Args:
-        batch_update: List of transaction updates to apply
-        session: Database session (injected)
-
-    Returns:
-        Summary of batch update operation with success/failure counts
-
-    Raises:
-        HTTPException: 400 for validation errors
-    """
-    try:
-        # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
-
-        return use_case.execute(dto_request)
-
-    except Exception as e:
-        # Unexpected errors
-        logger.error(f"Unexpected error in batch update: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-
-
-@router.get("/export", response_model=DTOExportTransactionsResponse)
-def export_transactions(
-    session: SessionDep,
-    document_id: Optional[uuid.UUID] = Query(None, description="Filter by document UUID"),
-    document_unique_identifier: Optional[str] = Query(None, description="Filter by document unique identifier"),
-) -> DTOExportTransactionsResponse:
-    """
-    Export transactions to CSV format and save to file
-
-    Filters:
-        - month: Optional filter by month in format YYYY-MM (e.g., "2025-01")
-        - document_id: Optional filter by specific document
-        - output_dir: Output directory for CSV file (default: ./exports)
-
-    Returns:
-        JSON with file path, transaction count, and status
-
-    Examples:
-        - GET /transactions/export/csv - Export all transactions
-        - GET /transactions/export/csv?month=2025-01 - Export transactions from January 2025
-        - GET /transactions/export/csv?document_id=xxx-xxx-xxx - Export transactions from specific document
-        - GET /transactions/export/csv?month=2025-01&document_id=xxx-xxx-xxx - Combined filters
-    """
-    try:
-        # Controller:
-        # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionDbGateway(session)
-        file_extractor_gateway = FileExtractorGateway()
-        document_gateway = DocumentDbGateway(session)
-        use_case = ExportTransactionsUseCase(
-            transaction_gateway=transaction_gateway,
-            file_extractor_gateway=file_extractor_gateway,
-            document_gateway=document_gateway,
-        )
-        dto_request = DTOExportTransactionsRequest(
-            document_id=document_id,
-            document_unique_identifier=document_unique_identifier,
-        )
-
-        # Execute use case
-        dto_response = use_case.execute(dto_request)
-
-        # TODO: fix this
-        if not dto_response.success:
-            raise HTTPException(
-                status_code=400 if "Invalid" in dto_response.error_message else 404,
-                detail=dto_response.error_message,
-            )
-        return dto_response
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error exporting transactions to CSV: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error exporting transactions: {str(e)}"
-        )
-
-
-@router.post("/import", response_model=DTOImportTransactionsResponse)
-def import_transactions(
-    session: SessionDep,
-    csv_filename: Optional[str] = Query(
-        None,
-        description="Specific CSV filename to import (optional, uses latest if not provided)",
-    ),
-    input_dir: str = Query(
-        "/shared_files/output", description="Directory where to read the CSV file from"
-    ),
-):
-    """
-    Import and update transactions from CSV file
-
-    Reads a CSV file from the specified directory and updates transactions based on unique_identifier.
-    Updates the 'history' and 'category_name' fields for matching transactions.
-
-    Args:
-        csv_filename: Optional specific CSV filename. If not provided, uses the most recent CSV file.
-        input_dir: Directory where to read the CSV file from (default: /shared_files/output)
-
-    Returns:
-        JSON with import summary including updated count, errors, etc.
-
-    Examples:
-        - POST /transactions/import/csv - Import from latest CSV file in default directory
-        - POST /transactions/import/csv?input_dir=/custom/path - Import from custom directory
-        - POST /transactions/import/csv?csv_filename=transactions.csv - Import from specific file
-        - POST /transactions/import/csv?csv_filename=transactions.csv&input_dir=/custom/path - Custom file and directory
-    """
-    try:
-
-        # Instantiate gateways and inject into use case
-        transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        use_case = ImportTransactionsUseCase(
-            transaction_gateway,
-            category_gateway,
-        )
-
-        # Create DTO request with input_dir
-        dto_request = DTOImportTransactionsRequest(
-            csv_filename=csv_filename, input_dir=input_dir
-        )
-        return use_case.execute(dto_request)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error importing transactions from CSV: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error importing transactions: {str(e)}"
-        )

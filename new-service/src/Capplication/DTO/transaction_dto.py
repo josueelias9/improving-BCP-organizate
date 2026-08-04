@@ -46,7 +46,6 @@ class DTOImportTransactionsRequest(BaseModel):
     """DTO for import transactions request - from controller to use case"""
 
     csv_filename: Optional[str] = None  # Specific CSV filename to import
-    input_dir: str = "/shared_files/output"  # Directory where to read the CSV file from
 
     model_config = {
         "json_schema_extra": {

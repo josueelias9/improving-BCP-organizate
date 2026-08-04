@@ -70,4 +70,14 @@ if selected_rows:
             else:
                 st.error(f"Error: {put_response.text}")
 
-st.bar_chart(df, x="category_name", y="amount", stack=False)
+
+st.bar_chart(
+    df[df["transaction_type"] == "expense"]
+    .groupby("category_name", as_index=False)["amount"]
+    .sum(),
+    x="category_name",
+    y="amount",
+    stack=False,
+)
+
+st.bar_chart(df, x="transaction_type", y="amount", stack=False)

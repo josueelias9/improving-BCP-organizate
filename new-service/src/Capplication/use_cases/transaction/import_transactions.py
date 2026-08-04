@@ -6,7 +6,7 @@ Orchestrates the flow of importing and updating transactions from CSV file
 import logging
 import csv
 from pathlib import Path
-from typing import Optional, List
+from typing import List
 
 from src.Capplication.DTO.transaction_dto import (
     DTOImportTransactionsResponse,
@@ -49,12 +49,10 @@ class ImportTransactionsUseCase:
         """
         try:
             # 1. Find the CSV file
-            csv_path = self._find_csv_file(
-                dto_request.csv_filename, dto_request.input_dir
-            )
+            csv_path = Path(f"/workspace/files/exports/{dto_request.csv_filename}.csv")
 
             if not csv_path.exists():
-                return DTOImportTransactionsFromCsvResponse(
+                return DTOImportTransactionsResponse(
                     success=False,
                     updated_count=0,
                     skipped_count=0,
@@ -67,7 +65,7 @@ class ImportTransactionsUseCase:
             rows = self._read_csv(csv_path)
 
             if not rows:
-                return DTOImportTransactionsFromCsvResponse(
+                return DTOImportTransactionsResponse(
                     success=False,
                     updated_count=0,
                     skipped_count=0,
@@ -123,35 +121,6 @@ class ImportTransactionsUseCase:
                 total_rows=0,
                 message=f"Import failed: {str(e)}",
             )
-
-    def _find_csv_file(
-        self, filename: Optional[str] = None, input_dir: str = "/shared_files/output"
-    ) -> Path:
-        """
-        Find the CSV file in the specified input directory
-
-        Args:
-            filename: Optional specific filename, otherwise uses latest
-            input_dir: Directory where to read CSV files from
-
-        Returns:
-            Path to the CSV file
-        """
-        output_dir = Path(input_dir)
-
-        if filename:
-            return output_dir / filename
-
-        # Find the most recent transactions CSV file
-        csv_files = list(output_dir.glob("transactions*.csv"))
-
-        if not csv_files:
-            raise ValueError(f"No transaction CSV files found in {input_dir} directory")
-
-        # Sort by modification time, newest first
-        csv_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-
-        return csv_files[0]
 
     def _read_csv(self, csv_path: Path) -> List[dict]:
         """

@@ -163,7 +163,7 @@ default_transactions = [
         "id": "00000000-0000-0000-0000-000000000004",
         "description": "Movie Theater",
         "amount": 15.5,
-        "category_id": "00000000-0000-0000-0000-000000000010",
+        "category_id": "00000000-0000-0000-0000-000000000006",
         "order": 4,
         "transaction_type": "expense",
         "document_id": "00000000-0000-0000-0000-000000000001",
