@@ -25,3 +25,9 @@ save table with document id also and save in files
 
 add controller (this can be done by pyndantic, analize)
 can we use pyndantic in entity layer? what is the benefit?
+
+
+
+create new endpoint to export using unique_identifier. the return DTO must say how many elements were found with this unique_identifier
+
+separate transactions by expense or income

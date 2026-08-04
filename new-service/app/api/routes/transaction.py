@@ -244,9 +244,6 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
 @router.get("/export/csv", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     session: SessionDep,
-    month: Optional[str] = Query(
-        None, description="Filter by month in format YYYY-MM (e.g., 2025-01)"
-    ),
     document_id: Optional[uuid.UUID] = Query(None, description="Filter by document ID"),
 ) -> DTOExportTransactionsResponse:
     """
@@ -278,9 +275,7 @@ def export_transactions(
             document_gateway=document_gateway,
         )
         # TODO: remove month, because we are only filtering by document_id. The month filter is not being used in the use case.
-        dto_request = DTOExportTransactionsRequest(
-            month=month, document_id=document_id
-        )
+        dto_request = DTOExportTransactionsRequest(document_id=document_id)
 
         # Execute use case
         dto_response = use_case.execute(dto_request)

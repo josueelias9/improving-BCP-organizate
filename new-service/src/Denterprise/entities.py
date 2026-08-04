@@ -98,7 +98,7 @@ class DocumentEntity:
     document_type_name: Optional[str] = None
 
     def generate_unique_identifier(self):
-        prefix = self.plain_text.strip().replace(' ', '').replace('\n', '')[:20]
+        prefix = self.plain_text.strip().replace(" ", "").replace("\n", "")[:20]
         self.unique_identifier = f"{prefix}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
 
 

@@ -48,13 +48,10 @@ class ExportTransactionsUseCase:
             ValueError: If filters are invalid or no data found
         """
         try:
-            # 1. Validate month format if provided
-            if filters.month:
-                self._validate_month_format(filters.month)
 
             # 2. Retrieve transactions from gateway
             transactions = self.transaction_gateway.get_all_filtered(
-                month=filters.month, document_id=filters.document_id
+                document_id=filters.document_id
             )
 
             if not transactions:
@@ -69,7 +66,9 @@ class ExportTransactionsUseCase:
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(
-                filename=filename, content=csv_content, output_dir="/workspace/files/exports/"
+                filename=filename,
+                content=csv_content,
+                output_dir="/workspace/files/exports/",
             )
 
             logger.info(
@@ -101,21 +100,6 @@ class ExportTransactionsUseCase:
                 error_message=f"Internal error: {str(e)}",
             )
 
-    def _validate_month_format(self, month: str) -> None:
-        """
-        Validate month format is YYYY-MM
-
-        Args:
-            month: Month string to validate
-
-        Raises:
-            ValueError: If format is invalid
-        """
-        try:
-            datetime.strptime(month, "%Y-%m")
-        except ValueError:
-            raise ValueError("Invalid month format. Use YYYY-MM (e.g., 2025-01)")
-
     def _generate_csv(self, transactions: List[dict]) -> str:
         """
         Generate CSV content from transactions
@@ -131,18 +115,24 @@ class ExportTransactionsUseCase:
         writer = csv.writer(output)
 
         # Write header - only the 3 required fields
-        headers = ["category_name", "unique_identifier", "history"]
+        headers = [
+            "category_name",
+            "unique_identifier",
+            "history",
+            "document_unique_identifier",
+        ]
         writer.writerow(headers)
 
         # Write data rows - only transactions with category_name or history
         for transaction in transactions:
-            category_name = transaction.get("category_name", "") or ""
-            history = transaction.get("history", "") or ""
 
-            # Only include if category_name or history has data
-            if category_name.strip() or history.strip():
-                writer.writerow(
-                    [category_name, transaction.get("unique_identifier", ""), history]
-                )
+            category_name = transaction.category_name or ""
+            unique_identifier = transaction.unique_identifier or ""
+            history = transaction.history or ""
+            document_unique_identifier = transaction.document_unique_identifier or ""
+
+            writer.writerow(
+                [category_name, unique_identifier, history, document_unique_identifier]
+            )
 
         return output.getvalue()

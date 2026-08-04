@@ -199,7 +199,7 @@ class ITransactionDbGateway(ABC):
     @abstractmethod
     def get_all_filtered(
         self, month: Optional[str] = None, document_id: Optional[uuid.UUID] = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[TransactionEntity]:
         """
         Get all transactions with optional filters
 
@@ -208,7 +208,7 @@ class ITransactionDbGateway(ABC):
             document_id: Optional document UUID filter
 
         Returns:
-            List of transaction dictionaries including category_name
+            List of TransactionEntity including category_name
         """
         pass
 

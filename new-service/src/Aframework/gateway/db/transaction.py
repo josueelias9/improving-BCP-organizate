@@ -173,7 +173,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             raise ValueError(f"Error updating transaction: {str(e)}")
 
     def get_all_filtered(
-        self, month: Optional[str] = None, document_id: Optional[uuid.UUID] = None
+        self, document_id: Optional[uuid.UUID] = None
     ) -> List[Dict[str, Any]]:
         """Get all transactions with optional filters, including category name"""
         # Build query
@@ -185,30 +185,27 @@ class TransactionDbGateway(ITransactionDbGateway):
         if document_id:
             statement = statement.where(TransactionModel.document_id == document_id)
 
-        # Apply month filter if provided (filters by date field)
-        if month:
-            # Extract year and month from the date field
-            year, month_num = month.split("-")
-            statement = statement.where(
-                TransactionModel.date.isnot(None),
-            )
-            # Filter using SQL extract for year and month
-            from sqlalchemy import extract
-
-            statement = statement.where(
-                extract("year", TransactionModel.date) == int(year),
-                extract("month", TransactionModel.date) == int(month_num),
-            )
-
         # Execute query
         transactions = self.session.exec(statement).all()
 
-        # Convert to dict and add category_name
         result = []
         for t in transactions:
-            t_dict = t.model_dump()
-            t_dict["category_name"] = t.category.name if t.category else None
-            result.append(t_dict)
+            entity = TransactionEntity(
+                id=t.id,
+                order=t.order,
+                description=t.description,
+                history=t.history,
+                amount=t.amount,
+                transaction_type=t.transaction_type,
+                transaction_date=t.transaction_date,
+                currency=t.currency,
+                unique_identifier=t.unique_identifier,
+                category_name=t.category.name if t.category else None,
+                document_unique_identifier=(
+                    t.document.unique_identifier if t.document else None
+                ),
+            )
+            result.append(entity)
 
         return result
 

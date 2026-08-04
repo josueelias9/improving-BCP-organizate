@@ -9,7 +9,6 @@ from sqlmodel import Field, Relationship, SQLModel, Column, Text
 from sqlalchemy import JSON
 from src.Denterprise.entities import TransactionType, Currency
 
-
 # ============================================================================= base models
 # 1. it was decided to delete all classes that behave as DTOs and are not used for persistence. They were moved to the src.Capplication.DTO module.
 # 2. this block was names as "entities", but it is not correct, because these classes are not domain entities, they are base database models. Base because it helped to avoid code duplication in table models and DTO models

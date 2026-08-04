@@ -1,50 +1,9 @@
-import os
 import requests
 import pandas as pd
 import streamlit as st
 
 BASE_URL = "http://localhost:8000"
-DOWNLOADS_DIR = "/downloads"
 
-# --- Sidebar: Add Document and Transactions ---
-with st.sidebar:
-    st.header("Add Document and Transactions")
-
-    pdf_files = sorted(
-        f for f in os.listdir(DOWNLOADS_DIR) if f.lower().endswith(".pdf")
-    ) if os.path.isdir(DOWNLOADS_DIR) else []
-
-    selected_file = st.selectbox("PDF File", options=pdf_files, index=0 if pdf_files else None)
-    pdf_filepath = f"{DOWNLOADS_DIR}/{selected_file}" if selected_file else ""
-
-    document_type = st.selectbox("Document Type", ["bcp_debit", "bcp_credit"])
-    user_email = st.text_input("User Email", value="admin@bcpextractor.com")
-
-    if st.button("Add Document and Transactions", type="primary"):
-        if not pdf_filepath or not user_email:
-            st.error("PDF file path and user email are required.")
-        else:
-            with st.spinner("Creating document..."):
-                doc_res = requests.post(
-                    f"{BASE_URL}/document/",
-                    json={"pdf_filepath": pdf_filepath, "document_type": document_type, "user_email": user_email},
-                )
-            if not doc_res.ok:
-                st.error(f"Create document failed: {doc_res.text}")
-            else:
-                doc_data = doc_res.json()
-                document_id = doc_data["document_id"]
-                with st.spinner("Loading transactions..."):
-                    tx_res = requests.post(f"{BASE_URL}/transactions/{document_id}")
-                if not tx_res.ok:
-                    st.warning("Document created but transactions failed.")
-                    st.json(doc_data)
-                    st.error(tx_res.text)
-                else:
-                    st.success("Done!")
-                    st.json(doc_data)
-                    st.json(tx_res.json())
-                    st.rerun()
 
 # Fetch documents for the combobox
 docs_response = requests.get(f"{BASE_URL}/document/")
@@ -69,15 +28,6 @@ category_names = [c["name"] for c in categories_response.json().get("categories"
 df = pd.DataFrame(transactions)
 if "order" in df.columns:
     df = df.sort_values("order").reset_index(drop=True)
-
-# Export CSV button
-if selected_document_id:
-    if st.button("Export CSV"):
-        export_resp = requests.get(
-            f"{BASE_URL}/transactions/export/csv",
-            params={"document_id": selected_document_id},
-        )
-
 
 # Row selection
 event = st.dataframe(
