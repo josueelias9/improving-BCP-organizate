@@ -69,7 +69,7 @@ class ExportTransactionsUseCase:
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(
-                filename=filename, content=csv_content, output_dir=filters.output_dir
+                filename=filename, content=csv_content, output_dir="/workspace/files/exports/"
             )
 
             logger.info(

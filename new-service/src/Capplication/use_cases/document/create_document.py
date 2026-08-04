@@ -102,30 +102,22 @@ class CreateDocumentUseCase:
             if not document.data:
                 raise ValueError("No transactions extracted from PDF")
 
-            # Check if document already exists with this unique_identifier
-            existing_document = self.document_gateway.get_by_unique_identifier(
-                document.unique_identifier
-            )
-
-            if existing_document:
-                logger.info(
-                    f"Document already exists with unique_id: {document.unique_identifier}"
-                )
-                return DTOCreateDocumentResponse(
-                    success=True,
-                    document_id=str(existing_document.id),
-                    unique_identifier=document.unique_identifier,
-                    already_exists=True,
-                    transactions_count=len(document.data),
-                    message="Document already exists",
-                )
-
             # Set user_id and document_type_id on the entity
             document.user_id = user.id
             document.document_type_id = doc_type.id
 
             # Create document via gateway
             created_document = self.document_gateway.create(document)
+
+            if not created_document:
+                return DTOCreateDocumentResponse(
+                    success=True,
+                    document_id=None,
+                    unique_identifier=document.unique_identifier,
+                    already_exists=True,
+                    transactions_count=len(document.data),
+                    message=f"Document with unique identifier '{document.unique_identifier}' already exists.",
+                )
 
             logger.info(f"Created new document with ID: {created_document.id}")
 

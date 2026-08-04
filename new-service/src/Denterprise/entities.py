@@ -51,6 +51,7 @@ class TransactionEntity:
     amount: float = 0.0
     transaction_type: str = ""
     transaction_date: Optional[date] = None
+    # TODO: currency is not being validated. Maybe pyndantic could fix this
     currency: Currency = None
     unique_identifier: Optional[str] = None
     category_id: Optional[uuid.UUID] = None
@@ -97,7 +98,8 @@ class DocumentEntity:
     document_type_name: Optional[str] = None
 
     def generate_unique_identifier(self):
-        self.unique_identifier = f"{self.plain_text.strip().replace(' ', '')[:20]}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
+        prefix = self.plain_text.strip().replace(' ', '').replace('\n', '')[:20]
+        self.unique_identifier = f"{prefix}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
 
 
 # con respecto al unique identifier

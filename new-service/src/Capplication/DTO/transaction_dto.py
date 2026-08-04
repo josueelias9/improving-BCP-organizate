@@ -7,10 +7,9 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 import uuid
+from datetime import date
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel
-
-from ...Denterprise.entities import TransactionEntity
+from pydantic import BaseModel, ConfigDict
 
 
 class DTOExportTransactionsRequest(BaseModel):
@@ -18,9 +17,6 @@ class DTOExportTransactionsRequest(BaseModel):
 
     month: Optional[str] = None  # Format: YYYY-MM
     document_id: Optional[uuid.UUID] = None
-    output_dir: str = (
-        "/shared_files/output"  # Directory where to save the exported file
-    )
 
     model_config = {
         "json_schema_extra": {
@@ -79,11 +75,29 @@ class DTOImportTransactionsResponse(BaseModel):
 # ===========================================================
 
 
+class DTOTransaction(BaseModel):
+    """Read model for a single transaction — no FK/PK fields"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    order: int
+    description: str
+    history: Optional[str]
+    amount: float
+    transaction_type: str
+    category_name: Optional[str] = None
+    transaction_date: Optional[date]
+    currency: Optional[str]
+    document_document_type_name: Optional[str]
+    unique_identifier: Optional[str]
+    document_unique_identifier: Optional[str]
+    id: Optional[uuid.UUID]
+
+
 class DTOGetTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
-    # TODO: maybe we can limit the fields returned to only those needed by the controller, instead of returning full entities
-    transactions: List[TransactionEntity]
+    transactions: List[DTOTransaction]
 
 
 # ===========================================================

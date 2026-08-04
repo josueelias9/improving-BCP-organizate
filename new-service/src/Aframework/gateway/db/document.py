@@ -68,6 +68,12 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         document.generate_unique_identifier()
 
+        statement = select(DocumentModel).where(DocumentModel.unique_identifier == document.unique_identifier)
+        db_document = self.session.exec(statement).first()
+
+        if db_document:
+            return None
+
         db_document = DocumentModel(
             data=document.data,
             unique_identifier=document.unique_identifier,

@@ -19,12 +19,19 @@ sequenceDiagram
     Parser-->>-DocumentUseCase: get data, unique_identifier, start_date, end_date
 
     DocumentUseCase->>+DocumentGateway: save document
-    DocumentGateway-->>-DocumentUseCase: saved document
+    DocumentGateway->>DocumentGateway: generate unique identifier
+    alt document already exist
+    DocumentGateway->>DocumentUseCase: return None
+    else new document
+    DocumentGateway->>-DocumentUseCase: DocumentEntity
 
+    end
 
 ```
 
 #### CreateTransactionsUseCase
+
+if a document is already processed, this is nonsense, because it will overlap information already stored
 
 ```mermaid
 sequenceDiagram
@@ -39,8 +46,10 @@ sequenceDiagram
     
     TransactionUseCase->>+DocumentGateway: get document by id
     DocumentGateway-->>-TransactionUseCase: document
+    TransactionUseCase->>TransactionUseCase: raise error if document already exists (processed)
     TransactionUseCase->>TransactionUseCase: data attribute to list of TransactionEntity
     TransactionUseCase->>+TransactionGateway: save Transactions
+    TransactionGateway->>TransactionGateway: create unique identifier
     TransactionGateway-->>-TransactionUseCase: saved
     TransactionUseCase->>+DocumentGateway: mark document as processed
     DocumentGateway-->>-TransactionUseCase: processed
