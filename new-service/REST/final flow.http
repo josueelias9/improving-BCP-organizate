@@ -19,7 +19,7 @@ content-type: application/json
 ###
 
 # @name createTransactions
-POST http://{{host}}/transactions/{{getDocuments.response.body.$.documents[4].id}} HTTP/1.1
+POST http://{{host}}/transactions/{{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
 content-type: application/json
 
 ###

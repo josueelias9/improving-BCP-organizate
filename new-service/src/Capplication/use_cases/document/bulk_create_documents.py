@@ -52,7 +52,7 @@ class BulkCreateDocumentsUseCase:
                 logger.warning(f"No parser registered for document type '{document_format}', skipping folder")
                 continue
 
-            pdf_files = self.file_extractor_gateway.list_files(subdir, ".pdf")
+            pdf_files = self.file_extractor_gateway.list_files(subdir, parser.file_extension)
 
             for pdf_filepath in pdf_files:
                 item = self._process_single(pdf_filepath, document_format, request.user_email, parser)

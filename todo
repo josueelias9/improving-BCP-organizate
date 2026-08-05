@@ -12,6 +12,10 @@ new-service/
 
 [ ] streamlit always requires a gmail. when on production it will be an issue. fix
 
-[ ] analyze yape
 
-[ ] change account for identier. Makes more sense.
+
+
+[ ] yape is inverted
+[ ] now time need tu include hour, minute and second (yape document enable this option)
+
+[ ] remove plain_text from getDocuments

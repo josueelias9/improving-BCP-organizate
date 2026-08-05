@@ -16,6 +16,7 @@ from typing import List, Optional, Dict, Any
 
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Denterprise.entities import TransactionEntity
+from src.Aframework.gateway.content_extractor.pdf_utils import extract_pdf_text
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,13 @@ class BCPCreditParser(IStatementParser):
         "NOV": "11",
         "DIC": "12",
     }
+
+    @property
+    def file_extension(self) -> str:
+        return ".pdf"
+
+    def read_file(self, file_content: bytes) -> str:
+        return extract_pdf_text(file_content)
 
     def get_account(self, full_text: str) -> Optional[str]:
         pass

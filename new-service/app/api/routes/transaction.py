@@ -12,6 +12,7 @@ from api.deps import SessionDep
 
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
+from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
@@ -189,6 +190,7 @@ def create_transactions(document_id: str, session: SessionDep):
         parsers = {
             "bcp_credit": BCPCreditParser(),
             "bcp_debit": BCPDebitParser(),
+            "yape": YapeParser(),
         }
 
         document_gateway = DocumentDbGateway(session)

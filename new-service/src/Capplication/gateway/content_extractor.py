@@ -12,6 +12,24 @@ from src.Denterprise.entities import TransactionEntity
 class IStatementParser(ABC):
     """Abstract interface for parsing document text into structured data."""
 
+    @property
+    @abstractmethod
+    def file_extension(self) -> str:
+        """File extension handled by this parser (e.g. '.pdf', '.xlsx')."""
+        pass
+
+    @abstractmethod
+    def read_file(self, file_content: bytes) -> str:
+        """Convert raw file bytes to a plain-text or serialised-text representation.
+
+        Args:
+            file_content: Raw bytes of the source file (PDF, XLSX, …)
+
+        Returns:
+            Text representation suitable for the other parser methods
+        """
+        pass
+
     @abstractmethod
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         """Parse document text and return transaction entities.

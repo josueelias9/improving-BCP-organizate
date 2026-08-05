@@ -15,6 +15,7 @@ from typing import List, Optional, Tuple
 
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Denterprise.entities import TransactionEntity
+from src.Aframework.gateway.content_extractor.pdf_utils import extract_pdf_text
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,13 @@ class BCPDebitParser(IStatementParser):
         "DIC": "12",
         "SET": "09",  # Setiembre
     }
+
+    @property
+    def file_extension(self) -> str:
+        return ".pdf"
+
+    def read_file(self, file_content: bytes) -> str:
+        return extract_pdf_text(file_content)
 
     def get_account(self, full_text: str) -> Optional[str]:
         """Extract account code from BCP PDF text"""

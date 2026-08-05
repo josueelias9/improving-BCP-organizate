@@ -1,14 +1,10 @@
 """
-Process PDF Use Case - Application Layer
-Orchestrates the flow of processing a PDF and creating a document
+Process document Use Case - Application Layer
+Orchestrates the flow of processing a file and creating a document
 """
 
 import logging
-import os
 from pathlib import Path
-
-import fitz
-from dotenv import load_dotenv
 
 from src.Denterprise.entities import DocumentEntity, UserEntity
 from src.Capplication.DTO.document_dto import (
@@ -19,8 +15,6 @@ from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -77,11 +71,9 @@ class CreateDocumentUseCase:
                     f"Document type '{document_format}' not found in database"
                 )
 
-            # extract text from PDF file using file system gateway
-            pdf_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
-
-            password = os.getenv("PDF_PASSWORD")
-            full_text = self._extract_text_from_binary(pdf_binary, password)
+            # Read and extract text using the parser (format-specific)
+            file_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
+            full_text = self.parser_gateway.read_file(file_binary)
 
             document = DocumentEntity(
                 account=self.parser_gateway.get_account(full_text),
@@ -126,39 +118,5 @@ class CreateDocumentUseCase:
             )
 
         except Exception as e:
-            logger.error(f"Error processing PDF: {str(e)}")
-            raise
-
-    # TODO I need to clarify if this works only with pdf. I will start working with csv and plain .txt files
-    def _extract_text_from_binary(
-        self, pdf_content: bytes, password: str = None
-    ) -> str:
-        """Extract text from PDF using PyMuPDF"""
-        logger.info("Extracting text from PDF")
-
-        try:
-            text = ""
-            pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
-
-            if pdf_document.is_encrypted:
-                if password:
-                    if pdf_document.authenticate(password):
-                        logger.info("PDF decrypted successfully")
-                    else:
-                        raise ValueError("Incorrect password for PDF")
-                else:
-                    raise ValueError("PDF is encrypted but no password provided")
-
-            logger.info(f"PDF has {pdf_document.page_count} pages")
-
-            for page_num in range(pdf_document.page_count):
-                page = pdf_document[page_num]
-                page_text = page.get_text()
-                if page_text:
-                    text += f"\n\n--- PAGE {page_num + 1} ---\n\n{page_text}\n"
-
-            pdf_document.close()
-            return text
-        except Exception as e:
-            logger.error(f"Error with PyMuPDF: {str(e)}")
+            logger.error(f"Error processing file: {str(e)}")
             raise

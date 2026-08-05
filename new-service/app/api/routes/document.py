@@ -21,6 +21,7 @@ from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
+from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 
 logger = logging.getLogger(__name__)
@@ -85,11 +86,17 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         file_extractor_gateway = FileExtractorGateway()
 
         document_format_name = Path(dto_request.pdf_filepath).parent.name
-        parser_gateway = (
-            BCPCreditParser()
-            if document_format_name == "bcp_credit"
-            else BCPDebitParser()
-        )
+        parser_map = {
+            "bcp_credit": BCPCreditParser(),
+            "bcp_debit": BCPDebitParser(),
+            "yape": YapeParser(),
+        }
+        parser_gateway = parser_map.get(document_format_name)
+        if parser_gateway is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown document format: '{document_format_name}'",
+            )
 
         # Delegate all processing to application layer use case
         use_case = CreateDocumentUseCase(
@@ -130,6 +137,7 @@ async def bulk_create_documents(dto_request: DTOBulkCreateDocumentsRequest, sess
         parsers = {
             "bcp_credit": BCPCreditParser(),
             "bcp_debit": BCPDebitParser(),
+            "yape": YapeParser(),
         }
         use_case = BulkCreateDocumentsUseCase(
             document_gateway=DocumentDbGateway(session),

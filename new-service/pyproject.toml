@@ -13,7 +13,8 @@ dependencies = [
     "psycopg[binary]",
     "pymupdf",
     "tenacity",
-    "streamlit"
+    "streamlit",
+    "openpyxl",
 ]
 
 [dependency-groups]
