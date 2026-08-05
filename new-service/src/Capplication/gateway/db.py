@@ -197,15 +197,14 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
-    def get_all_filtered(
-        self, month: Optional[str] = None, document_id: Optional[uuid.UUID] = None
+    def get_by_document_id(
+        self, document_id: uuid.UUID = None
     ) -> List[TransactionEntity]:
         """
         Get all transactions with optional filters
 
         Args:
-            month: Optional month filter in format YYYY-MM
-            document_id: Optional document UUID filter
+            document_id: document UUID filter
 
         Returns:
             List of TransactionEntity including category_name

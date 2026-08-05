@@ -61,7 +61,7 @@ class ExportTransactionsUseCase:
                 document_id = doc.id
 
             # 2. Retrieve transactions from gateway
-            transactions = self.transaction_gateway.get_all_filtered(
+            transactions = self.transaction_gateway.get_by_document_id(
                 document_id=document_id
             )
 

@@ -172,20 +172,18 @@ class TransactionDbGateway(ITransactionDbGateway):
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
 
-    def get_all_filtered(
-        self, document_id: Optional[uuid.UUID] = None
-    ) -> List[Dict[str, Any]]:
+    def get_by_document_id(
+        self, document_id: uuid.UUID = None
+    ) -> List[TransactionEntity]:
         """Get all transactions with optional filters, including category name"""
         # Build query
-        statement = select(TransactionModel).options(
-            joinedload(TransactionModel.category)
+
+        statement = (
+            select(TransactionModel)
+            .options(joinedload(TransactionModel.category))
+            .where(TransactionModel.document_id == document_id)
+            .order_by(TransactionModel.order)
         )
-
-        # Apply document_id filter if provided
-        if document_id:
-            statement = statement.where(TransactionModel.document_id == document_id)
-
-        # Execute query
         transactions = self.session.exec(statement).all()
 
         result = []

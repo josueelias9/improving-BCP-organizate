@@ -123,4 +123,3 @@ st.bar_chart(
 )
 
 st.bar_chart(df, x="transaction_type", y="amount", stack=False)
-

@@ -78,10 +78,10 @@ class DTOTransaction(BaseModel):
 
     order: int
     description: str
+    category_name: Optional[str] = None
     history: Optional[str]
     amount: float
     transaction_type: str
-    category_name: Optional[str] = None
     transaction_date: Optional[date]
     currency: Optional[str]
     document_document_type_name: Optional[str]
