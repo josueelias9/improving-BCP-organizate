@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from src.Capplication.DTO.transaction_dto import DTOGetTransactionsResponse
+from src.Capplication.DTO.transaction_dto import DTOGetTransactionsResponse, DTOTransaction
 from src.Capplication.gateway.db import ITransactionDbGateway
 
 
@@ -35,5 +35,5 @@ class GetTransactionsUseCase:
         entities = self.transaction_gateway.get_all(
             skip=skip, limit=limit, document_id=document_id
         )
-
-        return DTOGetTransactionsResponse(transactions=entities)
+        # https://pydantic.dev/docs/validation/dev/concepts/models/#nested-attributes
+        return DTOGetTransactionsResponse(transactions=[DTOTransaction.model_validate(e) for e in entities])

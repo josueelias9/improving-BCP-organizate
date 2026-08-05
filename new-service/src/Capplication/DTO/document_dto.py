@@ -1,8 +1,7 @@
 from typing import List, Optional
-from pydantic import BaseModel
-
-
-from ...Denterprise.entities import DocumentEntity
+import uuid
+from datetime import date
+from pydantic import BaseModel, ConfigDict
 
 """
 Document DTOs - Data Transfer Objects
@@ -40,6 +39,20 @@ class DTOCreateDocumentResponse(BaseModel):
 # ===========================================================
 
 
+class DTODocumentItem(BaseModel):
+    """Document summary DTO — plain_text is excluded."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: Optional[str] = None
+    account: Optional[str] = None
+    balance: Optional[float] = None
+    processed: bool = False
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    document_format_name: Optional[str] = None
+
+
 class DTOGetDocumentsRequest(BaseModel):
     """Request DTO for getting all documents - input from controller"""
 
@@ -59,7 +72,7 @@ class DTOGetDocumentsRequest(BaseModel):
 class DTOGetDocumentsResponse(BaseModel):
     """Response DTO for get all documents operation - returned from use case to controller"""
 
-    documents: List[DocumentEntity]
+    documents: List[DTODocumentItem]
     total_returned: int
     skip: int
     limit: int

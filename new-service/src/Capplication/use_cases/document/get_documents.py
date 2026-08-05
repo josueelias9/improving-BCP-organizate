@@ -11,6 +11,7 @@ from src.Capplication.gateway.db import IDocumentDbGateway, IDocumentTypeDbGatew
 from src.Capplication.DTO.document_dto import (
     DTOGetDocumentsResponse,
     DTOGetDocumentsRequest,
+    DTODocumentItem,
 )
 
 logger = logging.getLogger(__name__)
@@ -60,8 +61,9 @@ class GetDocumentsUseCase:
             skip=request.skip, limit=request.limit
         )
 
+        # https://pydantic.dev/docs/validation/dev/concepts/models/#nested-attributes
         return DTOGetDocumentsResponse(
-            documents=documents,
+            documents=[DTODocumentItem.model_validate(doc) for doc in documents],
             total_returned=len(documents),
             skip=request.skip,
             limit=request.limit,
