@@ -68,9 +68,6 @@ class CreateDocumentUseCase:
             if not self.file_extractor_gateway.file_exists(pdf_filepath):
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
-            # Get or create user entity
-            user = self._get_or_create_user(user_email)
-
             # Get document type entity from database
             doc_type = self.document_type_gateway.get_by_name(document_type)
 
@@ -94,9 +91,10 @@ class CreateDocumentUseCase:
                 document_type_name=doc_type.name,
             )
 
-            # Validate document has data
-            if not document.data:
-                raise ValueError("No transactions extracted from PDF")
+            # Get user entity
+            user = self.user_gateway.get_by_email(user_email)
+            if not user:
+                raise ValueError(f"User with email '{user_email}' not found. Please create the user first.")
 
             # Set user_id and document_type_id on the entity
             document.user_id = user.id
@@ -131,6 +129,7 @@ class CreateDocumentUseCase:
             logger.error(f"Error processing PDF: {str(e)}")
             raise
 
+    # TODO I need to clarify if this works only with pdf. I will start working with csv and plain .txt files
     def _extract_text_from_binary(
         self, pdf_content: bytes, password: str = None
     ) -> str:
@@ -163,27 +162,3 @@ class CreateDocumentUseCase:
         except Exception as e:
             logger.error(f"Error with PyMuPDF: {str(e)}")
             raise
-
-    # TODO: isnt this a user_gateway method?
-    def _get_or_create_user(self, user_email: str):
-        """
-        Get existing user entity or create new one
-
-        Args:
-            user_email: Email of the user
-
-        Returns:
-            UserEntity
-        """
-        user = self.user_gateway.get_by_email(user_email)
-        if not user:
-
-            user_create = UserEntity(
-                email=user_email,
-                name="Admin User",
-                is_active=True,
-            )
-            user = self.user_gateway.create(user_create)
-            logger.info(f"Created new user with email: {user_email}")
-        logger.info(f"Using user with email: {user_email}")
-        return user

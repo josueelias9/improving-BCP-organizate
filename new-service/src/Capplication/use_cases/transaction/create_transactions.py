@@ -16,7 +16,6 @@ from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGatewa
 logger = logging.getLogger(__name__)
 
 
-# TODO: Where is the interface?
 class CreateTransactionsUseCase:
     """Use case for loading transactions from document data into transaction table"""
 
