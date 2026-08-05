@@ -2,6 +2,7 @@
 @path = /downloads
 @fileName = EECC062026_05628441.PDF
 @uniqueIdentifier = ---PAGE1---EstadodeC__2026-06-01__bcp_debit
+@type = bcp_debit
 ###
 
 # @name createDocument
@@ -9,7 +10,7 @@ POST http://{{host}}/document HTTP/1.1
 content-type: application/json
 
 {
-  "document_type": "bcp_debit",
+  "document_type": "{{type}}",
   "pdf_filepath": "{{path}}/{{fileName}}",
   "user_email": "admin@bcpextractor.com"
 }

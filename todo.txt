@@ -12,14 +12,21 @@ new-service/
 
 [ ] streamlit always requires a gmail. when on production it will be an issue. fix
 
-[ ] update document unique identifier logic to get the charaters located at the center of the plain text
-
-[ ] why not use a hash for the documents unique identifiers???
 
 
-[ ] batch only for multiple categories (not history)
+[ ] analyze yape
+
+[ ] having the hash as unique identifier is excelent. However for us as human we need more information to understand the document. A proposal is: documentType_date_hash
 
 
+[ ] add a new use case that reads a directory following this logic.
 
+- data
+    - type 1
+        - date_hash1
+        - date_hash2
+    - type 1
+        - date_hash1
+        - date_hash2
 
-make an experiment: the hash of a document is the same even if the file name is c
+then, load all in documents with balance. This will help up have the so called "timeline"

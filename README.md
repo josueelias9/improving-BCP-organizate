@@ -13,61 +13,6 @@ Start dev container and follow `README.md` file inside it
 ![alt text](image.png)
 
 
-## DB design
-
-This is the design of the application and the database
-
-- Document: the representation of a place that stores money
-
-```mermaid
-erDiagram
-    USER {
-        _ name
-        _ is_active
-    }
-
-    TRANSACTION {
-        _ description
-        _ amount
-        _ transaction_type
-        _ date
-        _ currency
-        _ unique_identifier 
-        _ history
-        _ order
-    }
-
-    CATEGORY {
-        _ name
-        _ description
-        _ subcategory
-    }
-
-    DOCUMENT_TYPE {
-        _ name
-    }
-
-
-    DOCUMENT {
-        json data "all meaningfull data that can be extracted"
-        _ unique_identifier "this is created concatenating other attributes"
-        bool processed
-        _ time_range "not sure about this. It can be inferred from the first and last transaction date"
-        _ plain_text
-        float balance "net amount"
-    }
-
-    %% Relaciones
-    USER ||--o{ DOCUMENT : "has"
-    DOCUMENT ||--o{ TRANSACTION : "has"
-    USER ||--o{ TRANSACTION : "realize"
-    TRANSACTION }o--|| CATEGORY : "pertenece a"
-    CATEGORY ||--o| CATEGORY : "may have"
-    DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"
-```
-
-
-
 
 ## project architecture
 
