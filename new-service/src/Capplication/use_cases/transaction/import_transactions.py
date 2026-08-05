@@ -12,7 +12,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOImportTransactionsResponse,
     DTOImportTransactionsRequest,
 )
-from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway, IDocumentDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -24,16 +24,11 @@ class ImportTransactionsUseCase:
         self,
         transaction_gateway: ITransactionDbGateway,
         category_gateway: ICategoryDbGateway,
+        document_gateway: IDocumentDbGateway,
     ):
-        """
-        Initialize use case with gateway dependencies
-
-        Args:
-            transaction_gateway: Transaction gateway interface
-            category_gateway: Category gateway interface
-        """
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway
+        self.document_gateway = document_gateway
 
     def execute(
         self, dto_request: DTOImportTransactionsRequest
@@ -49,7 +44,18 @@ class ImportTransactionsUseCase:
         """
         try:
             # 1. Find the CSV file
-            csv_path = Path(f"/workspace/files/exports/{dto_request.csv_filename}.csv")
+            document = self.document_gateway.get_by_unique_identifier(dto_request.csv_filename)
+            if not document:
+                return DTOImportTransactionsResponse(
+                    success=False,
+                    updated_count=0,
+                    skipped_count=0,
+                    errors=[f"Document not found for unique identifier: {dto_request.csv_filename}"],
+                    total_rows=0,
+                    message="Document not found",
+                )
+            filename = f"{document.document_type_name}__{document.end_date}__{document.unique_identifier}"
+            csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 
             if not csv_path.exists():
                 return DTOImportTransactionsResponse(

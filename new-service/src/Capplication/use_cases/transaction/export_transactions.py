@@ -73,7 +73,7 @@ class ExportTransactionsUseCase:
 
             # 4. Generate filename
             doc = self.document_gateway.get_by_id(document_id)
-            filename = f"{doc.unique_identifier}.csv"
+            filename = f"{doc.document_type_name}__{doc.end_date}__{doc.unique_identifier}.csv"
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(
@@ -111,6 +111,7 @@ class ExportTransactionsUseCase:
                 error_message=f"Internal error: {str(e)}",
             )
 
+    # TODO: i think this should go in the file driver gateway, but for now it's here
     def _generate_csv(self, transactions: List[dict]) -> str:
         """
         Generate CSV content from transactions
@@ -130,7 +131,6 @@ class ExportTransactionsUseCase:
             "category_name",
             "unique_identifier",
             "history",
-            "document_unique_identifier",
         ]
         writer.writerow(headers)
 
@@ -140,10 +140,9 @@ class ExportTransactionsUseCase:
             category_name = transaction.category_name or ""
             unique_identifier = transaction.unique_identifier or ""
             history = transaction.history or ""
-            document_unique_identifier = transaction.document_unique_identifier or ""
 
             writer.writerow(
-                [category_name, unique_identifier, history, document_unique_identifier]
+                [category_name, unique_identifier, history]
             )
 
         return output.getvalue()

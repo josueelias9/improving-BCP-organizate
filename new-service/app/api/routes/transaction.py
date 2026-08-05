@@ -140,9 +140,11 @@ def import_transactions(
     try:
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
+        document_gateway = DocumentDbGateway(session)
         use_case = ImportTransactionsUseCase(
             transaction_gateway,
             category_gateway,
+            document_gateway,
         )
         dto_request = DTOImportTransactionsRequest(csv_filename=csv_filename)
         return use_case.execute(dto_request)
