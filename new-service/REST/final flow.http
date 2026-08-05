@@ -31,7 +31,7 @@ content-type: application/json
 ###
 
 # @name importTransactions
-POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[4].id}} HTTP/1.1
+POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
 content-type: application/json
 
 ###

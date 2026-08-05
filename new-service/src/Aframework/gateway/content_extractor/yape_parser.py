@@ -38,11 +38,11 @@ _TIPO_MAP = {
 }
 
 
-def _parse_date(fecha_str: str) -> Optional[date]:
+def _parse_datetime(fecha_str: str) -> Optional[datetime]:
     if not fecha_str:
         return None
     try:
-        return datetime.strptime(fecha_str, _DATE_FMT).date()
+        return datetime.strptime(fecha_str, _DATE_FMT)
     except ValueError:
         logger.warning(f"Unrecognised date format: {fecha_str}")
         return None
@@ -83,14 +83,14 @@ class YapeParser(IStatementParser):
         return None
 
     def get_initial_day(self, full_text: str) -> Optional[date]:
-        dates = [_parse_date(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")]
-        valid = [d for d in dates if d]
-        return min(valid) if valid else None
+        datetimes = [_parse_datetime(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")]
+        valid = [d for d in datetimes if d]
+        return min(valid).date() if valid else None
 
     def get_final_day(self, full_text: str) -> Optional[date]:
-        dates = [_parse_date(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")]
-        valid = [d for d in dates if d]
-        return max(valid) if valid else None
+        datetimes = [_parse_datetime(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")]
+        valid = [d for d in datetimes if d]
+        return max(valid).date() if valid else None
 
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         rows = json.loads(full_text)
@@ -110,7 +110,7 @@ class YapeParser(IStatementParser):
             # Store the raw message as history when available
             history = row.get("mensaje")
 
-            transaction_date = _parse_date(row.get("fecha"))
+            transaction_date = _parse_datetime(row.get("fecha"))
 
             entities.append(
                 TransactionEntity(

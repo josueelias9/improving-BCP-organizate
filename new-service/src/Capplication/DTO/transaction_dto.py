@@ -7,7 +7,7 @@ Internal domain logic uses entities from Denterprise layer.
 """
 
 import uuid
-from datetime import date
+from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, ConfigDict
 
@@ -80,7 +80,7 @@ class DTOTransaction(BaseModel):
     history: Optional[str]
     amount: float
     transaction_type: str
-    transaction_date: Optional[date]
+    transaction_date: Optional[datetime]
     currency: Optional[str]
     document_document_format_name: Optional[str]
     unique_identifier: Optional[str]

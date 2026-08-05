@@ -10,7 +10,7 @@ This is an INPUT ADAPTER that:
 
 import re
 import logging
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional, Tuple
 
 from src.Capplication.gateway.content_extractor import IStatementParser
@@ -91,7 +91,7 @@ class BCPDebitParser(IStatementParser):
                     description=tx.get("description", ""),
                     amount=amount,
                     transaction_type=transaction_type,
-                    transaction_date=tx.get("fecha_valor"),
+                    transaction_date=datetime.combine(tx["fecha_valor"], datetime.min.time()) if tx.get("fecha_valor") else None,
                     currency=currency_code,
                 )
             )

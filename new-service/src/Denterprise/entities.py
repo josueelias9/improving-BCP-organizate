@@ -1,5 +1,5 @@
 import hashlib
-from datetime import date
+from datetime import date, datetime
 from typing import Optional, List
 from enum import Enum
 from dataclasses import dataclass
@@ -51,7 +51,7 @@ class TransactionEntity:
     history: Optional[str] = None
     amount: float = 0.0
     transaction_type: str = ""
-    transaction_date: Optional[date] = None
+    transaction_date: Optional[datetime] = None
     # TODO: currency is not being validated. Maybe pyndantic could fix this
     currency: Currency = None
     unique_identifier: Optional[str] = None
@@ -70,7 +70,7 @@ class TransactionEntity:
         Returns:
             Unique identifier string
         """
-        self.unique_identifier = f"{self.transaction_type}__{self.transaction_date.strftime('%Y-%m-%d')}__{self.order}__{self.amount}__{self.description}"
+        self.unique_identifier = f"{self.transaction_type}__{self.transaction_date.strftime('%Y-%m-%dT%H:%M:%S')}__{self.order}__{self.amount}__{self.description}"
 
 
 @dataclass

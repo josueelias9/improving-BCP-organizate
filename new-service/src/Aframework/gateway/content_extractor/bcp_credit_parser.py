@@ -11,7 +11,7 @@ This is an INPUT ADAPTER that:
 
 import re
 import logging
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional, Dict, Any
 
 from src.Capplication.gateway.content_extractor import IStatementParser
@@ -110,7 +110,9 @@ class BCPCreditParser(IStatementParser):
             for idx, tx in enumerate(raw_transactions):
                 fecha_valor_str = tx.get("fecha_valor")
                 transaction_date = (
-                    date.fromisoformat(fecha_valor_str) if fecha_valor_str else None
+                    datetime.combine(date.fromisoformat(fecha_valor_str), datetime.min.time())
+                    if fecha_valor_str
+                    else None
                 )
                 cargos = float(tx.get("cargos", 0.0))
                 abonos = float(tx.get("abonos", 0.0))

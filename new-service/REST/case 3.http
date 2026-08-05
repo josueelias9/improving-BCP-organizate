@@ -2,16 +2,11 @@
 
 @host = localhost:8000
 
-
 ###
 
 # @name getDocument
-
 GET http://{{host}}/document/ HTTP/1.1
 content-type: application/json
-
-
-
 
 ### the csv_filename must have a coincidence with the unique_identifier of the document created in the previous step
 

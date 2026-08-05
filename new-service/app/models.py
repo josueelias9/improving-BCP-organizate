@@ -44,7 +44,7 @@ class TransactionBase(SQLModel):
     history: Optional[str] = Field(default=None)
     amount: float
     transaction_type: TransactionType
-    transaction_date: Optional[date] = Field(default=None)  # fecha_consumo
+    transaction_date: Optional[datetime] = Field(default=None)  # fecha_consumo
     currency: Currency
     unique_identifier: Optional[str] = Field(default=None, max_length=500)
     created_at: datetime = Field(default_factory=datetime.utcnow)
