@@ -56,7 +56,7 @@ class TransactionEntity:
     currency: Currency = None
     unique_identifier: Optional[str] = None
     category_id: Optional[uuid.UUID] = None
-    document_id: Optional[uuid.UUID] = None
+    document_id: Optional[str] = None
     id: Optional[uuid.UUID] = None
     category_name: Optional[str] = None
     document_document_type_name: Optional[str] = None
@@ -88,18 +88,17 @@ class DocumentEntity:
     """Document entity - represents a financial document"""
 
     data: List[Dict[str, Any]] = field(default_factory=list)
-    unique_identifier: Optional[str] = None
     processed: bool = False
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     user_id: Optional[uuid.UUID] = None
     document_type_id: Optional[uuid.UUID] = None
-    id: Optional[uuid.UUID] = None
+    id: Optional[str] = None
     plain_text: Optional[str] = None
     document_type_name: Optional[str] = None
 
-    def generate_unique_identifier(self):
-        self.unique_identifier = hashlib.sha256(self.plain_text.encode()).hexdigest()
+    def generate_id(self):
+        self.id = hashlib.sha256(self.plain_text.encode()).hexdigest()
 
 
 # con respecto al unique identifier

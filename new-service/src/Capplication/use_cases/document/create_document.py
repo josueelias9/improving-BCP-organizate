@@ -109,7 +109,6 @@ class CreateDocumentUseCase:
                 return DTOCreateDocumentResponse(
                     success=True,
                     document_id=str(result_document.id),
-                    unique_identifier=result_document.unique_identifier,
                     already_exists=True,
                     transactions_count=len(document.data),
                     document_processed=result_document.processed,
@@ -120,7 +119,6 @@ class CreateDocumentUseCase:
             return DTOCreateDocumentResponse(
                 success=True,
                 document_id=str(result_document.id),
-                unique_identifier=result_document.unique_identifier,
                 already_exists=False,
                 transactions_count=len(document.data),
                 document_processed=result_document.processed,

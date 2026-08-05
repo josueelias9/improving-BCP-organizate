@@ -43,8 +43,8 @@ erDiagram
 
 
     DOCUMENT {
+        string id "this is generated with the hash of the content of the document"
         json data "all meaningfull data that can be extracted"
-        _ unique_identifier "this is created concatenating other attributes"
         bool processed
         _ time_range "not sure about this. It can be inferred from the first and last transaction date"
         _ plain_text

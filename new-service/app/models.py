@@ -34,7 +34,6 @@ class DocumentBase(SQLModel):
     data: Optional[Dict[str, Any]] = Field(
         default=None, sa_column=Column(JSON)
     )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
-    unique_identifier: Optional[str] = Field(default=None, max_length=500)
     processed: bool = Field(default=False)
     start_date: Optional[date] = Field(default=None)
     end_date: Optional[date] = Field(default=None)
@@ -99,9 +98,7 @@ class Category(CategoryBase, table=True):
 class Document(DocumentBase, table=True):
     __tablename__ = "documents"
 
-    id: uuid.UUID = Field(
-        default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
-    )
+    id: str = Field(primary_key=True, index=True, nullable=False, max_length=64)
     user_id: uuid.UUID = Field(foreign_key="users.id")
     document_type_id: uuid.UUID = Field(foreign_key="document_types.id")
 
@@ -117,7 +114,7 @@ class Transaction(TransactionBase, table=True):
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
     )
-    document_id: uuid.UUID = Field(foreign_key="documents.id")
+    document_id: str = Field(foreign_key="documents.id")
     category_id: Optional[uuid.UUID] = Field(
         default=uuid.UUID("00000000-0000-0000-0000-000000000013"),
         foreign_key="categories.id",

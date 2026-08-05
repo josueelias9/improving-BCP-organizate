@@ -57,8 +57,8 @@ def get_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 1000,
-    document_id: Optional[uuid.UUID] = Query(
-        default=None, description="Filter by document UUID"
+    document_id: Optional[str] = Query(
+        default=None, description="Filter by document ID"
     ),
 ) -> DTOGetTransactionsResponse:
     """
@@ -93,8 +93,8 @@ def get_transactions(
 @router.get("/export", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     session: SessionDep,
-    document_id: Optional[uuid.UUID] = Query(
-        None, description="Filter by document UUID"
+    document_id: Optional[str] = Query(
+        None, description="Filter by document ID"
     ),
     document_unique_identifier: Optional[str] = Query(
         None, description="Filter by document unique identifier"
@@ -173,7 +173,7 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
     "/{document_id}",
     response_model=DTOCreateTransactionsResponse,
 )
-def create_transactions(document_id: uuid.UUID, session: SessionDep):
+def create_transactions(document_id: str, session: SessionDep):
     """
     Load transactions from a document's data column into the transactions table.
 

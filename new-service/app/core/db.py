@@ -70,7 +70,6 @@ def init_db(session: Session) -> None:
             document = Document(
                 id=document_data["id"],
                 processed=document_data["processed"],
-                unique_identifier=document_data["unique_identifier"],
                 data=document_data["data"],
                 document_type_id=document_data["document_type_id"],
                 user_id=document_data["user_id"],

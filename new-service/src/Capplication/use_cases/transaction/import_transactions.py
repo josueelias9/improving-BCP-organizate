@@ -44,7 +44,7 @@ class ImportTransactionsUseCase:
         """
         try:
             # 1. Find the CSV file
-            document = self.document_gateway.get_by_unique_identifier(dto_request.csv_filename)
+            document = self.document_gateway.get_by_id(dto_request.csv_filename)
             if not document:
                 return DTOImportTransactionsResponse(
                     success=False,
@@ -54,7 +54,7 @@ class ImportTransactionsUseCase:
                     total_rows=0,
                     message="Document not found",
                 )
-            filename = f"{document.document_type_name}__{document.end_date}__{document.unique_identifier}"
+            filename = f"{document.document_type_name}__{document.end_date}__{document.id}"
             csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 
             if not csv_path.exists():

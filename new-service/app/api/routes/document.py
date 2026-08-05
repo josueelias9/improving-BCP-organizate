@@ -1,5 +1,4 @@
 import logging
-import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
@@ -45,8 +44,7 @@ async def get_documents(
     Get all documents with pagination
 
     Returns all documents with their properties including:
-    - id, unique_identifier
-    - processed status, user_id, document_type_id
+    - id (SHA256 hash of plain text), processed status, user_id, document_type_id
     - transactions count
     """
     try:
@@ -112,7 +110,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
 
 
 @router.delete("/{document_id}")
-def delete_document(session: SessionDep, document_id: uuid.UUID) -> dict:
+def delete_document(session: SessionDep, document_id: str) -> dict:
     document_db_gateway = DocumentDbGateway(session)
     delete_document_use_case = DeleteDocumentUseCase(document_db_gateway)
     delete_document_use_case.execute(document_id)

@@ -3,7 +3,6 @@ Implements document persistence operations
 Maps between SQLModel Document and domain Document entity
 """
 
-import uuid
 import logging
 from sqlmodel import Session, select
 from typing import Optional
@@ -21,7 +20,7 @@ class DocumentDbGateway(IDocumentDbGateway):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_by_id(self, document_id: uuid.UUID) -> DocumentEntity:
+    def get_by_id(self, document_id: str) -> DocumentEntity:
         """Retrieve document and map to domain entity"""
         db_document = self.session.get(DocumentModel, document_id)
         if not db_document:
@@ -31,7 +30,6 @@ class DocumentDbGateway(IDocumentDbGateway):
         return DocumentEntity(
             data=db_document.data,
             id=db_document.id,
-            unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
             start_date=db_document.start_date,
             end_date=db_document.end_date,
@@ -39,7 +37,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             document_type_name=db_document.document_type.name,
         )
 
-    def mark_as_processed(self, document_id: uuid.UUID) -> None:
+    def mark_as_processed(self, document_id: str) -> None:
         """Mark document as processed"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:
@@ -48,41 +46,24 @@ class DocumentDbGateway(IDocumentDbGateway):
             self.session.commit()
             logger.info(f"Document {document_id} marked as processed")
 
-    def get_by_unique_identifier(
-        self, unique_identifier: str
-    ) -> Optional[DocumentEntity]:
-        """Get document by unique_identifier and map to domain entity"""
-        statement = select(DocumentModel).where(
-            DocumentModel.unique_identifier == unique_identifier
-        )
-        db_document = self.session.exec(statement).first()
-
-        if not db_document:
-            return None
-
-        return self._map_to_entity(db_document)
-
     def get_or_create(self, document: DocumentEntity):
         """Return existing document or create a new one."""
-        document.generate_unique_identifier()
+        document.generate_id()
 
-        statement = select(DocumentModel).where(
-            DocumentModel.unique_identifier == document.unique_identifier
-        )
-        db_document = self.session.exec(statement).first()
+        db_document = self.session.get(DocumentModel, document.id)
 
         if db_document:
             return self._map_to_entity(db_document), False
 
         db_document = DocumentModel(
+            id=document.id,
             data=document.data,
-            unique_identifier=document.unique_identifier,
             processed=document.processed,
             start_date=document.start_date,
             end_date=document.end_date,
             user_id=document.user_id,
             document_type_id=document.document_type_id,
-            plain_text=document.plain_text,  # Store the plain text in the database
+            plain_text=document.plain_text,
         )
 
         self.session.add(db_document)
@@ -95,13 +76,13 @@ class DocumentDbGateway(IDocumentDbGateway):
         self, skip: int = 0, limit: int = 100
     ) -> list[DocumentEntity]:
         """Get all documents as domain entities with pagination"""
-        statement = select(DocumentModel).offset(skip).limit(limit)
+        statement = select(DocumentModel).order_by(DocumentModel.id).offset(skip).limit(limit)
         documents = self.session.exec(statement).all()
 
         # Map all documents to domain entities
         return [self._map_to_entity(doc) for doc in documents]
 
-    def delete(self, document_id: uuid.UUID) -> None:
+    def delete(self, document_id: str) -> None:
         """Delete document and its associated transactions by ID"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:
@@ -113,11 +94,8 @@ class DocumentDbGateway(IDocumentDbGateway):
 
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""
-        # Extract transactions from nested JSON structure
-
         return DocumentEntity(
             id=db_document.id,
-            unique_identifier=db_document.unique_identifier,
             processed=db_document.processed,
             start_date=db_document.start_date,
             end_date=db_document.end_date,

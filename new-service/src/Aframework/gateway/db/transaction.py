@@ -25,7 +25,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         self.session = session
 
     def save_batch(
-        self, transactions: List[TransactionEntity], document_id: uuid.UUID
+        self, transactions: List[TransactionEntity], document_id: str
     ) -> Tuple[int, int, List[str]]:
         """Save multiple transactions from domain entities to database"""
         loaded_count = 0
@@ -75,7 +75,7 @@ class TransactionDbGateway(ITransactionDbGateway):
         self,
         skip: int = 0,
         limit: int = 100,
-        document_id: Optional[uuid.UUID] = None,
+        document_id: Optional[str] = None,
     ) -> List[TransactionEntity]:
         """Get all transactions with pagination and optional document filter"""
 
@@ -107,7 +107,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     unique_identifier=transaction.unique_identifier,
                     category_name=transaction.category.name,
                     document_document_type_name=transaction.document.document_type.name,
-                    document_unique_identifier=transaction.document.unique_identifier,
+                    document_unique_identifier=transaction.document.id,
                 )
                 entities.append(entity)
             except Exception as e:
@@ -173,7 +173,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             raise ValueError(f"Error updating transaction: {str(e)}")
 
     def get_by_document_id(
-        self, document_id: uuid.UUID = None
+        self, document_id: str = None
     ) -> List[TransactionEntity]:
         """Get all transactions with optional filters, including category name"""
         # Build query
@@ -200,7 +200,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                 unique_identifier=t.unique_identifier,
                 category_name=t.category.name if t.category else None,
                 document_unique_identifier=(
-                    t.document.unique_identifier if t.document else None
+                    t.document.id if t.document else None
                 ),
             )
             result.append(entity)

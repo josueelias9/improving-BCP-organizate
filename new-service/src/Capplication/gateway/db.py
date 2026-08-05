@@ -19,7 +19,7 @@ class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
 
     @abstractmethod
-    def get_by_id(self, document_id: uuid.UUID) -> DocumentEntity:
+    def get_by_id(self, document_id: str) -> DocumentEntity:
         """
         Retrieve document by ID
 
@@ -32,29 +32,17 @@ class IDocumentDbGateway(ABC):
         pass
 
     @abstractmethod
-    def mark_as_processed(self, document_id: uuid.UUID) -> None:
+    def mark_as_processed(self, document_id: str) -> None:
         """Mark document as processed"""
         pass
 
     @abstractmethod
-    def get_by_unique_identifier(
-        self, unique_identifier: str
-    ) -> Optional[DocumentEntity]:
-        """
-        Get document by unique identifier
-
-        Returns:
-            Domain Document entity if found, None otherwise
-        """
-        pass
-
-    @abstractmethod
-    def delete(self, document_id: uuid.UUID) -> None:
+    def delete(self, document_id: str) -> None:
         """
         Delete document by ID
 
         Args:
-            document_id: UUID of the document to delete
+            document_id: hash-based ID of the document to delete
         """
         pass
 

@@ -15,14 +15,12 @@ from pydantic import BaseModel, ConfigDict
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
-    document_id: Optional[uuid.UUID] = None
-    document_unique_identifier: Optional[str] = None
+    document_id: Optional[str] = None
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                "document_unique_identifier": "TEXTOEJEMPLO__2025-01-01__bcp_debit",
+                "document_id": "a1b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80",
             }
         }
     }
@@ -35,7 +33,7 @@ class DTOExportTransactionsResponse(BaseModel):
     filename: str
     transaction_count: int
     file_path: Optional[str] = None
-    document_id: Optional[uuid.UUID] = None
+    document_id: Optional[str] = None
     error_message: Optional[str] = None
 
 
@@ -179,12 +177,12 @@ class DTOUpdateTransactionsRequest(BaseModel):
 
 
 class DTOCreateTransactionsRequest(BaseModel):
-    document_id: uuid.UUID
+    document_id: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "document_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "document_id": "a1b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80",
             }
         }
     }
