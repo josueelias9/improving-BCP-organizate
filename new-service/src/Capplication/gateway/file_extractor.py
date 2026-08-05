@@ -5,6 +5,7 @@ Defines contracts for file system operations
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import List
 
 
 class IFileExtractorGateway(ABC):
@@ -57,4 +58,14 @@ class IFileExtractorGateway(ABC):
             FileNotFoundError: If file does not exist
             IOError: If file cannot be read
         """
+        pass
+
+    @abstractmethod
+    def list_subdirectories(self, directory: str) -> List[str]:
+        """Return full paths of immediate subdirectories inside directory."""
+        pass
+
+    @abstractmethod
+    def list_files(self, directory: str, extension: str) -> List[str]:
+        """Return full paths of files matching extension (case-insensitive) inside directory."""
         pass

@@ -8,11 +8,14 @@ from api.deps import SessionDep
 from src.Capplication.use_cases.document.get_documents import GetDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
+from src.Capplication.use_cases.document.bulk_create_documents import BulkCreateDocumentsUseCase
 from src.Capplication.DTO.document_dto import (
     DTOGetDocumentsRequest,
     DTOGetDocumentsResponse,
     DTOCreateDocumentRequest,
     DTOCreateDocumentResponse,
+    DTOBulkCreateDocumentsRequest,
+    DTOBulkCreateDocumentsResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
@@ -117,3 +120,27 @@ def delete_document(session: SessionDep, document_id: uuid.UUID) -> dict:
         "message": f"Document {document_id} deleted successfully",
         "status": "success",
     }
+
+
+@router.post("/bulk", response_model=DTOBulkCreateDocumentsResponse)
+async def bulk_create_documents(dto_request: DTOBulkCreateDocumentsRequest, session: SessionDep):
+    """
+    Scan base_directory subfolders and create documents for every PDF found.
+    Each subfolder name is used as the document type.
+    """
+    try:
+        parsers = {
+            "bcp_credit": BCPCreditParser(),
+            "bcp_debit": BCPDebitParser(),
+        }
+        use_case = BulkCreateDocumentsUseCase(
+            document_gateway=DocumentDbGateway(session),
+            user_gateway=UserDbGateway(session),
+            document_type_gateway=DocumentTypeDbGateway(session),
+            file_extractor_gateway=FileExtractorGateway(),
+            parsers=parsers,
+        )
+        return use_case.execute(dto_request)
+    except Exception as e:
+        logger.error(f"Error in bulk document creation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Bulk creation failed: {str(e)}")

@@ -36,3 +36,10 @@ new-service/
 
 
 [ ] parse balance. This will help up have the so called "timeline"
+
+
+
+
+
+
+[ ] to avoid confusion, and respecting the theory of DB, we are going to set the hash as id and remove the unique_identifier attribute, only for the docuemnt entity and model

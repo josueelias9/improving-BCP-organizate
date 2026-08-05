@@ -1,22 +1,28 @@
 @host = localhost:8000
-@path = /downloads/documents/bcp_debit
+@path = /downloads/documents/bcp_credit
 @fileName = EECC062026_05628441.PDF
 @uniqueIdentifier = a12b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80
+
 ###
 
-# @name createDocument
-POST http://{{host}}/document HTTP/1.1
+POST http://{{host}}/document/bulk HTTP/1.1
 content-type: application/json
 
 {
-  "pdf_filepath": "{{path}}/{{fileName}}",
+  "base_directory": "/downloads/documents",
   "user_email": "admin@bcpextractor.com"
 }
 
 ###
 
+# @name getDocuments
+GET http://{{host}}/document/ HTTP/1.1
+content-type: application/json
+
+###
+
 # @name createTransactions
-POST http://{{host}}/transactions/{{createDocument.response.body.$.document_id}} HTTP/1.1
+POST http://{{host}}/transactions/{{getDocuments.response.body.$.documents[2].id}} HTTP/1.1
 content-type: application/json
 
 ###
@@ -28,7 +34,7 @@ content-type: application/json
 ###
 
 # @name importTransactions
-POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[1].unique_identifier}} HTTP/1.1
+POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[2].unique_identifier}} HTTP/1.1
 content-type: application/json
 
 ###

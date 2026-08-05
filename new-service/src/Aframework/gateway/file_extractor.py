@@ -54,3 +54,10 @@ class FileExtractorGateway(IFileExtractorGateway):
         except Exception as e:
             logger.error(f"Error reading file {filepath}: {str(e)}")
             raise IOError(f"Failed to read file: {str(e)}")
+
+    def list_subdirectories(self, directory: str) -> list[str]:
+        return [str(p) for p in Path(directory).iterdir() if p.is_dir()]
+
+    def list_files(self, directory: str, extension: str) -> list[str]:
+        ext = extension.lower()
+        return [str(p) for p in Path(directory).iterdir() if p.is_file() and p.suffix.lower() == ext]
