@@ -202,14 +202,8 @@ def create_transactions(document_id: uuid.UUID, session: SessionDep):
 
         return use_case.execute(dto_request)
 
-    except ValueError as e:
-        # Business validation errors
-        error_msg = str(e)
-
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=404, detail=error_msg)
-        else:
-            raise HTTPException(status_code=400, detail=error_msg)
+    except HTTPException:
+        raise
 
     except Exception as e:
         # Unexpected errors
@@ -263,14 +257,8 @@ def update_transaction(
         # TODO: fix this
         return DTOUpdateTransactionResponse(**result)
 
-    except ValueError as e:
-        # Business validation errors
-        error_msg = str(e)
-
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=404, detail=error_msg)
-        else:
-            raise HTTPException(status_code=400, detail=error_msg)
+    except HTTPException:
+        raise
 
     except Exception as e:
         # Unexpected errors

@@ -9,7 +9,6 @@ import os
 import fitz
 from dotenv import load_dotenv
 
-from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 from src.Denterprise.entities import DocumentEntity, UserEntity
 from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
@@ -58,7 +57,6 @@ class CreateDocumentUseCase:
         Raises:
             ValueError: If validation fails
             FileNotFoundError: If PDF file not found
-            UnsupportedDocumentTypeException: If document type is not supported
         """
 
         pdf_filepath = request.pdf_filepath
@@ -70,12 +68,10 @@ class CreateDocumentUseCase:
             if not self.file_extractor_gateway.file_exists(pdf_filepath):
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
-            # Validate document type (business rule)
-            self._validate_document_type(document_type)
-
             # Get or create user entity
             user = self._get_or_create_user(user_email)
 
+            # Get document type entity from database
             doc_type = self.document_type_gateway.get_by_name(document_type)
 
             if not doc_type:
@@ -150,9 +146,9 @@ class CreateDocumentUseCase:
                     if pdf_document.authenticate(password):
                         logger.info("PDF decrypted successfully")
                     else:
-                        raise Exception("Incorrect password for PDF")
+                        raise ValueError("Incorrect password for PDF")
                 else:
-                    raise Exception("PDF is encrypted but no password provided")
+                    raise ValueError("PDF is encrypted but no password provided")
 
             logger.info(f"PDF has {pdf_document.page_count} pages")
 
@@ -167,26 +163,6 @@ class CreateDocumentUseCase:
         except Exception as e:
             logger.error(f"Error with PyMuPDF: {str(e)}")
             raise
-
-    def _validate_document_type(self, document_type: str) -> None:
-        """
-        Validate that the document type is supported (business rule)
-
-        Args:
-            document_type: Type of document to validate
-
-        Raises:
-            UnsupportedDocumentTypeException: If document type is not supported
-        """
-        # Get all document types from database
-        all_doc_types = self.document_type_gateway.get_all()
-        supported_types = [dt.name for dt in all_doc_types]
-
-        # Validate against database types
-        if document_type not in supported_types:
-            raise UnsupportedDocumentTypeException(
-                document_type=document_type, supported_types=supported_types
-            )
 
     # TODO: isnt this a user_gateway method?
     def _get_or_create_user(self, user_email: str):

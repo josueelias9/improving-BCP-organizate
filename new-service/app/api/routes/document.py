@@ -19,7 +19,6 @@ from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
-from src.Denterprise.exceptions import UnsupportedDocumentTypeException
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +57,8 @@ async def get_documents(
 
         return use_case.execute(dto_request)
 
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error retrieving documents: {str(e)}"
@@ -103,12 +102,6 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         # Use case returns DTO for controller response
         return use_case.execute(dto_request)
 
-    # TODO: maybe we can use just the internal error, but it depends if these errors can response using http
-    except UnsupportedDocumentTypeException as e:
-        # Adapt business exception to HTTP response
-        raise HTTPException(status_code=501, detail=str(e))
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:
