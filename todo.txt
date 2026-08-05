@@ -18,3 +18,8 @@ new-service/
 
 
 [ ] batch only for multiple categories (not history)
+
+
+
+
+make an experiment: the hash of a document is the same even if the file name is c

@@ -15,7 +15,7 @@ Start dev container and follow `README.md` file inside it
 
 ## DB design
 
-This is the design of the application and de database
+This is the design of the application and the database
 
 - Document: the representation of a place that stores money
 
@@ -89,8 +89,8 @@ sequenceDiagram
     DocumentUseCase->>FastAPI: DTOResponse
 ```
 
-in general, this is the pattern we are using for this project:
 
+in general, this is the pattern we are using for this project:
 
 ```mermaid
 sequenceDiagram
@@ -114,6 +114,7 @@ sequenceDiagram
     route->>FastAPI: 
 
 ```
+
 
 The original architecture: For this project the `Interface Adapters` layer was removed to take advantage of FastAPI and swagger. the idea was to use the DTO directly in the routes to generate the documentation automatically, otherwise, and aditional layer of DTO (FastAPI DTO) would have been required.
 

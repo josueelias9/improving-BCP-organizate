@@ -26,7 +26,7 @@ poetry run streamlit run app.py
 ```
 
 - be sure you have downloaded the file to analyze in you download directory (in Windows)
-- go to `./REST/README.md` and follow the `final flow` step. This consolites the complete process you need to follow.
+- go to [README.md](./REST/README.md) and follow the `final flow` step. This consolites the complete process you need to follow.
 
 ### other options
 
