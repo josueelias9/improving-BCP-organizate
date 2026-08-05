@@ -1,3 +1,4 @@
+import hashlib
 from datetime import date
 from typing import Optional, Dict, Any, List
 from enum import Enum
@@ -98,8 +99,7 @@ class DocumentEntity:
     document_type_name: Optional[str] = None
 
     def generate_unique_identifier(self):
-        prefix = self.plain_text.strip().replace(" ", "").replace("\n", "")[:20]
-        self.unique_identifier = f"{prefix}__{self.start_date.strftime('%Y-%m-%d')}__{self.document_type_name}"
+        self.unique_identifier = hashlib.sha256(self.plain_text.encode()).hexdigest()
 
 
 # con respecto al unique identifier
