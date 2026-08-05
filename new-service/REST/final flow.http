@@ -1,8 +1,7 @@
 @host = localhost:8000
-@path = /downloads
+@path = /downloads/documents/bcp_debit
 @fileName = EECC062026_05628441.PDF
-@uniqueIdentifier = ---PAGE1---EstadodeC__2026-06-01__bcp_debit
-@type = bcp_debit
+@uniqueIdentifier = a12b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80
 ###
 
 # @name createDocument
@@ -10,7 +9,6 @@ POST http://{{host}}/document HTTP/1.1
 content-type: application/json
 
 {
-  "document_type": "{{type}}",
   "pdf_filepath": "{{path}}/{{fileName}}",
   "user_email": "admin@bcpextractor.com"
 }

@@ -16,13 +16,11 @@ Internal domain logic uses entities from Denterprise layer.
 class DTOCreateDocumentRequest(BaseModel):
     pdf_filepath: str
     user_email: str
-    document_type: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "pdf_filepath": "/shared_files/examples/EECC102025_07750301.PDF",
-                "document_type": "bcp_debit",
+                "pdf_filepath": "/downloads/documents/bcp_debit/EECC102025_07750301.PDF",
                 "user_email": "admin@bcpextractor.com",
             }
         }

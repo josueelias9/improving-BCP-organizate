@@ -72,6 +72,7 @@ s2 : Update Transaction
 
 stateDiagram
 cd : Create Document
+cds : Create Documents
 ct : Create Transactions
 it : Import Transactions
 gd : Get Documents

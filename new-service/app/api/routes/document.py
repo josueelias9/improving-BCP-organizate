@@ -1,5 +1,6 @@
 import logging
 import uuid
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Query
 from api.deps import SessionDep
@@ -82,8 +83,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         document_type_gateway = DocumentTypeDbGateway(session)
         file_extractor_gateway = FileExtractorGateway()
 
-        doc_type = document_type_gateway.get_by_name(dto_request.document_type)
-        document_type_name = doc_type.name if doc_type else dto_request.document_type
+        document_type_name = Path(dto_request.pdf_filepath).parent.name
         parser_gateway = (
             BCPCreditParser()
             if document_type_name == "bcp_credit"

@@ -5,6 +5,7 @@ Orchestrates the flow of processing a PDF and creating a document
 
 import logging
 import os
+from pathlib import Path
 
 import fitz
 from dotenv import load_dotenv
@@ -61,7 +62,7 @@ class CreateDocumentUseCase:
 
         pdf_filepath = request.pdf_filepath
         user_email = request.user_email
-        document_type = request.document_type
+        document_type = Path(pdf_filepath).parent.name
 
         try:
             # Check if file exists using file system gateway
