@@ -54,7 +54,6 @@ erDiagram
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
     DOCUMENT ||--o{ TRANSACTION : "has"
-    USER ||--o{ TRANSACTION : "realize"
     TRANSACTION }o--|| CATEGORY : "pertenece a"
     CATEGORY ||--o| CATEGORY : "may have"
     DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"

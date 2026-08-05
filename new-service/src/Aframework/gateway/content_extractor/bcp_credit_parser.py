@@ -43,6 +43,9 @@ class BCPCreditParser(IStatementParser):
         "DIC": "12",
     }
 
+    def get_balance(self, full_text: str) -> Optional[float]:
+        pass
+
     def get_initial_day(self, full_text: str) -> Optional[date]:
 
         # Extract date range

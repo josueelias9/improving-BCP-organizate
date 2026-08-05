@@ -43,6 +43,10 @@ class BCPDebitParser(IStatementParser):
         "SET": "09",  # Setiembre
     }
 
+    def get_balance(self, full_text: str) -> Optional[float]:
+        """Extract previous balance from BCP PDF text"""
+        return self._extract_saldo_anterior(full_text)
+
     def get_initial_day(self, full_text: str) -> Optional[date]:
         return self._extract_period(full_text)[0]
 
@@ -57,13 +61,11 @@ class BCPDebitParser(IStatementParser):
         """
         # Use parser from Denterprise layer for business logic
         account_code, currency = self._extract_account_code(full_text)
-        saldo_anterior = self._extract_saldo_anterior(full_text)
         transactions = self._parse_transactions(full_text)
 
         data = {
             "account_code": account_code,
             "currency": currency,
-            "saldo_anterior": saldo_anterior,
             "transactions": [],
         }
         for transaction in transactions:

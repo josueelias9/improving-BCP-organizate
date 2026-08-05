@@ -87,6 +87,7 @@ class CategoryEntity:
 class DocumentEntity:
     """Document entity - represents a financial document"""
 
+    balance: Optional[float] = None
     data: List[Dict[str, Any]] = field(default_factory=list)
     processed: bool = False
     start_date: Optional[date] = None

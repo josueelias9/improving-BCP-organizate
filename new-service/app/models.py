@@ -34,6 +34,7 @@ class DocumentBase(SQLModel):
     data: Optional[Dict[str, Any]] = Field(
         default=None, sa_column=Column(JSON)
     )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
+    balance: Optional[float] = Field(default=None)
     processed: bool = Field(default=False)
     start_date: Optional[date] = Field(default=None)
     end_date: Optional[date] = Field(default=None)

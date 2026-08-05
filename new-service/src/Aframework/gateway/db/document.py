@@ -58,6 +58,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         db_document = DocumentModel(
             id=document.id,
             data=document.data,
+            balance=document.balance,
             processed=document.processed,
             start_date=document.start_date,
             end_date=document.end_date,
@@ -96,6 +97,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         """Map database model to domain entity"""
         return DocumentEntity(
             id=db_document.id,
+            balance=db_document.balance,
             processed=db_document.processed,
             start_date=db_document.start_date,
             end_date=db_document.end_date,

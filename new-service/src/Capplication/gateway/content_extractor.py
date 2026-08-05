@@ -29,3 +29,7 @@ class IStatementParser(ABC):
     @abstractmethod
     def get_final_day(self, full_text: str) -> Optional[date]:
         pass
+
+    @abstractmethod
+    def get_balance(self, full_text: str) -> Optional[float]:
+        pass

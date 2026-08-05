@@ -96,9 +96,6 @@ def export_transactions(
     document_id: Optional[str] = Query(
         None, description="Filter by document ID"
     ),
-    document_unique_identifier: Optional[str] = Query(
-        None, description="Filter by document unique identifier"
-    ),
 ) -> DTOExportTransactionsResponse:
     try:
         transaction_gateway = TransactionDbGateway(session)
@@ -111,7 +108,6 @@ def export_transactions(
         )
         dto_request = DTOExportTransactionsRequest(
             document_id=document_id,
-            document_unique_identifier=document_unique_identifier,
         )
         dto_response = use_case.execute(dto_request)
         if not dto_response.success:
