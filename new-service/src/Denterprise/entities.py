@@ -59,7 +59,7 @@ class TransactionEntity:
     document_id: Optional[str] = None
     id: Optional[uuid.UUID] = None
     category_name: Optional[str] = None
-    document_document_type_name: Optional[str] = None
+    document_document_format_name: Optional[str] = None
     document_unique_identifier: Optional[str] = None
 
     def generate_unique_identifier(self) -> str:
@@ -97,7 +97,7 @@ class DocumentEntity:
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[str] = None
     plain_text: Optional[str] = None
-    document_type_name: Optional[str] = None
+    document_format_name: Optional[str] = None
 
     def generate_id(self):
         self.id = hashlib.sha256(self.plain_text.encode()).hexdigest()

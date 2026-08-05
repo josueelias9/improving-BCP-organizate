@@ -11,7 +11,7 @@ POST http://{{host}}/document HTTP/1.1
 content-type: application/json
 
 {
-  "document_type": "bcp_debit",
+  "document_format": "bcp_debit",
   "pdf_filepath": "{{path}}/{{fileName}}",
   "user_email": "admin@bcpextractor.com"
 }

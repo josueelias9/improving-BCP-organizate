@@ -34,7 +34,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             start_date=db_document.start_date,
             end_date=db_document.end_date,
             user_id=db_document.user_id,
-            document_type_name=db_document.document_type.name,
+            document_format_name=db_document.document_format.name,
         )
 
     def mark_as_processed(self, document_id: str) -> None:
@@ -109,5 +109,5 @@ class DocumentDbGateway(IDocumentDbGateway):
             start_date=db_document.start_date,
             end_date=db_document.end_date,
             user_id=db_document.user_id,
-            document_type_name=db_document.document_type.name,
+            document_format_name=db_document.document_format.name,
         )

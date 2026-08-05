@@ -63,7 +63,7 @@ class ExportTransactionsUseCase:
 
             # 4. Generate filename
             doc = self.document_gateway.get_by_id(document_id)
-            filename = f"{doc.document_type_name}__{doc.end_date}__{doc.id}.csv"
+            filename = f"{doc.document_format_name}__{doc.end_date}__{doc.id}.csv"
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(

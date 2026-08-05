@@ -106,7 +106,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     currency=transaction.currency,
                     unique_identifier=transaction.unique_identifier,
                     category_name=transaction.category.name,
-                    document_document_type_name=transaction.document.document_type.name,
+                    document_document_format_name=transaction.document.document_format.name,
                     document_unique_identifier=transaction.document.id,
                 )
                 entities.append(entity)

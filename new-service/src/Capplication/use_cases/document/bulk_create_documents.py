@@ -15,14 +15,14 @@ from src.Capplication.DTO.document_dto import (
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
-from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 
 logger = logging.getLogger(__name__)
 
 
 class BulkCreateDocumentsUseCase:
-    """Scans subfolders of base_directory; each subfolder name is treated as document_type."""
+    """Scans subfolders of base_directory; each subfolder name is treated as document_format."""
 
     def __init__(
         self,
@@ -45,17 +45,17 @@ class BulkCreateDocumentsUseCase:
         subdirs = self.file_extractor_gateway.list_subdirectories(request.base_directory)
 
         for subdir in subdirs:
-            document_type = Path(subdir).name
-            parser = self.parsers.get(document_type)
+            document_format = Path(subdir).name
+            parser = self.parsers.get(document_format)
 
             if parser is None:
-                logger.warning(f"No parser registered for document type '{document_type}', skipping folder")
+                logger.warning(f"No parser registered for document type '{document_format}', skipping folder")
                 continue
 
             pdf_files = self.file_extractor_gateway.list_files(subdir, ".pdf")
 
             for pdf_filepath in pdf_files:
-                item = self._process_single(pdf_filepath, document_type, request.user_email, parser)
+                item = self._process_single(pdf_filepath, document_format, request.user_email, parser)
                 results.append(item)
                 if item.success and not item.already_exists:
                     created += 1
@@ -73,7 +73,7 @@ class BulkCreateDocumentsUseCase:
         )
 
     def _process_single(
-        self, pdf_filepath: str, document_type: str, user_email: str, parser: IStatementParser
+        self, pdf_filepath: str, document_format: str, user_email: str, parser: IStatementParser
     ) -> DTOBulkCreateDocumentItemResult:
         try:
             use_case = CreateDocumentUseCase(
@@ -86,7 +86,7 @@ class BulkCreateDocumentsUseCase:
             response = use_case.execute(DTOCreateDocumentRequest(pdf_filepath=pdf_filepath, user_email=user_email))
             return DTOBulkCreateDocumentItemResult(
                 pdf_filepath=pdf_filepath,
-                document_type=document_type,
+                document_format=document_format,
                 success=response.success,
                 document_id=response.document_id,
                 already_exists=response.already_exists,
@@ -96,7 +96,7 @@ class BulkCreateDocumentsUseCase:
             logger.error(f"Failed to process '{pdf_filepath}': {e}")
             return DTOBulkCreateDocumentItemResult(
                 pdf_filepath=pdf_filepath,
-                document_type=document_type,
+                document_format=document_format,
                 success=False,
                 error=str(e),
             )

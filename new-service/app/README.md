@@ -15,6 +15,8 @@ TODO:
 
 ```mermaid
 erDiagram
+
+
     USER {
         _ name
         _ is_active
@@ -37,7 +39,7 @@ erDiagram
         _ subcategory
     }
 
-    DOCUMENT_TYPE {
+    DOCUMENT_FORMAT {
         _ name
     }
 
@@ -53,9 +55,11 @@ erDiagram
 
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
-    DOCUMENT ||--o{ TRANSACTION : "has"
+    DOCUMENT ||--o{ TRANSACTION : "could have"
     TRANSACTION }o--|| CATEGORY : "pertenece a"
     CATEGORY ||--o| CATEGORY : "may have"
-    DOCUMENT_TYPE ||--o{ DOCUMENT : "has many"
+    DOCUMENT_FORMAT ||--o{ DOCUMENT : "has many"
+    DOCUMENT ||--o| MONEY : "could have"
+    
 ```
 

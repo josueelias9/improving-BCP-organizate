@@ -15,7 +15,7 @@ from src.Denterprise.entities import TransactionType, Currency
 # 3. It seems that the best final approach is to delete all these base models and move the features inside the table models
 
 
-class DocumentTypeBase(SQLModel):
+class DocumentFormatBase(SQLModel):
     name: str = Field(max_length=100, unique=True, index=True)
 
 
@@ -58,7 +58,7 @@ class TransactionBase(SQLModel):
 # ============================================================================= db (PK, FK, and relationships)
 
 
-class DocumentType(DocumentTypeBase, table=True):
+class DocumentFormat(DocumentFormatBase, table=True):
     __tablename__ = "document_types"
 
     id: uuid.UUID = Field(
@@ -66,7 +66,7 @@ class DocumentType(DocumentTypeBase, table=True):
     )
 
     # Relationships
-    documents: List["Document"] = Relationship(back_populates="document_type")
+    documents: List["Document"] = Relationship(back_populates="document_format")
 
 
 class User(UserBase, table=True):
@@ -106,7 +106,7 @@ class Document(DocumentBase, table=True):
 
     # Relationships
     user: User = Relationship(back_populates="documents")
-    document_type: "DocumentType" = Relationship(back_populates="documents")
+    document_format: "DocumentFormat" = Relationship(back_populates="documents")
     transactions: List["Transaction"] = Relationship(back_populates="document")
 
 

@@ -64,7 +64,7 @@ def get_transactions(
     """
     Get all transactions with pagination
 
-    Includes category_name and document_type_name fields.
+    Includes category_name and document_format_name fields.
 
     Args:
         skip: Number of records to skip (default: 0)

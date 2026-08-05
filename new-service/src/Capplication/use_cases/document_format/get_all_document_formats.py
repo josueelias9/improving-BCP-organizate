@@ -9,12 +9,12 @@ import logging
 from typing import List, Dict, Any
 
 from src.Capplication.gateway.db import IDocumentTypeDbGateway
-from src.Capplication.DTO.document_type_dto import DTOGetAllDocumentTypesResponse
+from src.Capplication.DTO.document_format_dto import DTOGetAllDocumentFormatsResponse
 
 logger = logging.getLogger(__name__)
 
 
-class GetAllDocumentTypesUseCase:
+class GetAllDocumentFormatsUseCase:
     """
     Use Case: Retrieve all document types
 
@@ -30,12 +30,12 @@ class GetAllDocumentTypesUseCase:
         """
         self.document_type_gateway = document_type_gateway
 
-    def execute(self) -> DTOGetAllDocumentTypesResponse:
+    def execute(self) -> DTOGetAllDocumentFormatsResponse:
         """
         Execute the use case to get all document types
 
         Returns:
-            DTOGetAllDocumentTypesResponse with list of document type dicts
+            DTOGetAllDocumentFormatsResponse with list of document type dicts
         """
         # Get all document types as entities from gateway
         document_type_entities = self.document_type_gateway.get_all()
@@ -53,6 +53,6 @@ class GetAllDocumentTypesUseCase:
         logger.info(f"Retrieved {len(document_types)} document types")
 
         # Return DTO response
-        return DTOGetAllDocumentTypesResponse(
+        return DTOGetAllDocumentFormatsResponse(
             document_types=document_types, total_count=len(document_types)
         )

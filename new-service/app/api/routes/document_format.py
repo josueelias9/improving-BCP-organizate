@@ -7,20 +7,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 import logging
 from api.deps import get_db_session
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
-from src.Capplication.use_cases.document_type.get_all_document_types import (
-    GetAllDocumentTypesUseCase,
+from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
+from src.Capplication.use_cases.document_format.get_all_document_formats import (
+    GetAllDocumentFormatsUseCase,
 )
-from src.Capplication.DTO.document_type_dto import DTOGetAllDocumentTypesResponse
+from src.Capplication.DTO.document_format_dto import DTOGetAllDocumentFormatsResponse
 
 router = APIRouter(prefix="/document-types", tags=["document types"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=DTOGetAllDocumentTypesResponse)
-def get_all_document_types(
+@router.get("/", response_model=DTOGetAllDocumentFormatsResponse)
+def get_all_document_formats(
     session: Session = Depends(get_db_session),
-) -> DTOGetAllDocumentTypesResponse:
+) -> DTOGetAllDocumentFormatsResponse:
     """
     Get all document types
 
@@ -31,7 +31,7 @@ def get_all_document_types(
         document_type_gateway = DocumentTypeDbGateway(session)
 
         # Inject gateway into use case
-        use_case = GetAllDocumentTypesUseCase(document_type_gateway)
+        use_case = GetAllDocumentFormatsUseCase(document_type_gateway)
 
         return use_case.execute()
 

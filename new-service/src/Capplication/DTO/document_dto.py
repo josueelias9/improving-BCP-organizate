@@ -84,7 +84,7 @@ class DTOBulkCreateDocumentsRequest(BaseModel):
 
 class DTOBulkCreateDocumentItemResult(BaseModel):
     pdf_filepath: str
-    document_type: str
+    document_format: str
     success: bool
     document_id: Optional[str] = None
     already_exists: Optional[bool] = None

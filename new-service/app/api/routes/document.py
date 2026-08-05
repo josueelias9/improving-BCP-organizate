@@ -17,7 +17,7 @@ from src.Capplication.DTO.document_dto import (
     DTOBulkCreateDocumentsResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.document_type import DocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
@@ -73,7 +73,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
     Process a PDF file and save extracted data to the Documents table
 
     - **pdf_filepath**: PDF file path (e.g., "files/document.pdf")
-    - **document_type**: Account type ("debit" or "credit")
+    - **document_format**: Account type ("debit" or "credit")
     - **user_email**: User email (optional, defaults to admin@bcpextractor.com)
     - Extracted data is saved as JSON in the 'data' column of the Documents table
     """
@@ -84,10 +84,10 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         document_type_gateway = DocumentTypeDbGateway(session)
         file_extractor_gateway = FileExtractorGateway()
 
-        document_type_name = Path(dto_request.pdf_filepath).parent.name
+        document_format_name = Path(dto_request.pdf_filepath).parent.name
         parser_gateway = (
             BCPCreditParser()
-            if document_type_name == "bcp_credit"
+            if document_format_name == "bcp_credit"
             else BCPDebitParser()
         )
 

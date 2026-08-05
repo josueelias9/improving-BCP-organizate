@@ -18,7 +18,7 @@ from src.Capplication.DTO.document_dto import (
 from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
-from src.Aframework.gateway.db.document_type import IDocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
 
 load_dotenv()
 
@@ -50,7 +50,7 @@ class CreateDocumentUseCase:
             request: DTOCreateDocumentRequest containing:
                 - pdf_filepath: Path to the PDF file
                 - user_email: Email of the user
-                - document_type: Type of document
+                - document_format: Type of document
 
         Returns:
             DTOCreateDocumentRequest (DTO for controller response)
@@ -62,7 +62,7 @@ class CreateDocumentUseCase:
 
         pdf_filepath = request.pdf_filepath
         user_email = request.user_email
-        document_type = Path(pdf_filepath).parent.name
+        document_format = Path(pdf_filepath).parent.name
 
         try:
             # Check if file exists using file system gateway
@@ -70,11 +70,11 @@ class CreateDocumentUseCase:
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
             # Get document type entity from database
-            doc_type = self.document_type_gateway.get_by_name(document_type)
+            doc_type = self.document_type_gateway.get_by_name(document_format)
 
             if not doc_type:
                 raise ValueError(
-                    f"Document type '{document_type}' not found in database"
+                    f"Document type '{document_format}' not found in database"
                 )
 
             # extract text from PDF file using file system gateway
@@ -91,7 +91,7 @@ class CreateDocumentUseCase:
                 end_date=self.parser_gateway.get_final_day(full_text),
                 processed=False,
                 plain_text=full_text,
-                document_type_name=doc_type.name,
+                document_format_name=doc_type.name,
             )
 
             # Get user entity

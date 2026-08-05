@@ -1,12 +1,12 @@
-"""DocumentType Gateway - Interface Adapter Layer
+"""DocumentFormat Gateway - Interface Adapter Layer
 Implements document type persistence operations
-Maps between SQLModel DocumentType and domain DocumentType entity
+Maps between SQLModel DocumentFormat and domain DocumentFormat entity
 """
 
 import logging
 from sqlmodel import Session, select
 
-from models import DocumentType as DocumentTypeModel
+from models import DocumentFormat as DocumentFormatModel
 from src.Denterprise.entities import DocumentTypeEntity
 
 from src.Capplication.gateway.db import IDocumentTypeDbGateway
@@ -22,7 +22,7 @@ class DocumentTypeDbGateway(IDocumentTypeDbGateway):
 
     def get_by_name(self, name: str) -> DocumentTypeEntity | None:
         """Get document type by name and map to domain entity"""
-        statement = select(DocumentTypeModel).where(DocumentTypeModel.name == name)
+        statement = select(DocumentFormatModel).where(DocumentFormatModel.name == name)
         db_doc_type = self.session.exec(statement).first()
 
         if not db_doc_type:
@@ -33,7 +33,7 @@ class DocumentTypeDbGateway(IDocumentTypeDbGateway):
 
     def get_all(self) -> list[DocumentTypeEntity]:
         """Get all document types as domain entities"""
-        statement = select(DocumentTypeModel)
+        statement = select(DocumentFormatModel)
         db_doc_types = self.session.exec(statement).all()
 
         # Map to domain entities

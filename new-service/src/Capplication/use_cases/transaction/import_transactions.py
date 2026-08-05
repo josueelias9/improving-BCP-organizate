@@ -54,7 +54,7 @@ class ImportTransactionsUseCase:
                     total_rows=0,
                     message="Document not found",
                 )
-            filename = f"{document.document_type_name}__{document.end_date}__{document.id}"
+            filename = f"{document.document_format_name}__{document.end_date}__{document.id}"
             csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 
             if not csv_path.exists():

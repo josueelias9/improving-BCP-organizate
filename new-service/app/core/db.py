@@ -2,7 +2,7 @@ from sqlmodel import Session, create_engine, SQLModel, select
 from core.config import settings
 
 # Import all models so SQLModel can detect them and create all tables
-from models import User, Category, DocumentType, Transaction, Document
+from models import User, Category, DocumentFormat, Transaction, Document
 import logging
 from core.data import (
     default_categories,
@@ -36,7 +36,7 @@ def init_db(session: Session) -> None:
         # ================= Create default document types
         logger.info("📄 Creating default document types...")
         for doc_type_data in default_document_types:
-            doc_type = DocumentType(id=doc_type_data["id"], name=doc_type_data["name"])
+            doc_type = DocumentFormat(id=doc_type_data["id"], name=doc_type_data["name"])
             session.add(doc_type)
         session.flush()  # Flush to ensure document types are created before categories
 
