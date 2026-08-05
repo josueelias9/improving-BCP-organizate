@@ -15,6 +15,7 @@ from datetime import date
 from typing import List, Optional, Dict, Any
 
 from src.Capplication.gateway.content_extractor import IStatementParser
+from src.Denterprise.entities import TransactionEntity
 
 logger = logging.getLogger(__name__)
 
@@ -84,39 +85,45 @@ class BCPCreditParser(IStatementParser):
             return date(year2, month2, day2)
         return None
 
-    def get_data(
+    def get_transactions(
         self, full_text: str
-    ) -> tuple[dict[str, Any], str, Optional[date], Optional[date]]:
-        """Parse BCP credit card PDF text and extract transaction data
-
-        Returns:
-            tuple: (data_dict, unique_identifier, start_date, end_date)
-        """
+    ) -> List[TransactionEntity]:
+        """Parse BCP credit card PDF text and return transaction entities."""
         try:
-            # Extract account code
-            account_code_match = re.search(r"Cuenta:\s+(\d{20})", full_text)
-            account_code = account_code_match.group(1) if account_code_match else ""
-
-            # Extract currency
             currency_match = re.search(r"Moneda:\s+([A-Z]{3})", full_text)
-            currency = currency_match.group(1) if currency_match else "PEN"
+            currency_raw = currency_match.group(1) if currency_match else "PEN"
 
-            # Extract previous balance (saldo anterior) for soles and dollars
-            saldo_anterior_soles, saldo_anterior_dolares = self.extract_saldo_anterior(
-                full_text
-            )
+            currency_map = {"PEN": "SOL", "USD": "USD", "EUR": "EUR"}
+            currency_code = currency_map.get(currency_raw, "SOL")
 
-            # Extract transactions
-            transactions = self.parse_transactions(full_text)
+            raw_transactions = self.parse_transactions(full_text)
 
-            data = {
-                "account_code": account_code,
-                "currency": currency,
-                "saldo_anterior_soles": saldo_anterior_soles,
-                "saldo_anterior_dolares": saldo_anterior_dolares,
-                "transactions": transactions,
-            }
-            return data
+            entities = []
+            for idx, tx in enumerate(raw_transactions):
+                fecha_valor_str = tx.get("fecha_valor")
+                transaction_date = (
+                    date.fromisoformat(fecha_valor_str) if fecha_valor_str else None
+                )
+                cargos = float(tx.get("cargos", 0.0))
+                abonos = float(tx.get("abonos", 0.0))
+                if cargos == 0.0:
+                    transaction_type = "income"
+                    amount = abonos
+                else:
+                    transaction_type = "expense"
+                    amount = cargos
+                entities.append(
+                    TransactionEntity(
+                        order=idx + 1,
+                        description=tx.get("description", ""),
+                        history=tx.get("history"),
+                        amount=amount,
+                        transaction_type=transaction_type,
+                        transaction_date=transaction_date,
+                        currency=currency_code,
+                    )
+                )
+            return entities
 
         except Exception as e:
             logger.error(f"Error parsing BCP credit PDF: {e}")

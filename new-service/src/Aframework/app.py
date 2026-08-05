@@ -126,6 +126,7 @@ st.bar_chart(
 
 st.bar_chart(df, x="transaction_type", y="amount", stack=False)
 
+st.divider()
 
 # One balance-evolution line chart per account
 docs_df = pd.DataFrame(documents)
@@ -135,5 +136,3 @@ if not docs_df.empty and {"end_date", "balance", "account"}.issubset(docs_df.col
     for account, group in docs_df.groupby("account"):
         st.caption(account)
         st.line_chart(group.sort_values("end_date").set_index("end_date")["balance"])
-
-st.divider()

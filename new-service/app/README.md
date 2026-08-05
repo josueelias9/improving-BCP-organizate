@@ -13,6 +13,12 @@ TODO:
 - The definition of Account here is "the representation of a place that has money". That is it.
 - Following this, Document should be modified (remove balance). Adding hashing have more relevance with this approach
 
+
+
+entity definitions:
+- DOCUMENT: the representation of a file
+- ACCOUNT: a place where money goes in and out
+
 ```mermaid
 erDiagram
 
@@ -43,6 +49,12 @@ erDiagram
         _ name
     }
 
+
+    ACCOUNT {        
+        float balance "net amount"
+        _ time_range "not sure about this. It can be inferred from the first and last transaction date"
+        _ account
+    }
 
     DOCUMENT {
         string id "this is generated with the hash of the content of the document"

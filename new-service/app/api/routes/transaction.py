@@ -10,7 +10,8 @@ import logging
 
 from api.deps import SessionDep
 
-from src.Aframework.gateway.file_extractor import FileExtractorGateway
+from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
+from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
@@ -45,6 +46,7 @@ from src.Capplication.use_cases.transaction.import_transactions import (
 from src.Capplication.use_cases.transaction.create_transactions import (
     CreateTransactionsUseCase,
 )
+from src.Aframework.gateway.file_extractor import FileExtractorGateway
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 logger = logging.getLogger(__name__)
@@ -171,12 +173,10 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
 )
 def create_transactions(document_id: str, session: SessionDep):
     """
-    Load transactions from a document's data column into the transactions table.
-
-    This endpoint delegates to the application layer use case.
+    Parse a document's plain text and load transactions into the transactions table.
 
     Args:
-        document_id: The UUID of the document to load transactions from
+        document_id: The ID of the document to process
         session: Database session (injected)
 
     Returns:
@@ -186,15 +186,15 @@ def create_transactions(document_id: str, session: SessionDep):
         HTTPException: 404 if document not found, 400 for validation errors
     """
     try:
+        parsers = {
+            "bcp_credit": BCPCreditParser(),
+            "bcp_debit": BCPDebitParser(),
+        }
 
-        temp_mapper = {"SOLES": "SOL", "DOLARES": "USD"}
-
-        # Instantiate concrete gateways
         document_gateway = DocumentDbGateway(session)
         transaction_gateway = TransactionDbGateway(session)
 
-        # Inject gateways into use case
-        use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway)
+        use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway, parsers)
 
         dto_request = DTOCreateTransactionsRequest(document_id=document_id)
 

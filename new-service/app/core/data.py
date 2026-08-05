@@ -125,9 +125,6 @@ default_documents = [
         "processed": True,
         "document_type_id": "00000000-0000-0000-0000-000000000001",
         "user_id": "00000000-0000-0000-0000-000000000001",
-        "data": {
-            "information": "Data here is dynamic. It depends on the PDF content and the parser used."
-        },
     }
 ]
 

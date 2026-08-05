@@ -1,8 +1,8 @@
 import hashlib
 from datetime import date
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 from enum import Enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import uuid
 
 # Enums
@@ -89,7 +89,6 @@ class DocumentEntity:
 
     account: Optional[str] = None
     balance: Optional[float] = None
-    data: List[Dict[str, Any]] = field(default_factory=list)
     processed: bool = False
     start_date: Optional[date] = None
     end_date: Optional[date] = None

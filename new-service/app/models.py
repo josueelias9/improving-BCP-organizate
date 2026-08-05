@@ -4,9 +4,8 @@ Database models based on UML diagram
 
 import uuid
 from datetime import datetime, date
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel, Column, Text
-from sqlalchemy import JSON
 from src.Denterprise.entities import TransactionType, Currency
 
 # ============================================================================= base models
@@ -31,9 +30,6 @@ class CategoryBase(SQLModel):
 
 
 class DocumentBase(SQLModel):
-    data: Optional[Dict[str, Any]] = Field(
-        default=None, sa_column=Column(JSON)
-    )  # Contains account_number, previous_balance, initial_day, final_day, and transactions list
     account: Optional[str] = Field(default=None, max_length=100)
     balance: Optional[float] = Field(default=None)
     processed: bool = Field(default=False)

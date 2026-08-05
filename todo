@@ -12,31 +12,6 @@ new-service/
 
 [ ] streamlit always requires a gmail. when on production it will be an issue. fix
 
-
-
 [ ] analyze yape
-
-
-
-
-
-
-
-[ ] add a new use case that reads a directory following this logic. Start only with bcp_debit type
-
-- documents
-    - type 1
-        - file1
-        - file2
-    - type 1
-        - file3
-        - file4
-
-
-
-
-[ ] to avoid confusion, and respecting the theory of DB, we are going to set the hash as id and remove the unique_identifier attribute, only for the docuemnt entity and model
-
-
 
 [ ] change account for identier. Makes more sense.

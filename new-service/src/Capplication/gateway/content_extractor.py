@@ -4,21 +4,23 @@ Defines contracts for data access without implementation details
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import Any, Optional
+from typing import List, Optional
+
+from src.Denterprise.entities import TransactionEntity
 
 
 class IStatementParser(ABC):
     """Abstract interface for parsing document text into structured data."""
 
     @abstractmethod
-    def get_data(self, full_text: str) -> dict[str, Any]:
-        """Parse document text and return extracted data.
+    def get_transactions(self, full_text: str) -> List[TransactionEntity]:
+        """Parse document text and return transaction entities.
 
         Args:
             full_text: Extracted text from the source document
 
         Returns:
-            Dictionary with extracted data
+            List of TransactionEntity objects
         """
         pass
 

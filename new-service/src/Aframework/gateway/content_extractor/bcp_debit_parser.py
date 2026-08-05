@@ -11,9 +11,10 @@ This is an INPUT ADAPTER that:
 import re
 import logging
 from datetime import date
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from src.Capplication.gateway.content_extractor import IStatementParser
+from src.Denterprise.entities import TransactionEntity
 
 logger = logging.getLogger(__name__)
 
@@ -58,41 +59,35 @@ class BCPDebitParser(IStatementParser):
     def get_final_day(self, full_text: str) -> Optional[date]:
         return self._extract_period(full_text)[1]
 
-    def get_data(self, full_text: str) -> dict[str, Any]:
-        """Parse BCP debit PDF text and extract transaction data
-
-        Returns:
-            dict: Parsed transaction data
-        """
-        # Use parser from Denterprise layer for business logic
+    def get_transactions(self, full_text: str) -> List[TransactionEntity]:
+        """Parse BCP debit PDF text and return transaction entities."""
         account_code, currency = self._extract_account_code(full_text)
-        transactions = self._parse_transactions(full_text)
+        raw_transactions = self._parse_transactions(full_text)
 
-        data = {
-            "account_code": account_code,
-            "currency": currency,
-            "transactions": [],
-        }
-        for transaction in transactions:
-            data["transactions"].append(
-                {
-                    "fecha_proceso": (
-                        transaction["fecha_proceso"].isoformat()
-                        if transaction["fecha_proceso"]
-                        else None
-                    ),
-                    "fecha_valor": (
-                        transaction["fecha_valor"].isoformat()
-                        if transaction["fecha_valor"]
-                        else None
-                    ),
-                    "description": transaction["description"],
-                    "cargos": transaction["cargos"],
-                    "abonos": transaction["abonos"],
-                    "internal_transaction": transaction["internal_transaction"],
-                }
+        currency_map = {"SOLES": "SOL", "US DOLARES": "USD"}
+        currency_code = currency_map.get(currency, "SOL")
+
+        entities = []
+        for idx, tx in enumerate(raw_transactions):
+            cargos = float(tx.get("cargos", 0.0))
+            abonos = float(tx.get("abonos", 0.0))
+            if cargos == 0.0:
+                transaction_type = "income"
+                amount = abonos
+            else:
+                transaction_type = "expense"
+                amount = cargos
+            entities.append(
+                TransactionEntity(
+                    order=idx + 1,
+                    description=tx.get("description", ""),
+                    amount=amount,
+                    transaction_type=transaction_type,
+                    transaction_date=tx.get("fecha_valor"),
+                    currency=currency_code,
+                )
             )
-        return data
+        return entities
 
     @staticmethod
     def _parse_transactions(text: str) -> List[dict[str, any]]:
