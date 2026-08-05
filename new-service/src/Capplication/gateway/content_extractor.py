@@ -33,3 +33,7 @@ class IStatementParser(ABC):
     @abstractmethod
     def get_balance(self, full_text: str) -> Optional[float]:
         pass
+
+    @abstractmethod
+    def get_account(self, full_text: str) -> Optional[str]:
+        pass

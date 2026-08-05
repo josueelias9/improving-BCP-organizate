@@ -5,10 +5,12 @@ import streamlit as st
 BASE_URL = "http://localhost:8000"
 
 
-# Fetch documents for the combobox
-docs_response = requests.get(f"{BASE_URL}/document/")
+# Fetch all documents
+docs_response = requests.get(f"{BASE_URL}/document/", params={"limit": 1000})
 docs_response.raise_for_status()
 documents = docs_response.json().get("documents", [])
+
+
 
 doc_options = {doc["id"]: doc["id"] for doc in documents}
 selected_label = st.selectbox("Document", options=list(doc_options.keys()))
@@ -123,3 +125,15 @@ st.bar_chart(
 )
 
 st.bar_chart(df, x="transaction_type", y="amount", stack=False)
+
+
+# One balance-evolution line chart per account
+docs_df = pd.DataFrame(documents)
+if not docs_df.empty and {"end_date", "balance", "account"}.issubset(docs_df.columns):
+    docs_df["end_date"] = pd.to_datetime(docs_df["end_date"])
+    st.subheader("Balance evolution by account")
+    for account, group in docs_df.groupby("account"):
+        st.caption(account)
+        st.line_chart(group.sort_values("end_date").set_index("end_date")["balance"])
+
+st.divider()

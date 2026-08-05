@@ -84,6 +84,7 @@ class CreateDocumentUseCase:
             full_text = self._extract_text_from_binary(pdf_binary, password)
 
             document = DocumentEntity(
+                account=self.parser_gateway.get_account(full_text),
                 balance=self.parser_gateway.get_balance(full_text),
                 data=self.parser_gateway.get_data(full_text),
                 start_date=self.parser_gateway.get_initial_day(full_text),

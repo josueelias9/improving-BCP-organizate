@@ -43,6 +43,9 @@ class BCPCreditParser(IStatementParser):
         "DIC": "12",
     }
 
+    def get_account(self, full_text: str) -> Optional[str]:
+        pass
+    
     def get_balance(self, full_text: str) -> Optional[float]:
         pass
 

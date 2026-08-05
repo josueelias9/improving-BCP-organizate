@@ -58,6 +58,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         db_document = DocumentModel(
             id=document.id,
             data=document.data,
+            account=document.account,
             balance=document.balance,
             processed=document.processed,
             start_date=document.start_date,
@@ -77,7 +78,12 @@ class DocumentDbGateway(IDocumentDbGateway):
         self, skip: int = 0, limit: int = 100
     ) -> list[DocumentEntity]:
         """Get all documents as domain entities with pagination"""
-        statement = select(DocumentModel).order_by(DocumentModel.id).offset(skip).limit(limit)
+        statement = (
+            select(DocumentModel)
+            .order_by(DocumentModel.id)
+            .offset(skip)
+            .limit(limit)
+        )
         documents = self.session.exec(statement).all()
 
         # Map all documents to domain entities
@@ -97,6 +103,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         """Map database model to domain entity"""
         return DocumentEntity(
             id=db_document.id,
+            account=db_document.account,
             balance=db_document.balance,
             processed=db_document.processed,
             start_date=db_document.start_date,

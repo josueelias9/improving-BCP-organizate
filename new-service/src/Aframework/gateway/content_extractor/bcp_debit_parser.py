@@ -43,6 +43,11 @@ class BCPDebitParser(IStatementParser):
         "SET": "09",  # Setiembre
     }
 
+    def get_account(self, full_text: str) -> Optional[str]:
+        """Extract account code from BCP PDF text"""
+        account, _ = self._extract_account_code(full_text)
+        return account
+
     def get_balance(self, full_text: str) -> Optional[float]:
         """Extract previous balance from BCP PDF text"""
         return self._extract_saldo_anterior(full_text)
