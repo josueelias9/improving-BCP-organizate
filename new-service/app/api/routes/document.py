@@ -128,7 +128,7 @@ def delete_document(session: SessionDep, document_id: str) -> dict:
 
 
 @router.post("/bulk", response_model=DTOBulkCreateDocumentsResponse)
-async def bulk_create_documents(dto_request: DTOBulkCreateDocumentsRequest, session: SessionDep):
+async def create_documents(dto_request: DTOBulkCreateDocumentsRequest, session: SessionDep):
     """
     Scan base_directory subfolders and create documents for every PDF found.
     Each subfolder name is used as the document type.

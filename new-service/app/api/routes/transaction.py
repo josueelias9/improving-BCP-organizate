@@ -169,10 +169,10 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
 
 
 @router.post(
-    "/{document_id}",
+    "/bulk",
     response_model=DTOCreateTransactionsResponse,
 )
-def create_transactions(document_id: str, session: SessionDep):
+def create_transactions(dto_request: DTOCreateTransactionsRequest, session: SessionDep):
     """
     Parse a document's plain text and load transactions into the transactions table.
 
@@ -197,8 +197,6 @@ def create_transactions(document_id: str, session: SessionDep):
         transaction_gateway = TransactionDbGateway(session)
 
         use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway, parsers)
-
-        dto_request = DTOCreateTransactionsRequest(document_id=document_id)
 
         return use_case.execute(dto_request)
 

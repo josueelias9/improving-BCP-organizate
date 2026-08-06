@@ -53,25 +53,22 @@ erDiagram
     ACCOUNT {        
         float balance "net amount"
         _ time_range "not sure about this. It can be inferred from the first and last transaction date"
-        _ account
+        _ id PK "extracted from document's plain text. If no one is present, use the doc format"
     }
 
     DOCUMENT {
-        string id "this is generated with the hash of the content of the document"
-        json data "all meaningfull data that can be extracted"
-        bool processed
-        _ time_range "not sure about this. It can be inferred from the first and last transaction date"
-        _ plain_text
-        float balance "net amount"
+        string id PK "this is generated with the hash of the content of the document"
+        bool processed "true if transactions were extracted from this document"
+        string plain_text
     }
 
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
-    DOCUMENT ||--o{ TRANSACTION : "could have"
+    ACCOUNT ||--o{ TRANSACTION : "could have"
     TRANSACTION }o--|| CATEGORY : "pertenece a"
     CATEGORY ||--o| CATEGORY : "may have"
     DOCUMENT_FORMAT ||--o{ DOCUMENT : "has many"
-    DOCUMENT ||--o| MONEY : "could have"
+    DOCUMENT }|--o| ACCOUNT : "could have"
     
 ```
 
