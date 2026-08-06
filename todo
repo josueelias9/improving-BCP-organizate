@@ -12,10 +12,16 @@ new-service/
 
 [ ] streamlit always requires a gmail. when on production it will be an issue. fix
 
-
-
-
 [ ] yape is inverted
-[ ] now time need tu include hour, minute and second (yape document enable this option)
 
-[ ] remove plain_text from getDocuments
+[ ] when importing transactions, be sure that it correspond to the document id
+
+[ ] create a presenter to parse the date. We need more information about the date: add day
+
+[ ] graph need to zoom ranges
+
+[ ] separate docuemnt table: document and account
+
+[ ] in streamlit, now showing document id. Should we show account information instead?
+
+[ ] just like we did with the documents, we need to do the same with create_transactions. Do it for all the documents in the db
