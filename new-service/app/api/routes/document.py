@@ -27,7 +27,7 @@ from src.Aframework.gateway.file_extractor import FileExtractorGateway
 logger = logging.getLogger(__name__)
 
 # Crear router para rutas de procesamiento de PDF
-router = APIRouter(prefix="/document", tags=["document management"])
+router = APIRouter(prefix="/documents", tags=["document management"])
 
 
 # CRUD

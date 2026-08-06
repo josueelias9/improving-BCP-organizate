@@ -23,7 +23,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsResponse,
     DTOImportTransactionsRequest,
     DTOImportTransactionsResponse,
-    DTOGetTransactionsResponse,
+    DTOReadTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
     DTOCreateTransactionsRequest,
@@ -38,8 +38,8 @@ from src.Capplication.use_cases.transaction.update_transactions import (
 from src.Capplication.use_cases.transaction.export_transactions import (
     ExportTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.get_transactions import (
-    GetTransactionsUseCase,
+from src.Capplication.use_cases.transaction.read_transactions import (
+    ReadTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.import_transactions import (
     ImportTransactionsUseCase,
@@ -55,15 +55,15 @@ logger = logging.getLogger(__name__)
 # CRUD
 
 
-@router.get("/", response_model=DTOGetTransactionsResponse)
-def get_transactions(
+@router.get("/", response_model=DTOReadTransactionsResponse)
+def read_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 1000,
     document_id: Optional[str] = Query(
         default=None, description="Filter by document ID"
     ),
-) -> DTOGetTransactionsResponse:
+) -> DTOReadTransactionsResponse:
     """
     Get all transactions with pagination
 
@@ -79,7 +79,7 @@ def get_transactions(
     """
     try:
         transaction_gateway = TransactionDbGateway(session)
-        use_case = GetTransactionsUseCase(
+        use_case = ReadTransactionsUseCase(
             transaction_gateway,
         )
         # TODO: You should pass a DTO

@@ -88,7 +88,7 @@ class DTOTransaction(BaseModel):
     id: Optional[uuid.UUID]
 
 
-class DTOGetTransactionsResponse(BaseModel):
+class DTOReadTransactionsResponse(BaseModel):
     """DTO for get all transactions response"""
 
     transactions: List[DTOTransaction]
