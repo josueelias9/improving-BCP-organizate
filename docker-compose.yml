@@ -77,5 +77,14 @@ services:
       - ./files:/shared_files
       - /mnt/c/Users/josue/Downloads:/downloads
 
+# https://jupyter-docker-stacks.readthedocs.io/en/latest/
+  jupyter:
+    image: quay.io/jupyter/scipy-notebook:2026-07-28
+    container_name: jupyter-container
+    ports:
+      - "10000:8888"
+    volumes:
+          - ./jupyter:/home/jovyan/work
+
 volumes:
   pgadmin_data:

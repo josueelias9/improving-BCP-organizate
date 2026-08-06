@@ -51,14 +51,13 @@ async def get_documents(
     - transactions count
     """
     try:
+        # Create use case
         document_gateway = DocumentDbGateway(session)
         document_type_gateway = DocumentTypeDbGateway(session)
+        use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
 
         # Create request DTO
         dto_request = DTOGetDocumentsRequest(skip=skip, limit=limit)
-
-        # Inject gateways into use case
-        use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
 
         return use_case.execute(dto_request)
 

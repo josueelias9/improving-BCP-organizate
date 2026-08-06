@@ -1,10 +1,10 @@
-# this directories contains private information
 
+# directories
 __pycache__/
-new-service/output/
-files/*
 # !files/exports
-
 .pnpm-store/
-
 data
+.ipynb_checkpoints
+
+# patterns
+files/*

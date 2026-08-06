@@ -15,6 +15,7 @@ dependencies = [
     "tenacity",
     "streamlit",
     "openpyxl",
+    "streamlit[charts]"
 ]
 
 [dependency-groups]

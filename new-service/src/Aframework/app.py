@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import streamlit as st
+import matplotlib.pyplot as plt
 
 BASE_URL = "http://localhost:8000"
 
@@ -127,11 +128,32 @@ st.bar_chart(df, x="transaction_type", y="amount", stack=False)
 
 st.divider()
 
-# One balance-evolution line chart per account
 docs_df = pd.DataFrame(documents)
 if not docs_df.empty and {"end_date", "balance", "account"}.issubset(docs_df.columns):
     docs_df["end_date"] = pd.to_datetime(docs_df["end_date"])
     st.subheader("Balance evolution by account")
     for account, group in docs_df.groupby("account"):
-        st.caption(account)
-        st.line_chart(group.sort_values("end_date").set_index("end_date")["balance"])
+        group = group.sort_values("end_date")
+
+        ymin = group["balance"].min()
+        ymax = group["balance"].max()
+        margin = max((ymax - ymin) * 0.05, 100)
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+
+        ax.plot(
+            group["end_date"],
+            group["balance"],
+            marker="o",
+            linewidth=2,
+        )
+
+        ax.set_title(account)
+        ax.set_xlabel("")
+        ax.set_ylabel("Balance")
+        ax.set_ylim(ymin - margin, ymax + margin)
+        ax.grid(True, alpha=0.3)
+
+        st.pyplot(fig)
+
+        plt.close(fig)

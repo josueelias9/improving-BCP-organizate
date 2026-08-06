@@ -14,10 +14,10 @@ TODO:
 - Following this, Document should be modified (remove balance). Adding hashing have more relevance with this approach
 
 
-
 entity definitions:
 - DOCUMENT: the representation of a file
 - ACCOUNT: a place where money goes in and out
+- HISTORY: a registry of the amount of time of an account in a specific time
 
 ```mermaid
 erDiagram
@@ -39,6 +39,11 @@ erDiagram
         _ order
     }
 
+    HISTORY {
+        date time "when it was registered"
+        float balance "net amount"
+    }
+
     CATEGORY {
         _ name
         _ description
@@ -51,8 +56,6 @@ erDiagram
 
 
     ACCOUNT {        
-        float balance "net amount"
-        _ time_range "not sure about this. It can be inferred from the first and last transaction date"
         _ id PK "extracted from document's plain text. If no one is present, use the doc format"
     }
 
@@ -69,6 +72,7 @@ erDiagram
     CATEGORY ||--o| CATEGORY : "may have"
     DOCUMENT_FORMAT ||--o{ DOCUMENT : "has many"
     DOCUMENT }|--o| ACCOUNT : "could have"
+    ACCOUNT ||--o{ HISTORY : "could have"
     
 ```
 
