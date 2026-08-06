@@ -114,7 +114,7 @@ class Transaction(TransactionBase, table=True):
     )
     document_id: str = Field(foreign_key="documents.id")
     category_id: Optional[uuid.UUID] = Field(
-        default=uuid.UUID("00000000-0000-0000-0000-000000000013"),
+        default=uuid.UUID("00000000-0000-0000-0000-000000000007"),
         foreign_key="categories.id",
     )
 

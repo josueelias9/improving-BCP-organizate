@@ -6,7 +6,7 @@ BASE_URL = "http://localhost:8000"
 
 
 # Fetch all documents
-docs_response = requests.get(f"{BASE_URL}/document/", params={"limit": 1000})
+docs_response = requests.get(f"{BASE_URL}/documents/", params={"limit": 1000})
 docs_response.raise_for_status()
 documents = docs_response.json().get("documents", [])
 

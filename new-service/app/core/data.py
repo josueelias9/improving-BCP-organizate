@@ -1,12 +1,10 @@
 default_categories = [
-    # ================================== Food & Dining
     {
         "id": "00000000-0000-0000-0000-000000000001",
         "name": "Food & Dining",
         "description": "Expenses related to food and beverages",
         "parent_id": None,
     },
-    # ================================== Transportation
     {
         "id": "00000000-0000-0000-0000-000000000002",
         "name": "Transportation",
@@ -15,78 +13,56 @@ default_categories = [
     },
     {
         "id": "00000000-0000-0000-0000-000000000003",
-        "name": "Fuel",
-        "description": "Gasoline and fuel",
-        "parent_id": "00000000-0000-0000-0000-000000000002",
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000004",
-        "name": "Taxi/Uber",
-        "description": "Transportation services",
-        "parent_id": "00000000-0000-0000-0000-000000000002",
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000005",
-        "name": "Public Transport",
-        "description": "Bus, metro, train",
-        "parent_id": "00000000-0000-0000-0000-000000000002",
-    },
-    # ================================== Entertainment
-    {
-        "id": "00000000-0000-0000-0000-000000000006",
         "name": "Entertainment",
         "description": "Leisure and entertainment expenses",
         "parent_id": None,
     },
-    # ================================== Health
     {
-        "id": "00000000-0000-0000-0000-000000000007",
+        "id": "00000000-0000-0000-0000-000000000004",
+        "name": "Alcohol & Bars",
+        "description": "Expenses related to alcoholic beverages and bars",
+        "parent_id": None,
+    },
+    {
+        "id": "00000000-0000-0000-0000-000000000005",
         "name": "Health",
         "description": "Medical and health expenses",
         "parent_id": None,
     },
-    # ================================== Utilities
     {
-        "id": "00000000-0000-0000-0000-000000000008",
+        "id": "00000000-0000-0000-0000-000000000006",
         "name": "Utilities",
         "description": "Basic services payments",
         "parent_id": None,
     },
     {
-        "id": "00000000-0000-0000-0000-000000000009",
-        "name": "Electricity",
-        "description": "Electric bill",
-        "parent_id": "00000000-0000-0000-0000-000000000008",
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000010",
-        "name": "Water",
-        "description": "Water bill",
-        "parent_id": "00000000-0000-0000-0000-000000000008",
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000011",
-        "name": "Internet",
-        "description": "Internet service",
-        "parent_id": "00000000-0000-0000-0000-000000000008",
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000012",
-        "name": "Phone",
-        "description": "Phone services",
-        "parent_id": "00000000-0000-0000-0000-000000000008",
-    },
-    # ================================== Other
-    {
-        "id": "00000000-0000-0000-0000-000000000013",
+        "id": "00000000-0000-0000-0000-000000000007",
         "name": "Other",
         "description": "Uncategorized expenses",
         "parent_id": None,
     },
     {
-        "id": "00000000-0000-0000-0000-000000000014",
+        "id": "00000000-0000-0000-0000-000000000008",
         "name": "Dad",
         "description": "All transactions related to my dad",
+        "parent_id": None,
+    },
+    {
+        "id": "00000000-0000-0000-0000-000000000009",
+        "name": "Pets",
+        "description": "All transactions related to my pets",
+        "parent_id": None,
+    },
+    {
+        "id": "00000000-0000-0000-0000-000000000010",
+        "name": "Family",
+        "description": "All transactions related to my family",
+        "parent_id": None,
+    },
+    {
+        "id": "00000000-0000-0000-0000-000000000011",
+        "name": "Investments",
+        "description": "All transactions related to my investments",
         "parent_id": None,
     },
 ]
