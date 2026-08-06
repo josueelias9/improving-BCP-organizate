@@ -54,7 +54,7 @@ class BCPCreditParser(IStatementParser):
 
     def get_account(self, full_text: str) -> Optional[str]:
         pass
-    
+
     def get_balance(self, full_text: str) -> Optional[float]:
         pass
 
@@ -93,9 +93,7 @@ class BCPCreditParser(IStatementParser):
             return date(year2, month2, day2)
         return None
 
-    def get_transactions(
-        self, full_text: str
-    ) -> List[TransactionEntity]:
+    def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         """Parse BCP credit card PDF text and return transaction entities."""
         try:
             currency_match = re.search(r"Moneda:\s+([A-Z]{3})", full_text)
@@ -110,7 +108,9 @@ class BCPCreditParser(IStatementParser):
             for idx, tx in enumerate(raw_transactions):
                 fecha_valor_str = tx.get("fecha_valor")
                 transaction_date = (
-                    datetime.combine(date.fromisoformat(fecha_valor_str), datetime.min.time())
+                    datetime.combine(
+                        date.fromisoformat(fecha_valor_str), datetime.min.time()
+                    )
                     if fecha_valor_str
                     else None
                 )

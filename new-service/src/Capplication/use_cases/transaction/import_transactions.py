@@ -12,7 +12,11 @@ from src.Capplication.DTO.transaction_dto import (
     DTOImportTransactionsResponse,
     DTOImportTransactionsRequest,
 )
-from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway, IDocumentDbGateway
+from src.Capplication.gateway.db import (
+    ITransactionDbGateway,
+    ICategoryDbGateway,
+    IDocumentDbGateway,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +54,15 @@ class ImportTransactionsUseCase:
                     success=False,
                     updated_count=0,
                     skipped_count=0,
-                    errors=[f"Document not found for unique identifier: {dto_request.csv_filename}"],
+                    errors=[
+                        f"Document not found for unique identifier: {dto_request.csv_filename}"
+                    ],
                     total_rows=0,
                     message="Document not found",
                 )
-            filename = f"{document.document_format_name}__{document.end_date}__{document.id}"
+            filename = (
+                f"{document.document_format_name}__{document.end_date}__{document.id}"
+            )
             csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 
             if not csv_path.exists():

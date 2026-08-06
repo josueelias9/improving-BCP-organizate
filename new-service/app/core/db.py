@@ -36,7 +36,9 @@ def init_db(session: Session) -> None:
         # ================= Create default document types
         logger.info("📄 Creating default document types...")
         for doc_type_data in default_document_types:
-            doc_type = DocumentFormat(id=doc_type_data["id"], name=doc_type_data["name"])
+            doc_type = DocumentFormat(
+                id=doc_type_data["id"], name=doc_type_data["name"]
+            )
             session.add(doc_type)
         session.flush()  # Flush to ensure document types are created before categories
 

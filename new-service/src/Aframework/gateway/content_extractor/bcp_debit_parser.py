@@ -91,7 +91,11 @@ class BCPDebitParser(IStatementParser):
                     description=tx.get("description", ""),
                     amount=amount,
                     transaction_type=transaction_type,
-                    transaction_date=datetime.combine(tx["fecha_valor"], datetime.min.time()) if tx.get("fecha_valor") else None,
+                    transaction_date=(
+                        datetime.combine(tx["fecha_valor"], datetime.min.time())
+                        if tx.get("fecha_valor")
+                        else None
+                    ),
                     currency=currency_code,
                 )
             )

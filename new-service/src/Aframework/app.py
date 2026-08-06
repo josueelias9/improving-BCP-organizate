@@ -11,7 +11,6 @@ docs_response.raise_for_status()
 documents = docs_response.json().get("documents", [])
 
 
-
 doc_options = {doc["id"]: doc["id"] for doc in documents}
 selected_label = st.selectbox("Document", options=list(doc_options.keys()))
 selected_document_id = doc_options.get(selected_label)

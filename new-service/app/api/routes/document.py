@@ -7,7 +7,9 @@ from api.deps import SessionDep
 from src.Capplication.use_cases.document.get_documents import GetDocumentsUseCase
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 from src.Capplication.use_cases.document.delete_document import DeleteDocumentUseCase
-from src.Capplication.use_cases.document.bulk_create_documents import BulkCreateDocumentsUseCase
+from src.Capplication.use_cases.document.bulk_create_documents import (
+    BulkCreateDocumentsUseCase,
+)
 from src.Capplication.DTO.document_dto import (
     DTOGetDocumentsRequest,
     DTOGetDocumentsResponse,
@@ -128,7 +130,9 @@ def delete_document(session: SessionDep, document_id: str) -> dict:
 
 
 @router.post("/bulk", response_model=DTOBulkCreateDocumentsResponse)
-async def create_documents(dto_request: DTOBulkCreateDocumentsRequest, session: SessionDep):
+async def create_documents(
+    dto_request: DTOBulkCreateDocumentsRequest, session: SessionDep
+):
     """
     Scan base_directory subfolders and create documents for every PDF found.
     Each subfolder name is used as the document type.

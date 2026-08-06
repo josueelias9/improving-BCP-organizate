@@ -9,6 +9,7 @@ Internal domain logic uses entities from Denterprise layer.
 from typing import List, Dict, Any
 from pydantic import BaseModel
 
+
 # TODO rename to DTOGetDocumentFormatsResponse
 class DTOGetAllDocumentFormatsResponse(BaseModel):
     """Response DTO for get all document types operation - returned from use case to controller"""

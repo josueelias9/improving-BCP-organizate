@@ -60,4 +60,8 @@ class FileExtractorGateway(IFileExtractorGateway):
 
     def list_files(self, directory: str, extension: str) -> list[str]:
         ext = extension.lower()
-        return [str(p) for p in Path(directory).iterdir() if p.is_file() and p.suffix.lower() == ext]
+        return [
+            str(p)
+            for p in Path(directory).iterdir()
+            if p.is_file() and p.suffix.lower() == ext
+        ]

@@ -88,7 +88,9 @@ class CreateDocumentUseCase:
             # Get user entity
             user = self.user_gateway.get_by_email(user_email)
             if not user:
-                raise ValueError(f"User with email '{user_email}' not found. Please create the user first.")
+                raise ValueError(
+                    f"User with email '{user_email}' not found. Please create the user first."
+                )
 
             # Set user_id and document_type_id on the entity
             document.user_id = user.id

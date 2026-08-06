@@ -96,9 +96,7 @@ def read_transactions(
 @router.get("/export", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     session: SessionDep,
-    document_id: Optional[str] = Query(
-        None, description="Filter by document ID"
-    ),
+    document_id: Optional[str] = Query(None, description="Filter by document ID"),
 ) -> DTOExportTransactionsResponse:
     try:
         transaction_gateway = TransactionDbGateway(session)
@@ -196,7 +194,9 @@ def create_transactions(dto_request: DTOCreateTransactionsRequest, session: Sess
         document_gateway = DocumentDbGateway(session)
         transaction_gateway = TransactionDbGateway(session)
 
-        use_case = CreateTransactionsUseCase(document_gateway, transaction_gateway, parsers)
+        use_case = CreateTransactionsUseCase(
+            document_gateway, transaction_gateway, parsers
+        )
 
         return use_case.execute(dto_request)
 

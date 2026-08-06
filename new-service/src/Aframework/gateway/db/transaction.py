@@ -172,9 +172,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
 
-    def get_by_document_id(
-        self, document_id: str = None
-    ) -> List[TransactionEntity]:
+    def get_by_document_id(self, document_id: str = None) -> List[TransactionEntity]:
         """Get all transactions with optional filters, including category name"""
         # Build query
 
@@ -199,9 +197,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                 currency=t.currency,
                 unique_identifier=t.unique_identifier,
                 category_name=t.category.name if t.category else None,
-                document_unique_identifier=(
-                    t.document.id if t.document else None
-                ),
+                document_unique_identifier=(t.document.id if t.document else None),
             )
             result.append(entity)
 

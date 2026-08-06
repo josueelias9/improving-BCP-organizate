@@ -78,10 +78,7 @@ class DocumentDbGateway(IDocumentDbGateway):
     ) -> list[DocumentEntity]:
         """Get all documents as domain entities with pagination"""
         statement = (
-            select(DocumentModel)
-            .order_by(DocumentModel.id)
-            .offset(skip)
-            .limit(limit)
+            select(DocumentModel).order_by(DocumentModel.id).offset(skip).limit(limit)
         )
         documents = self.session.exec(statement).all()
 

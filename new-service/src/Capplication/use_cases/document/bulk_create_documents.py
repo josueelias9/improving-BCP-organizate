@@ -38,24 +38,34 @@ class BulkCreateDocumentsUseCase:
         self.file_extractor_gateway = file_extractor_gateway
         self.parsers = parsers
 
-    def execute(self, request: DTOBulkCreateDocumentsRequest) -> DTOBulkCreateDocumentsResponse:
+    def execute(
+        self, request: DTOBulkCreateDocumentsRequest
+    ) -> DTOBulkCreateDocumentsResponse:
         results: list[DTOBulkCreateDocumentItemResult] = []
         created = already_existed = failed = 0
 
-        subdirs = self.file_extractor_gateway.list_subdirectories(request.base_directory)
+        subdirs = self.file_extractor_gateway.list_subdirectories(
+            request.base_directory
+        )
 
         for subdir in subdirs:
             document_format = Path(subdir).name
             parser = self.parsers.get(document_format)
 
             if parser is None:
-                logger.warning(f"No parser registered for document type '{document_format}', skipping folder")
+                logger.warning(
+                    f"No parser registered for document type '{document_format}', skipping folder"
+                )
                 continue
 
-            pdf_files = self.file_extractor_gateway.list_files(subdir, parser.file_extension)
+            pdf_files = self.file_extractor_gateway.list_files(
+                subdir, parser.file_extension
+            )
 
             for pdf_filepath in pdf_files:
-                item = self._process_single(pdf_filepath, document_format, request.user_email, parser)
+                item = self._process_single(
+                    pdf_filepath, document_format, request.user_email, parser
+                )
                 results.append(item)
                 if item.success and not item.already_exists:
                     created += 1
@@ -73,7 +83,11 @@ class BulkCreateDocumentsUseCase:
         )
 
     def _process_single(
-        self, pdf_filepath: str, document_format: str, user_email: str, parser: IStatementParser
+        self,
+        pdf_filepath: str,
+        document_format: str,
+        user_email: str,
+        parser: IStatementParser,
     ) -> DTOBulkCreateDocumentItemResult:
         try:
             use_case = CreateDocumentUseCase(
@@ -83,7 +97,11 @@ class BulkCreateDocumentsUseCase:
                 file_extractor_gateway=self.file_extractor_gateway,
                 parser_gateway=parser,
             )
-            response = use_case.execute(DTOCreateDocumentRequest(pdf_filepath=pdf_filepath, user_email=user_email))
+            response = use_case.execute(
+                DTOCreateDocumentRequest(
+                    pdf_filepath=pdf_filepath, user_email=user_email
+                )
+            )
             return DTOBulkCreateDocumentItemResult(
                 pdf_filepath=pdf_filepath,
                 document_format=document_format,
