@@ -5,7 +5,7 @@ Implements account and history persistence operations
 
 import logging
 from datetime import date
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from models import Account as AccountModel, History as HistoryModel
 from src.Denterprise.entities import AccountEntity, HistoryEntity
@@ -34,6 +34,11 @@ class AccountDbGateway(IAccountDbGateway):
 
         logger.info(f"Account created: {account_id}")
         return AccountEntity(id=db_account.id), True
+
+    def get_all(self) -> list[AccountEntity]:
+        """Return all accounts"""
+        accounts = self.session.exec(select(AccountModel)).all()
+        return [AccountEntity(id=a.id) for a in accounts]
 
 
 class HistoryDbGateway(IHistoryDbGateway):

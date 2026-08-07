@@ -241,6 +241,11 @@ class IAccountDbGateway(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_all(self) -> List[AccountEntity]:
+        """Return all accounts"""
+        pass
+
 
 class IHistoryDbGateway(ABC):
     """Interface for history persistence operations"""
