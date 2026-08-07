@@ -16,6 +16,7 @@ from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
+from src.Aframework.gateway.db.account import AccountDbGateway, HistoryDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,
@@ -60,8 +61,8 @@ def read_transactions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 1000,
-    document_id: Optional[str] = Query(
-        default=None, description="Filter by document ID"
+    account_id: Optional[str] = Query(
+        default=None, description="Filter by account ID"
     ),
 ) -> DTOReadTransactionsResponse:
     """
@@ -83,7 +84,7 @@ def read_transactions(
             transaction_gateway,
         )
         # TODO: You should pass a DTO
-        a = use_case.execute(skip=skip, limit=limit, document_id=document_id)
+        a = use_case.execute(skip=skip, limit=limit, account_id=account_id)
         return a
 
     except Exception as e:
@@ -96,19 +97,17 @@ def read_transactions(
 @router.get("/export", response_model=DTOExportTransactionsResponse)
 def export_transactions(
     session: SessionDep,
-    document_id: Optional[str] = Query(None, description="Filter by document ID"),
+    account_id: Optional[str] = Query(None, description="Filter by account ID"),
 ) -> DTOExportTransactionsResponse:
     try:
         transaction_gateway = TransactionDbGateway(session)
         file_extractor_gateway = FileExtractorGateway()
-        document_gateway = DocumentDbGateway(session)
         use_case = ExportTransactionsUseCase(
             transaction_gateway=transaction_gateway,
             file_extractor_gateway=file_extractor_gateway,
-            document_gateway=document_gateway,
         )
         dto_request = DTOExportTransactionsRequest(
-            document_id=document_id,
+            account_id=account_id,
         )
         dto_response = use_case.execute(dto_request)
         if not dto_response.success:

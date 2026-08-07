@@ -2,13 +2,14 @@ from sqlmodel import Session, create_engine, SQLModel, select
 from core.config import settings
 
 # Import all models so SQLModel can detect them and create all tables
-from models import User, Category, DocumentFormat, Transaction, Document
+from models import User, Category, DocumentFormat, Transaction, Document, Account, History
 import logging
 from core.data import (
     default_categories,
     default_document_types,
     default_users,
     default_documents,
+    default_accounts,
     default_transactions,
 )
 
@@ -66,6 +67,13 @@ def init_db(session: Session) -> None:
             session.add(user)
         session.flush()
 
+        # ================== Create default accounts
+        logger.info("🏦 Creating default accounts...")
+        for account_data in default_accounts:
+            account = Account(id=account_data["id"])
+            session.add(account)
+        session.flush()
+
         # ================== Create default documents
         logger.info("📄 Creating default documents...")
         for document_data in default_documents:
@@ -74,6 +82,7 @@ def init_db(session: Session) -> None:
                 processed=document_data["processed"],
                 document_type_id=document_data["document_type_id"],
                 user_id=document_data["user_id"],
+                account_id=document_data.get("account_id"),
             )
             session.add(document)
         session.flush()
@@ -88,7 +97,7 @@ def init_db(session: Session) -> None:
                 order=transaction_data["order"],
                 transaction_type=transaction_data["transaction_type"],
                 category_id=transaction_data["category_id"],
-                document_id=transaction_data["document_id"],
+                account_id=transaction_data["account_id"],
                 currency=transaction_data["currency"],
                 history=transaction_data["history"],
                 unique_identifier=transaction_data["unique_identifier"],
@@ -100,6 +109,7 @@ def init_db(session: Session) -> None:
         logger.info(f"   📄 Created {len(default_document_types)} document types")
         logger.info(f"   📁 Created {len(default_categories)} categories")
         logger.info(f"   👥 Created {len(default_users)} users")
+        logger.info(f"   🏦 Created {len(default_accounts)} accounts")
         logger.info(f"   📄 Created {len(default_documents)} documents")
         logger.info(f"   💰 Created {len(default_transactions)} transactions")
 

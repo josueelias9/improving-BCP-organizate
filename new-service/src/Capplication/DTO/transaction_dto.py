@@ -15,12 +15,12 @@ from pydantic import BaseModel, ConfigDict
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
-    document_id: Optional[str] = None
+    account_id: Optional[str] = None
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "document_id": "a1b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80",
+                "account_id": "191-04106279-0-55",
             }
         }
     }
@@ -33,7 +33,7 @@ class DTOExportTransactionsResponse(BaseModel):
     filename: str
     transaction_count: int
     file_path: Optional[str] = None
-    document_id: Optional[str] = None
+    account_id: Optional[str] = None
     error_message: Optional[str] = None
 
 
@@ -82,9 +82,8 @@ class DTOTransaction(BaseModel):
     transaction_type: str
     transaction_date: Optional[datetime]
     currency: Optional[str]
-    document_document_format_name: Optional[str]
+    account_id: Optional[str]
     unique_identifier: Optional[str]
-    document_id: Optional[str]
     id: Optional[uuid.UUID]
 
 

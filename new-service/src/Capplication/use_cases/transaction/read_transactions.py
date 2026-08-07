@@ -20,14 +20,14 @@ class ReadTransactionsUseCase:
         self,
         skip: int = 0,
         limit: int = 1000,
-        document_id: Optional[uuid.UUID] = None,
+        account_id: Optional[str] = None,
     ) -> DTOReadTransactionsResponse:
-        """Get transactions with pagination and optional document filter
+        """Get transactions with pagination and optional account filter
 
         Args:
             skip: Number of records to skip
             limit: Maximum number of records to return
-            document_id: Optional document UUID to filter transactions
+            account_id: Optional account ID to filter transactions
 
         Returns:
             DTOReadTransactionsResponse with transactions including category_name
@@ -36,7 +36,7 @@ class ReadTransactionsUseCase:
             limit = 1000
 
         entities = self.transaction_gateway.get_all(
-            skip=skip, limit=limit, document_id=document_id
+            skip=skip, limit=limit, account_id=account_id
         )
         # https://pydantic.dev/docs/validation/dev/concepts/models/#nested-attributes
         return DTOReadTransactionsResponse(

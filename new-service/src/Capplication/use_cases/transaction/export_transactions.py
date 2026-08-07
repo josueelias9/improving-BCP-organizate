@@ -13,7 +13,7 @@ from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsRequest,
     DTOExportTransactionsResponse,
 )
-from src.Capplication.gateway.db import ITransactionDbGateway, IDocumentDbGateway
+from src.Capplication.gateway.db import ITransactionDbGateway
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 
 logger = logging.getLogger(__name__)
@@ -26,11 +26,9 @@ class ExportTransactionsUseCase:
         self,
         transaction_gateway: ITransactionDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
-        document_gateway: IDocumentDbGateway,
     ):
         self.transaction_gateway = transaction_gateway
         self.file_extractor_gateway = file_extractor_gateway
-        self.document_gateway = document_gateway
 
     def execute(
         self, filters: DTOExportTransactionsRequest
@@ -50,9 +48,9 @@ class ExportTransactionsUseCase:
         try:
 
             # 2. Retrieve transactions from gateway
-            document_id = filters.document_id
-            transactions = self.transaction_gateway.get_by_document_id(
-                document_id=document_id
+            account_id = filters.account_id
+            transactions = self.transaction_gateway.get_by_account_id(
+                account_id=account_id
             )
 
             if not transactions:
@@ -62,8 +60,7 @@ class ExportTransactionsUseCase:
             csv_content = self._generate_csv(transactions)
 
             # 4. Generate filename
-            doc = self.document_gateway.get_by_id(document_id)
-            filename = f"{doc.document_format_name}__{doc.registration_date}__{doc.id}.csv"
+            filename = f"transactions__{account_id}.csv"
 
             # 5. Save file using file system gateway
             file_path = self.file_extractor_gateway.save_file(
@@ -81,7 +78,7 @@ class ExportTransactionsUseCase:
                 filename=filename,
                 transaction_count=len(transactions),
                 file_path=file_path,
-                document_id=filters.document_id,
+                account_id=filters.account_id,
             )
 
         except ValueError as e:

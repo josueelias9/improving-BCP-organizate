@@ -7,7 +7,7 @@ import logging
 from sqlmodel import Session, select
 from typing import Optional
 
-from models import Document as DocumentModel, Transaction as TransactionModel
+from models import Document as DocumentModel
 from src.Denterprise.entities import DocumentEntity
 from src.Capplication.gateway.db import IDocumentDbGateway
 
@@ -34,6 +34,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             plain_text=db_document.plain_text,
             user_id=db_document.user_id,
             document_format_name=db_document.document_format.name,
+            account_id=db_document.account_id,
         )
 
     def mark_as_processed(self, document_id: str) -> None:
@@ -56,8 +57,7 @@ class DocumentDbGateway(IDocumentDbGateway):
 
         db_document = DocumentModel(
             id=document.id,
-            account=document.account,
-            balance=document.balance,
+            account_id=document.account_id,
             processed=document.processed,
             registration_date=document.registration_date,
             user_id=document.user_id,
@@ -84,21 +84,18 @@ class DocumentDbGateway(IDocumentDbGateway):
         return [self._map_to_entity(doc) for doc in documents]
 
     def delete(self, document_id: str) -> None:
-        """Delete document and its associated transactions by ID"""
+        """Delete document by ID"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:
-            for transaction in db_document.transactions:
-                self.session.delete(transaction)
             self.session.delete(db_document)
             self.session.commit()
-            logger.info(f"Document {document_id} and its transactions deleted")
+            logger.info(f"Document {document_id} deleted")
 
     def _map_to_entity(self, db_document: DocumentModel) -> DocumentEntity:
         """Map database model to domain entity"""
         return DocumentEntity(
             id=db_document.id,
-            account=db_document.account,
-            balance=db_document.balance,
+            account_id=db_document.account_id,
             processed=db_document.processed,
             registration_date=db_document.registration_date,
             plain_text=db_document.plain_text,

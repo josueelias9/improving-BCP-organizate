@@ -101,7 +101,12 @@ default_documents = [
         "processed": True,
         "document_type_id": "00000000-0000-0000-0000-000000000001",
         "user_id": "00000000-0000-0000-0000-000000000001",
+        "account_id": "example-account-001",
     }
+]
+
+default_accounts = [
+    {"id": "example-account-001"},
 ]
 
 default_transactions = [
@@ -112,7 +117,7 @@ default_transactions = [
         "category_id": "00000000-0000-0000-0000-000000000003",
         "order": 1,
         "transaction_type": "expense",
-        "document_id": "0000000000000000000000000000000000000000000000000000000000000000",
+        "account_id": "example-account-001",
         "currency": "SOL",
         "history": "This is something that happened first.",
         "unique_identifier": "example__unique__identifier__1",
@@ -124,7 +129,7 @@ default_transactions = [
         "category_id": "00000000-0000-0000-0000-000000000002",
         "order": 2,
         "transaction_type": "expense",
-        "document_id": "0000000000000000000000000000000000000000000000000000000000000000",
+        "account_id": "example-account-001",
         "currency": "SOL",
         "history": "This is something that happened second.",
         "unique_identifier": "example__unique__identifier__2",
@@ -136,7 +141,7 @@ default_transactions = [
         "category_id": "00000000-0000-0000-0000-000000000006",
         "order": 3,
         "transaction_type": "expense",
-        "document_id": "0000000000000000000000000000000000000000000000000000000000000000",
+        "account_id": "example-account-001",
         "currency": "SOL",
         "history": "This is something that happened third.",
         "unique_identifier": "example__unique__identifier__3",
@@ -148,7 +153,7 @@ default_transactions = [
         "category_id": "00000000-0000-0000-0000-000000000006",
         "order": 4,
         "transaction_type": "expense",
-        "document_id": "0000000000000000000000000000000000000000000000000000000000000000",
+        "account_id": "example-account-001",
         "currency": "SOL",
         "history": "This is something that happened fourth.",
         "unique_identifier": "example__unique__identifier__4",

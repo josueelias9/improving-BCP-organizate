@@ -6,12 +6,12 @@ Orchestrates the flow of processing a file and creating a document
 import logging
 from pathlib import Path
 
-from src.Denterprise.entities import DocumentEntity, UserEntity
+from src.Denterprise.entities import DocumentEntity, UserEntity, AccountEntity, HistoryEntity
 from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
     DTOCreateDocumentRequest,
 )
-from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
+from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway, IAccountDbGateway, IHistoryDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
@@ -29,12 +29,16 @@ class CreateDocumentUseCase:
         document_type_gateway: IDocumentTypeDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
         parser_gateway: IStatementParser,
+        account_gateway: IAccountDbGateway,
+        history_gateway: IHistoryDbGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
         self.document_type_gateway = document_type_gateway
         self.file_extractor_gateway = file_extractor_gateway
         self.parser_gateway = parser_gateway
+        self.account_gateway = account_gateway
+        self.history_gateway = history_gateway
 
     def execute(self, request: DTOCreateDocumentRequest) -> DTOCreateDocumentResponse:
         """
@@ -76,9 +80,8 @@ class CreateDocumentUseCase:
             full_text = self.parser_gateway.read_file(file_binary)
 
             document = DocumentEntity(
-                account=self.parser_gateway.get_account(full_text),
-                balance=self.parser_gateway.get_balance(full_text),
-                registration_date=self.parser_gateway.get_initial_day(full_text), # TODO: rename to get_day or get_date
+                account_id=self.parser_gateway.get_account(full_text),
+                registration_date=self.parser_gateway.get_initial_day(full_text),
                 processed=False,
                 plain_text=full_text,
                 document_format_name=doc_type.name,
@@ -95,6 +98,10 @@ class CreateDocumentUseCase:
             document.user_id = user.id
             document.document_type_id = doc_type.id
 
+            # Ensure Account exists (get or create)
+            if document.account_id:
+                self.account_gateway.get_or_create(document.account_id)
+
             # Create document via gateway
             result_document, created = self.document_gateway.get_or_create(document)
 
@@ -109,6 +116,16 @@ class CreateDocumentUseCase:
                 )
 
             logger.info(f"Created new document with ID: {result_document.id}")
+
+            # Record balance snapshot only once per new document
+            if document.account_id:
+                balance = self.parser_gateway.get_balance(full_text)
+                if balance is not None:
+                    self.history_gateway.create(HistoryEntity(
+                        account_id=document.account_id,
+                        balance=balance,
+                        registration_date=document.registration_date,
+                    ))
 
             return DTOCreateDocumentResponse(
                 success=True,

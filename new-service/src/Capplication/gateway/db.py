@@ -12,6 +12,8 @@ from src.Denterprise.entities import (
     UserEntity,
     CategoryEntity,
     DocumentTypeEntity,
+    AccountEntity,
+    HistoryEntity,
 )
 
 
@@ -126,14 +128,14 @@ class ITransactionDbGateway(ABC):
 
     @abstractmethod
     def save_batch(
-        self, transactions: List[TransactionEntity], document_id: uuid.UUID
+        self, transactions: List[TransactionEntity], account_id: str
     ) -> Tuple[int, int, List[str]]:
         """
         Save multiple transactions from domain entities
 
         Args:
             transactions: List of domain Transaction entities
-            document_id: UUID of the document
+            account_id: ID of the account these transactions belong to
 
         Returns:
             Tuple of (loaded_count, skipped_count, errors)
@@ -145,15 +147,15 @@ class ITransactionDbGateway(ABC):
         self,
         skip: int = 0,
         limit: int = 100,
-        document_id: Optional[uuid.UUID] = None,
+        account_id: Optional[str] = None,
     ) -> List[TransactionEntity]:
         """
-        Get all transactions with pagination and optional document filter
+        Get all transactions with pagination and optional account filter
 
         Args:
             skip: Number of records to skip
             limit: Maximum number of records to return
-            document_id: Optional document UUID to filter transactions
+            account_id: Optional account ID to filter transactions
 
         Returns:
             List of TransactionEntity
@@ -185,14 +187,14 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
-    def get_by_document_id(
-        self, document_id: uuid.UUID = None
+    def get_by_account_id(
+        self, account_id: str
     ) -> List[TransactionEntity]:
         """
-        Get all transactions with optional filters
+        Get all transactions for a given account
 
         Args:
-            document_id: document UUID filter
+            account_id: account ID filter
 
         Returns:
             List of TransactionEntity including category_name
@@ -223,4 +225,32 @@ class IDocumentTypeDbGateway(ABC):
 
     @abstractmethod
     def get_all(self) -> list[DocumentTypeEntity]:
+        pass
+
+
+class IAccountDbGateway(ABC):
+    """Interface for account persistence operations"""
+
+    @abstractmethod
+    def get_or_create(self, account_id: str) -> Tuple[AccountEntity, bool]:
+        """
+        Return existing account or create a new one.
+
+        Returns:
+            (entity, created) — created is False when the account already existed
+        """
+        pass
+
+
+class IHistoryDbGateway(ABC):
+    """Interface for history persistence operations"""
+
+    @abstractmethod
+    def create(self, history: HistoryEntity) -> HistoryEntity:
+        """
+        Create a new history record (balance snapshot for an account).
+
+        Returns:
+            Created HistoryEntity
+        """
         pass

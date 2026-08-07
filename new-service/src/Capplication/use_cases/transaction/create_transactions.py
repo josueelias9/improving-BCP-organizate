@@ -62,7 +62,7 @@ class CreateTransactionsUseCase:
 
             # 4. Persist transactions (via gateway)
             loaded_count, skipped_count, errors = self.transaction_gateway.save_batch(
-                transaction_entities, document_id
+                transaction_entities, document.account_id
             )
 
             # 5. Mark document as processed (via gateway)

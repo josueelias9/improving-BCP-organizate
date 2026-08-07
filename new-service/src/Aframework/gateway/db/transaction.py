@@ -11,7 +11,7 @@ from typing import List, Tuple, Optional, Dict, Any
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
-from models import Transaction as TransactionModel, Document as DocumentModel
+from models import Transaction as TransactionModel
 from src.Denterprise.entities import TransactionEntity
 from src.Capplication.gateway.db import ITransactionDbGateway
 
@@ -25,18 +25,16 @@ class TransactionDbGateway(ITransactionDbGateway):
         self.session = session
 
     def save_batch(
-        self, transactions: List[TransactionEntity], document_id: str
+        self, transactions: List[TransactionEntity], account_id: str
     ) -> Tuple[int, int, List[str]]:
         """Save multiple transactions from domain entities to database"""
         loaded_count = 0
         skipped_count = 0
         errors = []
 
-        document = self.session.get(DocumentModel, document_id)
         for transaction_entity in transactions:
             try:
-                # Generate unique_identifier using entity method
-                transaction_entity.document_account = document.account if document else None
+                transaction_entity.account_id = account_id
                 transaction_entity.generate_unique_identifier()
 
                 # Map domain entity to database model
@@ -49,8 +47,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     transaction_date=transaction_entity.transaction_date,
                     currency=transaction_entity.currency,
                     unique_identifier=transaction_entity.unique_identifier,
-                    document_id=document_id,
-                    document_account=transaction_entity.document_account,
+                    account_id=account_id,
                 )
 
                 self.session.add(db_transaction)
@@ -78,14 +75,14 @@ class TransactionDbGateway(ITransactionDbGateway):
         self,
         skip: int = 0,
         limit: int = 100,
-        document_id: Optional[str] = None,
+        account_id: Optional[str] = None,
     ) -> List[TransactionEntity]:
-        """Get all transactions with pagination and optional document filter"""
+        """Get all transactions with pagination and optional account filter"""
 
-        if document_id:
+        if account_id:
             statement = (
                 select(TransactionModel)
-                .where(TransactionModel.document_id == document_id)
+                .where(TransactionModel.account_id == account_id)
                 .offset(skip)
                 .limit(limit)
             )
@@ -109,9 +106,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     currency=transaction.currency,
                     unique_identifier=transaction.unique_identifier,
                     category_name=transaction.category.name,
-                    document_document_format_name=transaction.document.document_format.name,
-                    document_id=transaction.document.id,
-                    document_account=transaction.document.account
+                    account_id=transaction.account_id,
                 )
                 entities.append(entity)
             except Exception as e:
@@ -131,7 +126,6 @@ class TransactionDbGateway(ITransactionDbGateway):
         if not db_transaction:
             return None
 
-        # TODO: create a single model -> entity mapper for all functions
         # Map to domain entity
         return TransactionEntity(
             id=db_transaction.id,
@@ -144,6 +138,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             currency=db_transaction.currency,
             unique_identifier=db_transaction.unique_identifier,
             category_id=db_transaction.category_id,
+            account_id=db_transaction.account_id,
         )
 
     def update(self, transaction_id: uuid.UUID, update_data: Dict[str, Any]) -> bool:
@@ -176,14 +171,12 @@ class TransactionDbGateway(ITransactionDbGateway):
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
 
-    def get_by_document_id(self, document_id: str = None) -> List[TransactionEntity]:
-        """Get all transactions with optional filters, including category name"""
-        # Build query
-
+    def get_by_account_id(self, account_id: str) -> List[TransactionEntity]:
+        """Get all transactions for a given account, including category name"""
         statement = (
             select(TransactionModel)
             .options(joinedload(TransactionModel.category))
-            .where(TransactionModel.document_id == document_id)
+            .where(TransactionModel.account_id == account_id)
             .order_by(TransactionModel.order)
         )
         transactions = self.session.exec(statement).all()
@@ -201,7 +194,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                 currency=t.currency,
                 unique_identifier=t.unique_identifier,
                 category_name=t.category.name if t.category else None,
-                document_id=(t.document.id if t.document else None),
+                account_id=t.account_id,
             )
             result.append(entity)
 
@@ -231,4 +224,5 @@ class TransactionDbGateway(ITransactionDbGateway):
             currency=db_transaction.currency,
             unique_identifier=db_transaction.unique_identifier,
             category_id=db_transaction.category_id,
+            account_id=db_transaction.account_id,
         )

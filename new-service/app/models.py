@@ -30,8 +30,6 @@ class CategoryBase(SQLModel):
 
 
 class DocumentBase(SQLModel):
-    account: Optional[str] = Field(default=None, max_length=100)
-    balance: Optional[float] = Field(default=None)
     processed: bool = Field(default=False)
     registration_date: Optional[date] = Field(default=None)
     plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
@@ -92,17 +90,44 @@ class Category(CategoryBase, table=True):
     transactions: List["Transaction"] = Relationship(back_populates="category")
 
 
+class Account(SQLModel, table=True):
+    __tablename__ = "accounts"
+
+    # id comes from the document's plain text (e.g. bank account number)
+    id: str = Field(primary_key=True, index=True, nullable=False, max_length=100)
+
+    # Relationships
+    documents: List["Document"] = Relationship(back_populates="account")
+    transactions: List["Transaction"] = Relationship(back_populates="account")
+    histories: List["History"] = Relationship(back_populates="account")
+
+
+class History(SQLModel, table=True):
+    __tablename__ = "histories"
+
+    id: uuid.UUID = Field(
+        default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
+    )
+    account_id: str = Field(foreign_key="accounts.id")
+    balance: float
+    registration_date: Optional[date] = Field(default=None)
+
+    # Relationships
+    account: "Account" = Relationship(back_populates="histories")
+
+
 class Document(DocumentBase, table=True):
     __tablename__ = "documents"
 
     id: str = Field(primary_key=True, index=True, nullable=False, max_length=64)
     user_id: uuid.UUID = Field(foreign_key="users.id")
     document_type_id: uuid.UUID = Field(foreign_key="document_types.id")
+    account_id: Optional[str] = Field(default=None, foreign_key="accounts.id")
 
     # Relationships
     user: User = Relationship(back_populates="documents")
     document_format: "DocumentFormat" = Relationship(back_populates="documents")
-    transactions: List["Transaction"] = Relationship(back_populates="document")
+    account: Optional["Account"] = Relationship(back_populates="documents")
 
 
 class Transaction(TransactionBase, table=True):
@@ -111,12 +136,12 @@ class Transaction(TransactionBase, table=True):
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
     )
-    document_id: str = Field(foreign_key="documents.id")
+    account_id: str = Field(foreign_key="accounts.id")
     category_id: Optional[uuid.UUID] = Field(
         default=uuid.UUID("00000000-0000-0000-0000-000000000007"),
         foreign_key="categories.id",
     )
 
     # Relationships
-    document: Document = Relationship(back_populates="transactions")
+    account: "Account" = Relationship(back_populates="transactions")
     category: Optional[Category] = Relationship(back_populates="transactions")

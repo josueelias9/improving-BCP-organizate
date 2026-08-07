@@ -21,6 +21,7 @@ from src.Capplication.DTO.document_dto import (
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
+from src.Aframework.gateway.db.account import AccountDbGateway, HistoryDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
@@ -81,10 +82,6 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
     """
     try:
         # Initialize all gateways (infrastructure layer)
-        document_gateway = DocumentDbGateway(session)
-        user_gateway = UserDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        file_extractor_gateway = FileExtractorGateway()
 
         document_format_name = Path(dto_request.pdf_filepath).parent.name
         parser_map = {
@@ -101,11 +98,13 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
 
         # Delegate all processing to application layer use case
         use_case = CreateDocumentUseCase(
-            document_gateway,
-            user_gateway,
-            document_type_gateway,
-            file_extractor_gateway,
-            parser_gateway,
+            document_gateway=DocumentDbGateway(session),
+            user_gateway=UserDbGateway(session),
+            document_type_gateway=DocumentTypeDbGateway(session),
+            file_extractor_gateway=FileExtractorGateway(),
+            parser_gateway=parser_gateway,
+            account_gateway=AccountDbGateway(session),
+            history_gateway=HistoryDbGateway(session),
         )
 
         # Use case returns DTO for controller response
@@ -148,6 +147,8 @@ async def create_documents(
             document_type_gateway=DocumentTypeDbGateway(session),
             file_extractor_gateway=FileExtractorGateway(),
             parsers=parsers,
+            account_gateway=AccountDbGateway(session),
+            history_gateway=HistoryDbGateway(session),
         )
         return use_case.execute(dto_request)
     except Exception as e:

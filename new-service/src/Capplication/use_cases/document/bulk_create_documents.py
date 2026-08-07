@@ -12,7 +12,7 @@ from src.Capplication.DTO.document_dto import (
     DTOBulkCreateDocumentItemResult,
     DTOCreateDocumentRequest,
 )
-from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway
+from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway, IAccountDbGateway, IHistoryDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
@@ -31,12 +31,16 @@ class BulkCreateDocumentsUseCase:
         document_type_gateway: IDocumentTypeDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
         parsers: dict[str, IStatementParser],
+        account_gateway: IAccountDbGateway,
+        history_gateway: IHistoryDbGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
         self.document_type_gateway = document_type_gateway
         self.file_extractor_gateway = file_extractor_gateway
         self.parsers = parsers
+        self.account_gateway = account_gateway
+        self.history_gateway = history_gateway
 
     def execute(
         self, request: DTOBulkCreateDocumentsRequest
@@ -96,6 +100,8 @@ class BulkCreateDocumentsUseCase:
                 document_type_gateway=self.document_type_gateway,
                 file_extractor_gateway=self.file_extractor_gateway,
                 parser_gateway=parser,
+                account_gateway=self.account_gateway,
+                history_gateway=self.history_gateway,
             )
             response = use_case.execute(
                 DTOCreateDocumentRequest(

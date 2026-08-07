@@ -12,12 +12,12 @@ docs_response.raise_for_status()
 documents = docs_response.json().get("documents", [])
 
 
-doc_options = {doc["id"]: doc["id"] for doc in documents}
+doc_options = {doc["id"]: doc.get("account_id") for doc in documents}
 selected_label = st.selectbox("Document", options=list(doc_options.keys()))
-selected_document_id = doc_options.get(selected_label)
+selected_account_id = doc_options.get(selected_label)
 
-# Fetch transactions filtered by selected document
-params = {"document_id": selected_document_id} if selected_document_id else {}
+# Fetch transactions filtered by the account of the selected document
+params = {"account_id": selected_account_id} if selected_account_id else {}
 response = requests.get(f"{BASE_URL}/transactions", params=params)
 response.raise_for_status()
 transactions = response.json()["transactions"]

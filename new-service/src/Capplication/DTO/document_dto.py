@@ -45,8 +45,7 @@ class DTODocumentItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: Optional[str] = None
-    account: Optional[str] = None
-    balance: Optional[float] = None
+    account_id: Optional[str] = None
     processed: bool = False
     registration_date: Optional[date] = None
     document_format_name: Optional[str] = None
