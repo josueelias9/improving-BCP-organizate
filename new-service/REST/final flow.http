@@ -43,3 +43,10 @@ content-type: application/json
 # @name exportTransactions
 GET http://{{host}}/transactions/export?document_id={{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
 content-type: application/json
+
+
+
+### temporal
+
+DELETE http://{{host}}/documents/{{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
+content-type: application/json

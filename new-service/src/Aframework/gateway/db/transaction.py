@@ -11,7 +11,7 @@ from typing import List, Tuple, Optional, Dict, Any
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
 
-from models import Transaction as TransactionModel
+from models import Transaction as TransactionModel, Document as DocumentModel
 from src.Denterprise.entities import TransactionEntity
 from src.Capplication.gateway.db import ITransactionDbGateway
 
@@ -32,9 +32,11 @@ class TransactionDbGateway(ITransactionDbGateway):
         skipped_count = 0
         errors = []
 
+        document = self.session.get(DocumentModel, document_id)
         for transaction_entity in transactions:
             try:
                 # Generate unique_identifier using entity method
+                transaction_entity.document_account = document.account if document else None
                 transaction_entity.generate_unique_identifier()
 
                 # Map domain entity to database model
@@ -48,6 +50,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                     currency=transaction_entity.currency,
                     unique_identifier=transaction_entity.unique_identifier,
                     document_id=document_id,
+                    document_account=transaction_entity.document_account,
                 )
 
                 self.session.add(db_transaction)
@@ -107,7 +110,8 @@ class TransactionDbGateway(ITransactionDbGateway):
                     unique_identifier=transaction.unique_identifier,
                     category_name=transaction.category.name,
                     document_document_format_name=transaction.document.document_format.name,
-                    document_unique_identifier=transaction.document.id,
+                    document_id=transaction.document.id,
+                    document_account=transaction.document.account
                 )
                 entities.append(entity)
             except Exception as e:
@@ -197,7 +201,7 @@ class TransactionDbGateway(ITransactionDbGateway):
                 currency=t.currency,
                 unique_identifier=t.unique_identifier,
                 category_name=t.category.name if t.category else None,
-                document_unique_identifier=(t.document.id if t.document else None),
+                document_id=(t.document.id if t.document else None),
             )
             result.append(entity)
 

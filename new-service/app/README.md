@@ -74,6 +74,8 @@ erDiagram
     DOCUMENT_FORMAT ||--o| ACCOUNT : "if we have two documents with different formats, same account, and same month, they can represent the inner transactions in diferent ways. We generate the transaction id with this information, and having transactions defined diferently will generate an inconsistency."
     DOCUMENT }|--o| ACCOUNT : "a document always need to have an account"
     ACCOUNT ||--o{ HISTORY : "a history represents time shots of the amount of money registered at that time for that account"
+    TRANSACTION }|--o| DOCUMENT : "actual relation. Keep it temporally"
+
     
 ```
 

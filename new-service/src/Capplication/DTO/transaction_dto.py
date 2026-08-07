@@ -84,7 +84,7 @@ class DTOTransaction(BaseModel):
     currency: Optional[str]
     document_document_format_name: Optional[str]
     unique_identifier: Optional[str]
-    document_unique_identifier: Optional[str]
+    document_id: Optional[str]
     id: Optional[uuid.UUID]
 
 
