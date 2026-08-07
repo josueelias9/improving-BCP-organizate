@@ -100,3 +100,10 @@ docker compose down db -v
 docker compose up db -d
 docker compose up new-service-init --build
 ```
+
+
+
+```
+./scripts/enc.sh encrypt
+SOPS_AGE_KEY_FILE=../key.txt ./scripts/enc.sh decrypt
+```
