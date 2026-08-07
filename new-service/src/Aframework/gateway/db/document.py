@@ -83,7 +83,13 @@ class DocumentDbGateway(IDocumentDbGateway):
         # Map all documents to domain entities
         return [self._map_to_entity(doc) for doc in documents]
 
-    def delete(self, document_id: str) -> None:
+    def get_by_account_id(self, account_id: str) -> list[DocumentEntity]:
+        """Get all documents linked to an account"""
+        statement = select(DocumentModel).where(DocumentModel.account_id == account_id)
+        documents = self.session.exec(statement).all()
+        return [self._map_to_entity(doc) for doc in documents]
+
+    def delete(self, document_id: str) -> None:        
         """Delete document by ID"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:

@@ -1,11 +1,9 @@
 """
 Load Transactions Use Case - Application Layer
-Orchestrates the flow of loading transactions from a document
+Orchestrates the flow of loading transactions from all documents of an account
 """
 
 import logging
-from typing import List
-from src.Denterprise.entities import DocumentEntity, TransactionEntity
 from src.Capplication.DTO.transaction_dto import (
     DTOCreateTransactionsResponse,
     DTOCreateTransactionsRequest,
@@ -17,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class CreateTransactionsUseCase:
-    """Use case for loading transactions from document plain text into the transaction table"""
+    """Given an account, parse all its unprocessed documents and load their transactions"""
 
     def __init__(
         self,
@@ -32,73 +30,66 @@ class CreateTransactionsUseCase:
     def execute(
         self, request: DTOCreateTransactionsRequest
     ) -> DTOCreateTransactionsResponse:
-        """
-        Execute the use case: parse plain text and load transactions from document.
+        account_id = request.account_id
+        total_loaded = 0
+        total_skipped = 0
+        total_records = 0
+        documents_processed = 0
+        all_errors = []
 
-        Args:
-            request: DTO containing document_id
-
-        Returns:
-            DTOCreateTransactionsResponse (DTO for controller response)
-
-        Raises:
-            ValueError: If document not found or validation fails
-        """
         try:
-            document_id = request.document_id
-            # 1. Retrieve document entity (from gateway)
-            document = self.document_gateway.get_by_id(document_id)
+            documents = self.document_gateway.get_by_account_id(account_id)
 
-            # 2. Validate document (business logic)
-            self.validate_document_for_processing(document)
+            if not documents:
+                raise ValueError(f"No documents found for account '{account_id}'")
 
-            # 3. Select parser based on document format and extract transaction entities
-            parser = self.parsers.get(document.document_format_name)
-            if parser is None:
-                raise ValueError(
-                    f"No parser registered for document format '{document.document_format_name}'"
+            for document in documents:
+                if document.processed:
+                    logger.info(f"Document {document.id} already processed, skipping")
+                    continue
+
+                if not document.plain_text:
+                    all_errors.append(f"Document {document.id} has no plain text, skipping")
+                    continue
+
+                parser = self.parsers.get(document.document_format_name)
+                if parser is None:
+                    all_errors.append(
+                        f"No parser for format '{document.document_format_name}' (document {document.id})"
+                    )
+                    continue
+
+                transaction_entities = parser.get_transactions(document.plain_text)
+                total_records += len(transaction_entities)
+
+                loaded, skipped, errors = self.transaction_gateway.save_batch(
+                    transaction_entities, account_id
                 )
-            transaction_entities = parser.get_transactions(document.plain_text)
+                total_loaded += loaded
+                total_skipped += skipped
+                all_errors.extend(errors)
 
-            # 4. Persist transactions (via gateway)
-            loaded_count, skipped_count, errors = self.transaction_gateway.save_batch(
-                transaction_entities, document.account_id
-            )
+                self.document_gateway.mark_as_processed(document.id)
+                documents_processed += 1
 
-            # 5. Mark document as processed (via gateway)
-            self.document_gateway.mark_as_processed(document_id)
-
-            # 6. Return result DTO (for controller)
             return DTOCreateTransactionsResponse(
                 success=True,
-                loaded_count=loaded_count,
-                skipped_count=skipped_count,
-                errors=errors,
-                total_records=len(transaction_entities),
-                document_id=str(document_id),
+                loaded_count=total_loaded,
+                skipped_count=total_skipped,
+                errors=all_errors,
+                total_records=total_records,
+                documents_processed=documents_processed,
+                account_id=account_id,
             )
+
         except Exception as e:
-            logger.error(f"Error loading transactions from document: {str(e)}")
+            logger.error(f"Error loading transactions for account {account_id}: {str(e)}")
             return DTOCreateTransactionsResponse(
                 success=False,
-                loaded_count=0,
-                skipped_count=0,
-                errors=[str(e)],
-                total_records=0,
-                document_id=str(request.document_id),
+                loaded_count=total_loaded,
+                skipped_count=total_skipped,
+                errors=all_errors + [str(e)],
+                total_records=total_records,
+                documents_processed=documents_processed,
+                account_id=account_id,
             )
-
-    def validate_document_for_processing(self, document: DocumentEntity) -> None:
-        """
-        Validate that a document can be processed.
-
-        Raises:
-            ValueError: If document is invalid or already processed
-        """
-        if document.processed:
-            raise ValueError(
-                "Document has already been processed. Transactions already loaded."
-            )
-
-        if not document.plain_text:
-            raise ValueError("Document has no plain text content to parse")

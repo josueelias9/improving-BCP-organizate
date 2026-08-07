@@ -176,12 +176,12 @@ class DTOUpdateTransactionsRequest(BaseModel):
 
 
 class DTOCreateTransactionsRequest(BaseModel):
-    document_id: str
+    account_id: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "document_id": "a1b2fb196c146c4c41f3e84946506d76cf5151594050f9d52aece97d4498f80",
+                "account_id": "191-04106279-0-55",
             }
         }
     }
@@ -195,4 +195,5 @@ class DTOCreateTransactionsResponse(BaseModel):
     skipped_count: int
     errors: List[str]
     total_records: int
-    document_id: str
+    documents_processed: int
+    account_id: str

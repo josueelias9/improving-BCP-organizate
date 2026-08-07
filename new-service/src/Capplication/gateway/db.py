@@ -64,13 +64,13 @@ class IDocumentDbGateway(ABC):
     ) -> List[DocumentEntity]:
         """
         Get all documents with pagination, returning domain entities
+        """
+        pass
 
-        Args:
-            skip: Number of records to skip
-            limit: Maximum number of records to return
-
-        Returns:
-            List of domain Document entities
+    @abstractmethod
+    def get_by_account_id(self, account_id: str) -> List[DocumentEntity]:
+        """
+        Get all documents associated with a given account ID
         """
         pass
 

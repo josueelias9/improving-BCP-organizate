@@ -171,17 +171,7 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
 )
 def create_transactions(dto_request: DTOCreateTransactionsRequest, session: SessionDep):
     """
-    Parse a document's plain text and load transactions into the transactions table.
-
-    Args:
-        document_id: The ID of the document to process
-        session: Database session (injected)
-
-    Returns:
-        Summary of loaded transactions
-
-    Raises:
-        HTTPException: 404 if document not found, 400 for validation errors
+    Given an account ID, find all its unprocessed documents and extract their transactions.
     """
     try:
         parsers = {
