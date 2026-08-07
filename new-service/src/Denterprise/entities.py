@@ -70,7 +70,7 @@ class TransactionEntity:
         Returns:
             Unique identifier string
         """
-        self.unique_identifier = f"{self.transaction_type}__{self.transaction_date.strftime('%Y-%m-%dT%H:%M:%S')}__{self.order}__{self.amount}__{self.description}"
+        self.unique_identifier = f"{self.transaction_date.strftime('%Y-%m-%dT%H:%M:%S')}"
 
 
 @dataclass

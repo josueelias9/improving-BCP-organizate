@@ -10,7 +10,8 @@ This is an INPUT ADAPTER that:
 
 import re
 import logging
-from datetime import date, datetime
+from collections import defaultdict
+from datetime import date, datetime, timedelta
 from typing import List, Optional, Tuple
 
 from src.Capplication.gateway.content_extractor import IStatementParser
@@ -75,6 +76,7 @@ class BCPDebitParser(IStatementParser):
         currency_map = {"SOLES": "SOL", "US DOLARES": "USD"}
         currency_code = currency_map.get(currency, "SOL")
 
+        day_counters: dict[date, int] = defaultdict(int)
         entities = []
         for idx, tx in enumerate(raw_transactions):
             cargos = float(tx.get("cargos", 0.0))
@@ -85,17 +87,21 @@ class BCPDebitParser(IStatementParser):
             else:
                 transaction_type = "expense"
                 amount = cargos
+
+            fecha_valor = tx.get("fecha_valor")
+            if fecha_valor:
+                day_counters[fecha_valor] += 1
+                transaction_date = datetime.combine(fecha_valor, datetime.min.time()) + timedelta(seconds=day_counters[fecha_valor])
+            else:
+                transaction_date = None
+
             entities.append(
                 TransactionEntity(
                     order=idx + 1,
                     description=tx.get("description", ""),
                     amount=amount,
                     transaction_type=transaction_type,
-                    transaction_date=(
-                        datetime.combine(tx["fecha_valor"], datetime.min.time())
-                        if tx.get("fecha_valor")
-                        else None
-                    ),
+                    transaction_date=transaction_date,
                     currency=currency_code,
                 )
             )
