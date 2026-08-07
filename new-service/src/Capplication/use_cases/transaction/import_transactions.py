@@ -61,7 +61,7 @@ class ImportTransactionsUseCase:
                     message="Document not found",
                 )
             filename = (
-                f"{document.document_format_name}__{document.end_date}__{document.id}"
+                f"{document.document_format_name}__{document.registration_date}__{document.id}"
             )
             csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 

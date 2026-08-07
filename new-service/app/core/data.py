@@ -154,3 +154,27 @@ default_transactions = [
         "unique_identifier": "example__unique__identifier__4",
     },
 ]
+
+
+default_targets = [
+    {
+        "name": "Toyota",
+        "price": 20000.0,
+        "currency": "USD",
+    },
+    {
+        "name": "Toyota",
+        "price": 200000.0,
+        "currency": "USD",
+    },
+    {
+        "name": "Toyota",
+        "price": 2000.0,
+        "currency": "USD",
+    },
+    {
+        "name": "Green Card",
+        "price": 1000000.0,
+        "currency": "USD",
+    }
+]

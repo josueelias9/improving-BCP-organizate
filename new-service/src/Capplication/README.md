@@ -16,7 +16,7 @@ sequenceDiagram
     FileExtractor-->>-DocumentUseCase: get the binary
 
     DocumentUseCase->>+Parser: extract content
-    Parser-->>-DocumentUseCase: get data, unique_identifier, start_date, end_date
+    Parser-->>-DocumentUseCase: get data, unique_identifier, registration_date
 
     DocumentUseCase->>+DocumentGateway: save document
     DocumentGateway->>DocumentGateway: generate unique identifier

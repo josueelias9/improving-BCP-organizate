@@ -18,8 +18,6 @@ new-service/
 
 [ ] create a presenter to parse the date. We need more information about the date: add day
 
-[ ] graph need to zoom ranges
-
 [ ] separate docuemnt table: document and account
 
 [ ] in streamlit, now showing document id. Should we show account information instead?

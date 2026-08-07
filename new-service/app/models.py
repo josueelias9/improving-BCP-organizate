@@ -33,8 +33,7 @@ class DocumentBase(SQLModel):
     account: Optional[str] = Field(default=None, max_length=100)
     balance: Optional[float] = Field(default=None)
     processed: bool = Field(default=False)
-    start_date: Optional[date] = Field(default=None)
-    end_date: Optional[date] = Field(default=None)
+    registration_date: Optional[date] = Field(default=None)
     plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 

@@ -78,8 +78,7 @@ class CreateDocumentUseCase:
             document = DocumentEntity(
                 account=self.parser_gateway.get_account(full_text),
                 balance=self.parser_gateway.get_balance(full_text),
-                start_date=self.parser_gateway.get_initial_day(full_text),
-                end_date=self.parser_gateway.get_final_day(full_text),
+                registration_date=self.parser_gateway.get_initial_day(full_text), # TODO: rename to get_day or get_date
                 processed=False,
                 plain_text=full_text,
                 document_format_name=doc_type.name,

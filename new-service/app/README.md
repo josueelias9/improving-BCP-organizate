@@ -40,7 +40,7 @@ erDiagram
     }
 
     HISTORY {
-        date time "when it was registered"
+        time registration_date "when it was registered"
         float balance "net amount"
     }
 
@@ -67,12 +67,13 @@ erDiagram
 
     %% Relaciones
     USER ||--o{ DOCUMENT : "has"
-    ACCOUNT ||--o{ TRANSACTION : "could have"
-    TRANSACTION }o--|| CATEGORY : "pertenece a"
+    ACCOUNT ||--o{ TRANSACTION : "every transactions is asociated with an account. This is for definition (an account is a place where money goes in and out)"
+    TRANSACTION }o--|| CATEGORY : "every transaction has a category"
     CATEGORY ||--o| CATEGORY : "may have"
-    DOCUMENT_FORMAT ||--o{ DOCUMENT : "has many"
-    DOCUMENT }|--o| ACCOUNT : "could have"
-    ACCOUNT ||--o{ HISTORY : "could have"
+    DOCUMENT_FORMAT ||--o{ DOCUMENT : "there are several standard format in which the document is composed"
+    DOCUMENT_FORMAT ||--o| ACCOUNT : "if we have two documents with different formats, same account, and same month, they can represent the inner transactions in diferent ways. We generate the transaction id with this information, and having transactions defined diferently will generate an inconsistency."
+    DOCUMENT }|--o| ACCOUNT : "a document always need to have an account"
+    ACCOUNT ||--o{ HISTORY : "a history represents time shots of the amount of money registered at that time for that account"
     
 ```
 

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="2vwq39nvkF-C-bEVSrWH" name="Page-1">
-        <mxGraphModel dx="1430" dy="-181" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1929" dy="-12" grid="1" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -293,25 +293,25 @@
                 <mxCell id="129" value="so I need to retrieve the plain text of n documents" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="-500" y="900" width="70" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="130" value="ta" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                <mxCell id="130" value="t1" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
                     <mxGeometry x="-790" y="1020" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="132" value="da" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.document;" parent="1" vertex="1">
+                <mxCell id="132" value="d1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.document;" parent="1" vertex="1">
                     <mxGeometry x="-750" y="1020" width="29.23" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="134" value="db" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.document;" parent="1" vertex="1">
+                <mxCell id="134" value="d2" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.document;" parent="1" vertex="1">
                     <mxGeometry x="-750" y="1100" width="29.23" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="136" value="both document&lt;div&gt;same account&lt;/div&gt;" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/storage/Storage_Accounts_Classic.svg;" parent="1" vertex="1">
                     <mxGeometry x="-570" y="1000" width="50" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="138" value="tb" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                <mxCell id="138" value="t2" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
                     <mxGeometry x="-790" y="1100" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="141" value="ta id" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                <mxCell id="141" value="t1 id" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
                     <mxGeometry x="-600" y="1100" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="142" value="tb id" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                <mxCell id="142" value="t2 id" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
                     <mxGeometry x="-540" y="1100" width="40" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="144" value="=" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
@@ -332,17 +332,110 @@
                 <mxCell id="148" value="ta and tb are the same transaction" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-405" y="1060" width="210" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="153" value="new-service&#xa;(contains backend&#xa;and Streamlit)" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/FastAPI_logo.svg/1280px-FastAPI_logo.svg.png;" vertex="1" parent="1">
+                <mxCell id="153" value="new-service&#xa;(contains backend&#xa;and Streamlit)" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/FastAPI_logo.svg/1280px-FastAPI_logo.svg.png;" parent="1" vertex="1">
                     <mxGeometry x="-230" y="450" width="108.11" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="155" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://images.icon-icons.com/2415/PNG/512/postgresql_original_wordmark_logo_icon_146392.png;" vertex="1" parent="1">
+                <mxCell id="155" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://images.icon-icons.com/2415/PNG/512/postgresql_original_wordmark_logo_icon_146392.png;" parent="1" vertex="1">
                     <mxGeometry x="-30" y="420" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="157" style="edgeStyle=none;html=1;" edge="1" parent="1" source="156" target="153">
+                <mxCell id="157" style="edgeStyle=none;html=1;" parent="1" source="156" target="153" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="156" value="" style="editableCssRules=.*;html=1;shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnY9Imh0dHBzOi8vdmVjdGEuaW8vbmFubyIgdmlld0JveD0iMCAwIDMwLjMwOTk5OTQ2NTk0MjM4MyAzMi41IiBoZWlnaHQ9IjEyMi44MzQiIHdpZHRoPSIxMTQuNTU3MjE4NDYyNTMyNiI+JiN4YTsJPHN0eWxlIHR5cGU9InRleHQvY3NzIj4mI3hhOwkuc3Qwe2ZpbGw6I2U1NWIyZDt9JiN4YTsJLnN0MXtmaWxsOiNlZDhlMjQ7fSYjeGE7CS5zdDJ7ZmlsbDojZjhiZjNjO30mI3hhOwk8L3N0eWxlPiYjeGE7CTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy4zMiA1djVsOC42NiA1di01ek0wIDEwdjVsNC4zMyAyLjV2LTV6bTEyLjk5IDIuNUw4LjY1OSAxNXYxNWw0LjMzIDIuNXYtMTBsNC4zMyAyLjV2LTVsLTQuMzMtMi41eiIvPiYjeGE7CTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNy4zMiA1bC0xMi45OSA3LjV2NWw4LjY2LTV2NWw0LjMzLTIuNXptMTIuOTkgMi41TDI1Ljk4IDEwdjVsNC4zMy0yLjV6bS04LjY2IDEwTDE3LjMyIDIwdjVsNC4zMy0yLjV6TTE3LjMyIDI1bC00LjMzLTIuNXYxMGw0LjMzLTIuNXoiLz4mI3hhOwk8cGF0aCBjbGFzcz0ic3QyIiBkPSJNMTcuMzIgMEwwIDEwbDQuMzMgMi41TDE3LjMyIDVsOC42NiA1IDQuMzMtMi41em0wIDE1bC00LjMzIDIuNSA0LjMzIDIuNSA0LjMzLTIuNXoiLz4mI3hhOzwvc3ZnPg==;fontColor=default;" vertex="1" parent="1">
+                <mxCell id="156" value="" style="editableCssRules=.*;html=1;shape=image;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;aspect=fixed;imageAspect=0;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnY9Imh0dHBzOi8vdmVjdGEuaW8vbmFubyIgdmlld0JveD0iMCAwIDMwLjMwOTk5OTQ2NTk0MjM4MyAzMi41IiBoZWlnaHQ9IjEyMi44MzQiIHdpZHRoPSIxMTQuNTU3MjE4NDYyNTMyNiI+JiN4YTsJPHN0eWxlIHR5cGU9InRleHQvY3NzIj4mI3hhOwkuc3Qwe2ZpbGw6I2U1NWIyZDt9JiN4YTsJLnN0MXtmaWxsOiNlZDhlMjQ7fSYjeGE7CS5zdDJ7ZmlsbDojZjhiZjNjO30mI3hhOwk8L3N0eWxlPiYjeGE7CTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy4zMiA1djVsOC42NiA1di01ek0wIDEwdjVsNC4zMyAyLjV2LTV6bTEyLjk5IDIuNUw4LjY1OSAxNXYxNWw0LjMzIDIuNXYtMTBsNC4zMyAyLjV2LTVsLTQuMzMtMi41eiIvPiYjeGE7CTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik0xNy4zMiA1bC0xMi45OSA3LjV2NWw4LjY2LTV2NWw0LjMzLTIuNXptMTIuOTkgMi41TDI1Ljk4IDEwdjVsNC4zMy0yLjV6bS04LjY2IDEwTDE3LjMyIDIwdjVsNC4zMy0yLjV6TTE3LjMyIDI1bC00LjMzLTIuNXYxMGw0LjMzLTIuNXoiLz4mI3hhOwk8cGF0aCBjbGFzcz0ic3QyIiBkPSJNMTcuMzIgMEwwIDEwbDQuMzMgMi41TDE3LjMyIDVsOC42NiA1IDQuMzMtMi41em0wIDE1bC00LjMzIDIuNSA0LjMzIDIuNSA0LjMzLTIuNXoiLz4mI3hhOzwvc3ZnPg==;fontColor=default;" parent="1" vertex="1">
                     <mxGeometry x="-400" y="420" width="76" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="158" value="t1" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                    <mxGeometry x="-1360" y="890" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="159" value="t2" style="image;html=1;image=img/lib/clip_art/finance/Dollar_128x128.png" parent="1" vertex="1">
+                    <mxGeometry x="-1360" y="960" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="160" value="d1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.document;" parent="1" vertex="1">
+                    <mxGeometry x="-1180" y="880" width="29.23" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="161" value="the name avoids overlap" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="-1410" y="1060" width="150" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="162" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;dashed=1;" parent="1" vertex="1">
+                    <mxGeometry x="-1400" y="840" width="120" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="163" value="both document&lt;div&gt;same account&lt;/div&gt;" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/storage/Storage_Accounts_Classic.svg;" parent="1" vertex="1">
+                    <mxGeometry x="-1370" y="750" width="50" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="164" value="date" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2160" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="165" value="name" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2160" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="166" value="amount" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2160" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="167" value="date" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2180" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="168" value="name" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2180" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="169" value="amount" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2180" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="170" value="date" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2200" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="171" value="name" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2200" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="172" value="amount" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2200" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="173" value="date" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2220" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="174" value="name" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2220" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="175" value="amount" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2220" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="176" value="date" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2120" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="177" value="name" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2120" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="178" value="amount" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2120" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="179" value="date" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="2140" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="180" value="name" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-760" y="2140" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="181" value="amount" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="2140" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="182" value="month A" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="-840" y="2120" width="20" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="183" value="month B" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="-840" y="2200" width="20" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="189" value="" style="endArrow=classic;html=1;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="-920" y="2200" as="sourcePoint"/>
+                        <mxPoint x="-920" y="2120" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="190" value="" style="endArrow=classic;html=1;startArrow=baseDash;startFill=0;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="-920" y="2200" as="sourcePoint"/>
+                        <mxPoint x="-920" y="2240" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="191" value="hash" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="-660" y="2120" width="20" height="40" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

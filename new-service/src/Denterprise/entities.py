@@ -90,8 +90,7 @@ class DocumentEntity:
     account: Optional[str] = None
     balance: Optional[float] = None
     processed: bool = False
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    registration_date: Optional[date] = None
     user_id: Optional[uuid.UUID] = None
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[str] = None
