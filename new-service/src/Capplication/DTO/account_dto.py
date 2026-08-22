@@ -1,11 +1,12 @@
 from datetime import date
-from typing import List, Optional
+from typing import Dict, List, Optional
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DTOAccount(BaseModel):
     id: str
+    links: list
 
 
 class DTOHistory(BaseModel):

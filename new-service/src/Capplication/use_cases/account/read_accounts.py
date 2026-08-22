@@ -9,5 +9,27 @@ class ReadAccountsUseCase:
 
     def execute(self) -> DTOGetAccountsResponse:
         entities = self.account_gateway.get_all()
-        accounts = [DTOAccount(id=e.id) for e in entities]
+        accounts = [
+            DTOAccount(
+                id=e.id,
+                links=[
+                    {
+                        "rel": "self",
+                        "href": f"/accounts/{e.id}",
+                        "action":"GET",
+                    },
+                    {
+                        "rel": "transactions",
+                        "href": f"/accounts/{e.id}/transactions",
+                        "action":"GET",
+                    },
+                    {
+                        "rel": "histories",
+                        "href": f"/accounts/{e.id}/histories",
+                        "action":"GET",
+                    },
+                ],
+            )
+            for e in entities
+        ]
         return DTOGetAccountsResponse(accounts=accounts, total_count=len(accounts))
