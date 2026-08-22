@@ -177,12 +177,15 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
-    def get_by_account_id(self, account_id: str) -> List[TransactionEntity]:
+    def get_by_account_id(
+        self, account_id: str, transaction_type: Optional[str] = None
+    ) -> List[TransactionEntity]:
         """
-        Get all transactions for a given account
+        Get all transactions for a given account, optionally filtered by type.
 
         Args:
             account_id: account ID filter
+            transaction_type: optional filter value (income or expense)
 
         Returns:
             List of TransactionEntity including category_name

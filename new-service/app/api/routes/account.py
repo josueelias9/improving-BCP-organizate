@@ -16,6 +16,7 @@ from src.Capplication.DTO.account_dto import (
     DTOGetAccountsResponse,
 )
 from src.Capplication.DTO.transaction_dto import DTOReadTransactionsResponse
+from src.Denterprise.entities import TransactionType
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 logger = logging.getLogger(__name__)
@@ -36,11 +37,14 @@ def read_accounts(session: SessionDep):
 @router.get("/{account_id}/transactions", response_model=DTOReadTransactionsResponse)
 def read_account_transactions(
     account_id: str,
-    session: SessionDep,
+    transaction_type: TransactionType | None = None,
+    session: SessionDep = None,
 ) -> DTOReadTransactionsResponse:
     try:
         use_case = ReadAccountTransactionsUseCase(TransactionDbGateway(session))
-        return use_case.execute(account_id=account_id)
+        return use_case.execute(
+            account_id=account_id, transaction_type=transaction_type
+        )
     except Exception as e:
         logger.error(
             f"Error retrieving transactions for account {account_id}: {str(e)}"

@@ -158,14 +158,25 @@ class TransactionDbGateway(ITransactionDbGateway):
             logger.error(f"Error updating transaction {transaction_id}: {str(e)}")
             raise ValueError(f"Error updating transaction: {str(e)}")
 
-    def get_by_account_id(self, account_id: str) -> List[TransactionEntity]:
-        """Get all transactions for a given account, including category name"""
+    def get_by_account_id(
+        self, account_id: str, transaction_type: Optional[str] = None
+    ) -> List[TransactionEntity]:
+        """Get all transactions for a given account, including category name."""
         statement = (
             select(TransactionModel)
             .options(joinedload(TransactionModel.category))
             .where(TransactionModel.account_id == account_id)
             .order_by(TransactionModel.transaction_date.asc())
         )
+
+        if transaction_type is not None:
+            statement = (
+                select(TransactionModel)
+                .options(joinedload(TransactionModel.category))
+                .where(TransactionModel.account_id == account_id)
+                .where(TransactionModel.transaction_type == transaction_type)
+                .order_by(TransactionModel.transaction_date.asc())
+            )
         transactions = self.session.exec(statement).all()
 
         result = []

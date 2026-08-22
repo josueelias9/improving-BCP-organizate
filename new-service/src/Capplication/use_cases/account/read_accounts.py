@@ -16,17 +16,17 @@ class ReadAccountsUseCase:
                     {
                         "rel": "self",
                         "href": f"/accounts/{e.id}",
-                        "action":"GET",
+                        "action": "GET",
                     },
                     {
                         "rel": "transactions",
                         "href": f"/accounts/{e.id}/transactions",
-                        "action":"GET",
+                        "action": "GET",
                     },
                     {
                         "rel": "histories",
                         "href": f"/accounts/{e.id}/histories",
-                        "action":"GET",
+                        "action": "GET",
                     },
                 ],
             )
