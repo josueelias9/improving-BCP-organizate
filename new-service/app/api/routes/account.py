@@ -28,7 +28,9 @@ def read_accounts(session: SessionDep):
         return use_case.execute()
     except Exception as e:
         logger.error(f"Error retrieving accounts: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error retrieving accounts: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving accounts: {str(e)}"
+        )
 
 
 @router.get("/{account_id}/transactions", response_model=DTOReadTransactionsResponse)
@@ -40,7 +42,9 @@ def read_account_transactions(
         use_case = ReadAccountTransactionsUseCase(TransactionDbGateway(session))
         return use_case.execute(account_id=account_id)
     except Exception as e:
-        logger.error(f"Error retrieving transactions for account {account_id}: {str(e)}")
+        logger.error(
+            f"Error retrieving transactions for account {account_id}: {str(e)}"
+        )
         raise HTTPException(
             status_code=500,
             detail=f"Error retrieving transactions for account {account_id}: {str(e)}",

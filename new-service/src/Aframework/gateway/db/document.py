@@ -87,7 +87,7 @@ class DocumentDbGateway(IDocumentDbGateway):
         documents = self.session.exec(statement).all()
         return [self._map_to_entity(doc) for doc in documents]
 
-    def delete(self, document_id: str) -> None:        
+    def delete(self, document_id: str) -> None:
         """Delete document by ID"""
         db_document = self.session.get(DocumentModel, document_id)
         if db_document:

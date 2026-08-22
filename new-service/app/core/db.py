@@ -2,7 +2,15 @@ from sqlmodel import Session, create_engine, SQLModel, select
 from core.config import settings
 
 # Import all models so SQLModel can detect them and create all tables
-from models import User, Category, DocumentFormat, Transaction, Document, Account, History
+from models import (
+    User,
+    Category,
+    DocumentFormat,
+    Transaction,
+    Document,
+    Account,
+    History,
+)
 import logging
 from core.data import (
     default_categories,

@@ -118,7 +118,9 @@ class ImportTransactionsUseCase:
         if not unique_identifier:
             raise ValueError("unique_identifier is required")
 
-        transaction = self.transaction_gateway.get_by_unique_identifier(unique_identifier)
+        transaction = self.transaction_gateway.get_by_unique_identifier(
+            unique_identifier
+        )
         if not transaction:
             return False
 

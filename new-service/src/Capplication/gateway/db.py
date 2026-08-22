@@ -183,9 +183,7 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
-    def get_by_account_id(
-        self, account_id: str
-    ) -> List[TransactionEntity]:
+    def get_by_account_id(self, account_id: str) -> List[TransactionEntity]:
         """
         Get all transactions for a given account
 

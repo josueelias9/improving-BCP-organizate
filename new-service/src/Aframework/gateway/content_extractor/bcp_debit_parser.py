@@ -93,7 +93,9 @@ class BCPDebitParser(IStatementParser):
             fecha_valor = tx.get("fecha_valor")
             if fecha_valor:
                 day_counters[fecha_valor] += 1
-                transaction_date = datetime.combine(fecha_valor, datetime.min.time()) + timedelta(seconds=day_counters[fecha_valor])
+                transaction_date = datetime.combine(
+                    fecha_valor, datetime.min.time()
+                ) + timedelta(seconds=day_counters[fecha_valor])
             else:
                 transaction_date = None
 
@@ -174,7 +176,9 @@ class BCPDebitParser(IStatementParser):
                 fecha_proceso_formatted = BCPDebitParser._convert_bcp_date(
                     fecha_proceso, year
                 )
-                fecha_valor_formatted = BCPDebitParser._convert_bcp_date(fecha_valor, year)
+                fecha_valor_formatted = BCPDebitParser._convert_bcp_date(
+                    fecha_valor, year
+                )
 
                 # Parse amounts
                 egreso = 0.0

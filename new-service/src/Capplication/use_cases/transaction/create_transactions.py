@@ -49,7 +49,9 @@ class CreateTransactionsUseCase:
                     continue
 
                 if not document.plain_text:
-                    all_errors.append(f"Document {document.id} has no plain text, skipping")
+                    all_errors.append(
+                        f"Document {document.id} has no plain text, skipping"
+                    )
                     continue
 
                 parser = self.parsers.get(document.document_format_name)
@@ -83,7 +85,9 @@ class CreateTransactionsUseCase:
             )
 
         except Exception as e:
-            logger.error(f"Error loading transactions for account {account_id}: {str(e)}")
+            logger.error(
+                f"Error loading transactions for account {account_id}: {str(e)}"
+            )
             return DTOCreateTransactionsResponse(
                 success=False,
                 loaded_count=total_loaded,

@@ -181,5 +181,5 @@ default_targets = [
         "name": "Green Card",
         "price": 1000000.0,
         "currency": "USD",
-    }
+    },
 ]

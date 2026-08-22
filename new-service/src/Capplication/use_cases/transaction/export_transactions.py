@@ -130,6 +130,6 @@ class ExportTransactionsUseCase:
             history = transaction.history or ""
             description = transaction.description or ""
 
-            writer.writerow([category_name, unique_identifier, history,description])
+            writer.writerow([category_name, unique_identifier, history, description])
 
         return output.getvalue()

@@ -6,12 +6,22 @@ Orchestrates the flow of processing a file and creating a document
 import logging
 from pathlib import Path
 
-from src.Denterprise.entities import DocumentEntity, UserEntity, AccountEntity, HistoryEntity
+from src.Denterprise.entities import (
+    DocumentEntity,
+    UserEntity,
+    AccountEntity,
+    HistoryEntity,
+)
 from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
     DTOCreateDocumentRequest,
 )
-from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway, IAccountDbGateway, IHistoryDbGateway
+from src.Capplication.gateway.db import (
+    IDocumentDbGateway,
+    IUserDbGateway,
+    IAccountDbGateway,
+    IHistoryDbGateway,
+)
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway

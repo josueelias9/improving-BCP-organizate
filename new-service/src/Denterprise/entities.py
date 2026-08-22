@@ -85,7 +85,9 @@ class TransactionEntity:
             Unique identifier string
         """
 
-        self.unique_identifier = f"{self.account_id}__{self.transaction_date.strftime('%Y-%m-%dT%H:%M:%S')}"
+        self.unique_identifier = (
+            f"{self.account_id}__{self.transaction_date.strftime('%Y-%m-%dT%H:%M:%S')}"
+        )
 
 
 @dataclass

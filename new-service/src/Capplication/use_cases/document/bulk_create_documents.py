@@ -12,7 +12,12 @@ from src.Capplication.DTO.document_dto import (
     DTOBulkCreateDocumentItemResult,
     DTOCreateDocumentRequest,
 )
-from src.Capplication.gateway.db import IDocumentDbGateway, IUserDbGateway, IAccountDbGateway, IHistoryDbGateway
+from src.Capplication.gateway.db import (
+    IDocumentDbGateway,
+    IUserDbGateway,
+    IAccountDbGateway,
+    IHistoryDbGateway,
+)
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
 from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
