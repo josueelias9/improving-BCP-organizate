@@ -79,9 +79,10 @@ class CreateDocumentUseCase:
             file_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
             full_text = self.parser_gateway.read_file(file_binary)
 
+            initial_day = self.parser_gateway.get_initial_day(full_text)
+
             document = DocumentEntity(
                 account_id=self.parser_gateway.get_account(full_text),
-                registration_date=self.parser_gateway.get_initial_day(full_text),
                 processed=False,
                 plain_text=full_text,
                 document_format_name=doc_type.name,
@@ -121,11 +122,13 @@ class CreateDocumentUseCase:
             if document.account_id:
                 balance = self.parser_gateway.get_balance(full_text)
                 if balance is not None:
-                    self.history_gateway.create(HistoryEntity(
-                        account_id=document.account_id,
-                        balance=balance,
-                        registration_date=document.registration_date,
-                    ))
+                    self.history_gateway.create(
+                        HistoryEntity(
+                            account_id=document.account_id,
+                            balance=balance,
+                            registration_date=initial_day,
+                        )
+                    )
 
             return DTOCreateDocumentResponse(
                 success=True,

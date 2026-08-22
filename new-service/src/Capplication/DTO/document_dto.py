@@ -1,6 +1,5 @@
 from typing import List, Optional
 import uuid
-from datetime import date
 from pydantic import BaseModel, ConfigDict
 
 """
@@ -47,7 +46,6 @@ class DTODocumentItem(BaseModel):
     id: Optional[str] = None
     account_id: Optional[str] = None
     processed: bool = False
-    registration_date: Optional[date] = None
     document_format_name: Optional[str] = None
 
 

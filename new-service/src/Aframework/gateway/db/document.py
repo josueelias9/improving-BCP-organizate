@@ -30,7 +30,6 @@ class DocumentDbGateway(IDocumentDbGateway):
         return DocumentEntity(
             id=db_document.id,
             processed=db_document.processed,
-            registration_date=db_document.registration_date,
             plain_text=db_document.plain_text,
             user_id=db_document.user_id,
             document_format_name=db_document.document_format.name,
@@ -59,7 +58,6 @@ class DocumentDbGateway(IDocumentDbGateway):
             id=document.id,
             account_id=document.account_id,
             processed=document.processed,
-            registration_date=document.registration_date,
             user_id=document.user_id,
             document_type_id=document.document_type_id,
             plain_text=document.plain_text,
@@ -103,7 +101,6 @@ class DocumentDbGateway(IDocumentDbGateway):
             id=db_document.id,
             account_id=db_document.account_id,
             processed=db_document.processed,
-            registration_date=db_document.registration_date,
             plain_text=db_document.plain_text,
             user_id=db_document.user_id,
             document_format_name=db_document.document_format.name,

@@ -31,7 +31,6 @@ class CategoryBase(SQLModel):
 
 class DocumentBase(SQLModel):
     processed: bool = Field(default=False)
-    registration_date: Optional[date] = Field(default=None)
     plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 

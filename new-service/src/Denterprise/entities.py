@@ -103,7 +103,6 @@ class DocumentEntity:
     """Document entity - represents a financial document"""
 
     processed: bool = False
-    registration_date: Optional[date] = None
     user_id: Optional[uuid.UUID] = None
     document_type_id: Optional[uuid.UUID] = None
     id: Optional[str] = None
