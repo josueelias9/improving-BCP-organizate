@@ -71,18 +71,10 @@ class TransactionDbGateway(ITransactionDbGateway):
 
         return loaded_count, skipped_count, errors
 
-    def get_all(
-        self,
-        account_id: Optional[str] = None,
-    ) -> List[TransactionEntity]:
-        """Get all transactions, optionally filtered by account."""
+    def get_all(self) -> List[TransactionEntity]:
+        """Get all transactions without account filtering."""
 
-        if account_id:
-            statement = select(TransactionModel).where(
-                TransactionModel.account_id == account_id
-            )
-        else:
-            statement = select(TransactionModel)
+        statement = select(TransactionModel)
         transactions = self.session.exec(statement).all()
 
         # Map to domain entities

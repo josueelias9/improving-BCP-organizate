@@ -143,15 +143,9 @@ class ITransactionDbGateway(ABC):
         pass
 
     @abstractmethod
-    def get_all(
-        self,
-        account_id: Optional[str] = None,
-    ) -> List[TransactionEntity]:
+    def get_all(self) -> List[TransactionEntity]:
         """
-        Get all transactions, optionally filtered by account.
-
-        Args:
-            account_id: Optional account ID to filter transactions
+        Get all transactions without account filtering.
 
         Returns:
             List of TransactionEntity
