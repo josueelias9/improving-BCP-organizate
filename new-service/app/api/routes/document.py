@@ -21,7 +21,8 @@ from src.Capplication.DTO.document_dto import (
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
-from src.Aframework.gateway.db.account import AccountDbGateway, HistoryDbGateway
+from src.Aframework.gateway.db.account import AccountDbGateway
+from src.Aframework.gateway.db.history import HistoryDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser

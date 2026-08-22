@@ -255,3 +255,16 @@ class IHistoryDbGateway(ABC):
             Created HistoryEntity
         """
         pass
+
+    @abstractmethod
+    def get_by_account_id(self, account_id: str) -> List[HistoryEntity]:
+        """
+        Get all balance snapshots for a given account.
+
+        Args:
+            account_id: account ID filter
+
+        Returns:
+            List of HistoryEntity ordered from oldest to newest
+        """
+        pass

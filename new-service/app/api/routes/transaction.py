@@ -16,7 +16,6 @@ from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.account import AccountDbGateway, HistoryDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,

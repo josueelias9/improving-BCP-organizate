@@ -1,15 +1,14 @@
 """
-Account and History Gateways - Interface Adapter Layer
-Implements account and history persistence operations
+Account Gateway - Interface Adapter Layer
+Implements account persistence operations
 """
 
 import logging
-from datetime import date
 from sqlmodel import Session, select
 
-from models import Account as AccountModel, History as HistoryModel
-from src.Denterprise.entities import AccountEntity, HistoryEntity
-from src.Capplication.gateway.db import IAccountDbGateway, IHistoryDbGateway
+from models import Account as AccountModel
+from src.Denterprise.entities import AccountEntity
+from src.Capplication.gateway.db import IAccountDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -39,29 +38,3 @@ class AccountDbGateway(IAccountDbGateway):
         """Return all accounts"""
         accounts = self.session.exec(select(AccountModel)).all()
         return [AccountEntity(id=a.id) for a in accounts]
-
-
-class HistoryDbGateway(IHistoryDbGateway):
-    """SQLModel implementation of history gateway"""
-
-    def __init__(self, session: Session):
-        self.session = session
-
-    def create(self, history: HistoryEntity) -> HistoryEntity:
-        """Create a new history record (balance snapshot)"""
-        db_history = HistoryModel(
-            account_id=history.account_id,
-            balance=history.balance,
-            registration_date=history.registration_date,
-        )
-        self.session.add(db_history)
-        self.session.commit()
-        self.session.refresh(db_history)
-
-        logger.info(f"History created for account {history.account_id}: balance={history.balance}")
-        return HistoryEntity(
-            id=db_history.id,
-            account_id=db_history.account_id,
-            balance=db_history.balance,
-            registration_date=db_history.registration_date,
-        )

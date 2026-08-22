@@ -2,7 +2,7 @@ from src.Capplication.gateway.db import IAccountDbGateway
 from src.Capplication.DTO.account_dto import DTOGetAccountsResponse, DTOAccount
 
 
-class GetAccountsUseCase:
+class ReadAccountsUseCase:
 
     def __init__(self, account_gateway: IAccountDbGateway):
         self.account_gateway = account_gateway
