@@ -43,13 +43,12 @@ class DTOExportTransactionsResponse(BaseModel):
 class DTOImportTransactionsRequest(BaseModel):
     """DTO for import transactions request - from controller to use case"""
 
-    csv_filename: Optional[str] = None  # Specific CSV filename to import
+    account_id: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "csv_filename": "transactions_2025-01.csv",
-                "input_dir": "/shared_files/output",
+                "account_id": "191-04106279-0-55",
             }
         }
     }

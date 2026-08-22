@@ -8,7 +8,7 @@ The idea on the feature is to integrate this with other banks and currency platf
 
 This project is highly integrated with vs code. Thus, you can take advantage of the dev container features to start upgrading the code.
 
-Start dev container and follow `README.md` file inside it
+Start dev container and follow [README file](new-service/README.md) inside it
 
 ![alt text](image.png)
 

@@ -22,7 +22,7 @@ POST http://{{host}}/transactions/bulk HTTP/1.1
 content-type: application/json
 
 {
-  "account_id": "{{getAccounts.response.body.$.accounts[2].id}}"
+  "account_id": "{{getAccounts.response.body.$.accounts[1].id}}"
 }
 
 ###
@@ -33,15 +33,21 @@ GET http://{{host}}/documents/ HTTP/1.1
 ###
 
 # @name importTransactions
-POST http://{{host}}/transactions/import?csv_filename={{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
+POST http://{{host}}/transactions/import?account_id={{getAccounts.response.body.$.accounts[2].id}} HTTP/1.1
 content-type: application/json
 
 ###
 
 # @name exportTransactions
-GET http://{{host}}/transactions/export?account_id={{getAccounts.response.body.$.accounts[0].id}} HTTP/1.1
+GET http://{{host}}/transactions/export?account_id={{getAccounts.response.body.$.accounts[1].id}} HTTP/1.1
 
 ### temporal
 
 DELETE http://{{host}}/documents/{{getDocuments.response.body.$.documents[1].id}} HTTP/1.1
+content-type: application/json
+
+
+###
+
+GET http://{{host}}/documents/ HTTP/1.1
 content-type: application/json

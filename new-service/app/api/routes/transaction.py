@@ -128,21 +128,13 @@ def export_transactions(
 @router.post("/import", response_model=DTOImportTransactionsResponse)
 def import_transactions(
     session: SessionDep,
-    csv_filename: Optional[str] = Query(
-        None,
-        description="Specific CSV filename to import (optional, uses latest if not provided)",
-    ),
+    account_id: str = Query(description="Account ID to import transactions for"),
 ):
     try:
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        document_gateway = DocumentDbGateway(session)
-        use_case = ImportTransactionsUseCase(
-            transaction_gateway,
-            category_gateway,
-            document_gateway,
-        )
-        dto_request = DTOImportTransactionsRequest(csv_filename=csv_filename)
+        use_case = ImportTransactionsUseCase(transaction_gateway, category_gateway)
+        dto_request = DTOImportTransactionsRequest(account_id=account_id)
         return use_case.execute(dto_request)
     except HTTPException:
         raise

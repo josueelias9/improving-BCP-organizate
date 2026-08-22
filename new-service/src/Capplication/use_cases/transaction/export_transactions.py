@@ -118,6 +118,7 @@ class ExportTransactionsUseCase:
             "category_name",
             "unique_identifier",
             "history",
+            "description",
         ]
         writer.writerow(headers)
 
@@ -127,7 +128,8 @@ class ExportTransactionsUseCase:
             category_name = transaction.category_name or ""
             unique_identifier = transaction.unique_identifier or ""
             history = transaction.history or ""
+            description = transaction.description or ""
 
-            writer.writerow([category_name, unique_identifier, history])
+            writer.writerow([category_name, unique_identifier, history,description])
 
         return output.getvalue()

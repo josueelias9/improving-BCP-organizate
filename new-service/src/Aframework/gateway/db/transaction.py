@@ -177,7 +177,7 @@ class TransactionDbGateway(ITransactionDbGateway):
             select(TransactionModel)
             .options(joinedload(TransactionModel.category))
             .where(TransactionModel.account_id == account_id)
-            .order_by(TransactionModel.order)
+            .order_by(TransactionModel.transaction_date.asc())
         )
         transactions = self.session.exec(statement).all()
 

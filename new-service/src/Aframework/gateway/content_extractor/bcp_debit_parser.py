@@ -71,7 +71,9 @@ class BCPDebitParser(IStatementParser):
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         """Parse BCP debit PDF text and return transaction entities."""
         account_code, currency = self._extract_account_code(full_text)
-        raw_transactions = self._parse_transactions(full_text)
+        initial_day, _ = self._extract_period(full_text)
+        year = initial_day.year if initial_day else datetime.now().year
+        raw_transactions = self._parse_transactions(full_text, year)
 
         currency_map = {"SOLES": "SOL", "US DOLARES": "USD"}
         currency_code = currency_map.get(currency, "SOL")
@@ -108,7 +110,7 @@ class BCPDebitParser(IStatementParser):
         return entities
 
     @staticmethod
-    def _parse_transactions(text: str) -> List[dict[str, any]]:
+    def _parse_transactions(text: str, year: int) -> List[dict[str, any]]:
         """
         Parse transactions from BCP PDF text using fixed positions
 
@@ -170,9 +172,9 @@ class BCPDebitParser(IStatementParser):
 
                 # Convert dates
                 fecha_proceso_formatted = BCPDebitParser._convert_bcp_date(
-                    fecha_proceso
+                    fecha_proceso, year
                 )
-                fecha_valor_formatted = BCPDebitParser._convert_bcp_date(fecha_valor)
+                fecha_valor_formatted = BCPDebitParser._convert_bcp_date(fecha_valor, year)
 
                 # Parse amounts
                 egreso = 0.0
@@ -210,7 +212,7 @@ class BCPDebitParser(IStatementParser):
         return transactions
 
     @staticmethod
-    def _convert_bcp_date(date_str: str) -> Optional[date]:
+    def _convert_bcp_date(date_str: str, year: int = 2025) -> Optional[date]:
         """Convert BCP date format DDMMM to Python date object"""
         if not date_str or len(date_str) < 5:
             return None
@@ -222,8 +224,6 @@ class BCPDebitParser(IStatementParser):
 
             if month_abbr in BCPDebitParser.MONTHS_MAP:
                 month = int(BCPDebitParser.MONTHS_MAP[month_abbr])
-                # Assume current year (2025 based on example)
-                year = 2025
                 return date(year, month, day)
             else:
                 logger.warning(f"Unrecognized month: {month_abbr}")

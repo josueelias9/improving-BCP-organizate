@@ -15,7 +15,6 @@ from src.Capplication.DTO.transaction_dto import (
 from src.Capplication.gateway.db import (
     ITransactionDbGateway,
     ICategoryDbGateway,
-    IDocumentDbGateway,
 )
 
 logger = logging.getLogger(__name__)
@@ -28,41 +27,16 @@ class ImportTransactionsUseCase:
         self,
         transaction_gateway: ITransactionDbGateway,
         category_gateway: ICategoryDbGateway,
-        document_gateway: IDocumentDbGateway,
     ):
         self.transaction_gateway = transaction_gateway
         self.category_gateway = category_gateway
-        self.document_gateway = document_gateway
 
     def execute(
         self, dto_request: DTOImportTransactionsRequest
     ) -> DTOImportTransactionsResponse:
-        """
-        Execute the use case: import and update transactions from CSV
-
-        Args:
-            dto_request: DTO containing optional specific CSV filename
-
-        Returns:
-            ImportTransactionsResult with operation summary
-        """
         try:
-            # 1. Find the CSV file
-            document = self.document_gateway.get_by_id(dto_request.csv_filename)
-            if not document:
-                return DTOImportTransactionsResponse(
-                    success=False,
-                    updated_count=0,
-                    skipped_count=0,
-                    errors=[
-                        f"Document not found for unique identifier: {dto_request.csv_filename}"
-                    ],
-                    total_rows=0,
-                    message="Document not found",
-                )
-            filename = (
-                f"{document.document_format_name}__{document.registration_date}__{document.id}"
-            )
+            account_id = dto_request.account_id
+            filename = f"transactions__{account_id}"
             csv_path = Path(f"/workspace/files/exports/{filename}.csv")
 
             if not csv_path.exists():
@@ -75,7 +49,6 @@ class ImportTransactionsUseCase:
                     message="CSV file not found",
                 )
 
-            # 2. Read and parse CSV
             rows = self._read_csv(csv_path)
 
             if not rows:
@@ -88,14 +61,11 @@ class ImportTransactionsUseCase:
                     message="CSV file is empty",
                 )
 
-            # 3. Update transactions
             updated_count = 0
             skipped_count = 0
             errors = []
 
-            for idx, row in enumerate(
-                rows, start=2
-            ):  # Start at 2 because row 1 is header
+            for idx, row in enumerate(rows, start=2):
                 try:
                     result = self._update_transaction_from_row(row)
                     if result:
@@ -105,22 +75,19 @@ class ImportTransactionsUseCase:
                         errors.append(
                             f"Row {idx}: Transaction not updated: {row.get('unique_identifier', 'N/A')}"
                         )
-
                 except Exception as e:
                     skipped_count += 1
                     errors.append(f"Row {idx}: {str(e)}")
                     logger.error(f"Error processing row {idx}: {str(e)}")
 
-            success = updated_count > 0
             message = f"Successfully updated {updated_count}/{len(rows)} transactions"
-
             logger.info(message)
 
             return DTOImportTransactionsResponse(
-                success=success,
+                success=updated_count > 0,
                 updated_count=updated_count,
                 skipped_count=skipped_count,
-                errors=errors if errors else [],
+                errors=errors,
                 total_rows=len(rows),
                 message=message,
             )
@@ -137,61 +104,30 @@ class ImportTransactionsUseCase:
             )
 
     def _read_csv(self, csv_path: Path) -> List[dict]:
-        """
-        Read and parse CSV file
-
-        Args:
-            csv_path: Path to CSV file
-
-        Returns:
-            List of row dictionaries
-        """
         rows = []
-
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
-
-            # Validate required columns
             if "unique_identifier" not in reader.fieldnames:
                 raise ValueError("CSV must contain 'unique_identifier' column")
-
             for row in reader:
                 rows.append(row)
-
         return rows
 
     def _update_transaction_from_row(self, row: dict) -> bool:
-        """
-        Update a transaction from a CSV row
-
-        Args:
-            row: Dictionary with CSV row data
-
-        Returns:
-            True if updated, False if transaction not found
-        """
         unique_identifier = row.get("unique_identifier", "").strip()
-
         if not unique_identifier:
             raise ValueError("unique_identifier is required")
 
-        # Get transaction by unique_identifier
-        transaction = self.transaction_gateway.get_by_unique_identifier(
-            unique_identifier
-        )
-
+        transaction = self.transaction_gateway.get_by_unique_identifier(unique_identifier)
         if not transaction:
             return False
 
-        # Prepare update data
         update_data = {}
 
-        # Update history if provided
         history = row.get("history", "").strip()
         if history:
             update_data["history"] = history
 
-        # Update category if provided
         category_name = row.get("category_name", "").strip()
         if category_name:
             category = self.category_gateway.get_by_name(category_name)
@@ -200,7 +136,6 @@ class ImportTransactionsUseCase:
             else:
                 logger.warning(f"Category not found: {category_name}")
 
-        # Update transaction if there's data to update
         if update_data:
             return self.transaction_gateway.update(transaction.id, update_data)
 
