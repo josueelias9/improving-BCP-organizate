@@ -59,33 +59,12 @@ logger = logging.getLogger(__name__)
 @router.get("/", response_model=DTOReadTransactionsResponse)
 def read_transactions(
     session: SessionDep,
-    skip: int = 0,
-    limit: int = 1000,
-    account_id: Optional[str] = Query(
-        default=None, description="Filter by account ID"
-    ),
 ) -> DTOReadTransactionsResponse:
-    """
-    Get all transactions with pagination
-
-    Includes category_name and document_format_name fields.
-
-    Args:
-        skip: Number of records to skip (default: 0)
-        limit: Maximum number of records to return (default: 100, max: 1000)
-        session: Database session (injected)
-
-    Returns:
-        List of transactions with category_name included
-    """
+    """Get all transactions without pagination or account filtering."""
     try:
         transaction_gateway = TransactionDbGateway(session)
-        use_case = ReadTransactionsUseCase(
-            transaction_gateway,
-        )
-        # TODO: You should pass a DTO
-        a = use_case.execute(skip=skip, limit=limit, account_id=account_id)
-        return a
+        use_case = ReadTransactionsUseCase(transaction_gateway)
+        return use_case.execute()
 
     except Exception as e:
         logger.error(f"Error retrieving transactions: {str(e)}")

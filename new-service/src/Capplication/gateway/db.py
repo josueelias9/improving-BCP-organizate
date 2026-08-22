@@ -145,16 +145,12 @@ class ITransactionDbGateway(ABC):
     @abstractmethod
     def get_all(
         self,
-        skip: int = 0,
-        limit: int = 100,
         account_id: Optional[str] = None,
     ) -> List[TransactionEntity]:
         """
-        Get all transactions with pagination and optional account filter
+        Get all transactions, optionally filtered by account.
 
         Args:
-            skip: Number of records to skip
-            limit: Maximum number of records to return
             account_id: Optional account ID to filter transactions
 
         Returns:

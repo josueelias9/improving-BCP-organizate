@@ -73,21 +73,16 @@ class TransactionDbGateway(ITransactionDbGateway):
 
     def get_all(
         self,
-        skip: int = 0,
-        limit: int = 100,
         account_id: Optional[str] = None,
     ) -> List[TransactionEntity]:
-        """Get all transactions with pagination and optional account filter"""
+        """Get all transactions, optionally filtered by account."""
 
         if account_id:
-            statement = (
-                select(TransactionModel)
-                .where(TransactionModel.account_id == account_id)
-                .offset(skip)
-                .limit(limit)
+            statement = select(TransactionModel).where(
+                TransactionModel.account_id == account_id
             )
         else:
-            statement = select(TransactionModel).offset(skip).limit(limit)
+            statement = select(TransactionModel)
         transactions = self.session.exec(statement).all()
 
         # Map to domain entities

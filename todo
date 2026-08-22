@@ -20,3 +20,11 @@ new-service/
 
 [ ] in streamlit, now showing document id. Should we show account information instead?
 
+
+
+
+
+[ ] Documents table do not need date
+[ ] currency account (analize)
+[ ] use the microsoft convention for API design
+[ ] accounts/id/transactions
