@@ -6,7 +6,7 @@ Accepts DTOs at the boundary and works with entities internally.
 """
 
 import logging
-from typing import List, Dict, Any
+from typing import List
 
 from src.Capplication.gateway.db import ICategoryDbGateway
 from src.Capplication.DTO.category_dto import DTOGetCategoriesResponse, DTOCategory

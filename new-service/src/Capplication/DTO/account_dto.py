@@ -3,17 +3,7 @@ from typing import List, Optional, Dict
 import uuid
 from pydantic import BaseModel
 
-
-class DTOAccount(BaseModel):
-    id: str
-    links: List[Dict[str, str]] = []
-
-
-class DTOHistory(BaseModel):
-    id: Optional[uuid.UUID] = None
-    account_id: Optional[str] = None
-    balance: float
-    registration_date: Optional[date] = None
+# ============================================================
 
 
 class DTOCreateAccountTransactionsRequest(BaseModel):
@@ -30,11 +20,29 @@ class DTOCreateAccountTransactionsResponse(BaseModel):
     account_id: str
 
 
+# ============================================================
+
+
+class DTOAccount(BaseModel):
+    id: str
+    links: List[Dict[str, str]] = []
+
+
 class DTOGetAccountsResponse(BaseModel):
     accounts: List[DTOAccount]
     total_count: int
 
 
-class DTOGetAccountHistoriesResponse(BaseModel):
+# ============================================================
+
+
+class DTOHistory(BaseModel):
+    id: Optional[uuid.UUID] = None
+    account_id: Optional[str] = None
+    balance: float
+    registration_date: Optional[date] = None
+
+
+class DTOReadAccountHistoriesResponse(BaseModel):
     histories: List[DTOHistory]
     total_count: int

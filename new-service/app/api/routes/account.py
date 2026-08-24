@@ -19,7 +19,7 @@ from src.Capplication.use_cases.account.create_account_transactions import (
     CreateAccountTransactionsUseCase,
 )
 from src.Capplication.DTO.account_dto import (
-    DTOGetAccountHistoriesResponse,
+    DTOReadAccountHistoriesResponse,
     DTOGetAccountsResponse,
     DTOCreateAccountTransactionsRequest,
     DTOCreateAccountTransactionsResponse,
@@ -95,11 +95,11 @@ def read_account_transactions(
         )
 
 
-@router.get("/{account_id}/histories", response_model=DTOGetAccountHistoriesResponse)
+@router.get("/{account_id}/histories", response_model=DTOReadAccountHistoriesResponse)
 def read_account_histories(
     account_id: str,
     session: SessionDep,
-) -> DTOGetAccountHistoriesResponse:
+) -> DTOReadAccountHistoriesResponse:
     try:
         use_case = ReadAccountHistoriesUseCase(HistoryDbGateway(session))
         return use_case.execute(account_id=account_id)
