@@ -1,5 +1,4 @@
 from typing import List, Optional
-import uuid
 from pydantic import BaseModel, ConfigDict
 
 """

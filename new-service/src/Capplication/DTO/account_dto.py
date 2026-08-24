@@ -23,12 +23,13 @@ class DTOCreateAccountTransactionsResponse(BaseModel):
 # ============================================================
 
 
+# TODO: maybe we can have a single DTO
 class DTOAccount(BaseModel):
     id: str
     links: List[Dict[str, str]] = []
 
 
-class DTOGetAccountsResponse(BaseModel):
+class DTOReadAccountsResponse(BaseModel):
     accounts: List[DTOAccount]
     total_count: int
 

@@ -20,7 +20,7 @@ from src.Capplication.use_cases.account.create_account_transactions import (
 )
 from src.Capplication.DTO.account_dto import (
     DTOReadAccountHistoriesResponse,
-    DTOGetAccountsResponse,
+    DTOReadAccountsResponse,
     DTOCreateAccountTransactionsRequest,
     DTOCreateAccountTransactionsResponse,
 )
@@ -31,7 +31,7 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=DTOGetAccountsResponse)
+@router.get("/", response_model=DTOReadAccountsResponse)
 def read_accounts(session: SessionDep):
     try:
         use_case = ReadAccountsUseCase(AccountDbGateway(session))

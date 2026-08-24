@@ -1,5 +1,5 @@
 from src.Capplication.gateway.db import IAccountDbGateway
-from src.Capplication.DTO.account_dto import DTOGetAccountsResponse, DTOAccount
+from src.Capplication.DTO.account_dto import DTOReadAccountsResponse, DTOAccount
 
 
 class ReadAccountsUseCase:
@@ -7,7 +7,8 @@ class ReadAccountsUseCase:
     def __init__(self, account_gateway: IAccountDbGateway):
         self.account_gateway = account_gateway
 
-    def execute(self) -> DTOGetAccountsResponse:
+    # TODO: maybe we can have a single DTO
+    def execute(self) -> DTOReadAccountsResponse:
         entities = self.account_gateway.get_all()
         accounts = [
             DTOAccount(
@@ -15,26 +16,26 @@ class ReadAccountsUseCase:
                 links=[
                     {
                         "rel": "self",
-                        "href": f"/accounts/{e.id}",
+                        "href": f"http://localhost:8000/accounts/{e.id}",
                         "action": "GET",
                     },
                     {
                         "rel": "transactions",
-                        "href": f"/accounts/{e.id}/transactions",
+                        "href": f"http://localhost:8000/accounts/{e.id}/transactions",
                         "action": "GET",
                     },
                     {
                         "rel": "histories",
-                        "href": f"/accounts/{e.id}/histories",
+                        "href": f"http://localhost:8000/accounts/{e.id}/histories",
                         "action": "GET",
                     },
                     {
                         "rel": "transactions",
-                        "href": f"/accounts/{e.id}/transactions",
+                        "href": f"http://localhost:8000/accounts/{e.id}/transactions",
                         "action": "POST",
                     },
                 ],
             )
             for e in entities
         ]
-        return DTOGetAccountsResponse(accounts=accounts, total_count=len(accounts))
+        return DTOReadAccountsResponse(accounts=accounts, total_count=len(accounts))
