@@ -28,6 +28,11 @@ class ReadAccountsUseCase:
                         "href": f"/accounts/{e.id}/histories",
                         "action": "GET",
                     },
+                    {
+                        "rel": "transactions",
+                        "href": f"/accounts/{e.id}/transactions",
+                        "action": "POST",
+                    },
                 ],
             )
             for e in entities

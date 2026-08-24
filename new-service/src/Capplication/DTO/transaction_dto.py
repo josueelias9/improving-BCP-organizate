@@ -170,29 +170,3 @@ class DTOUpdateTransactionsRequest(BaseModel):
         }
     }
 
-
-# ==========================================================
-
-
-class DTOCreateTransactionsRequest(BaseModel):
-    account_id: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "account_id": "191-04106279-0-55",
-            }
-        }
-    }
-
-
-class DTOCreateTransactionsResponse(BaseModel):
-    """Result DTO for loading transactions operation - returned from use case to controller"""
-
-    success: bool
-    loaded_count: int
-    skipped_count: int
-    errors: List[str]
-    total_records: int
-    documents_processed: int
-    account_id: str

@@ -1,12 +1,8 @@
-"""
-Load Transactions Use Case - Application Layer
-Orchestrates the flow of loading transactions from all documents of an account
-"""
-
 import logging
-from src.Capplication.DTO.transaction_dto import (
-    DTOCreateTransactionsResponse,
-    DTOCreateTransactionsRequest,
+
+from src.Capplication.DTO.account_dto import (
+    DTOCreateAccountTransactionsRequest,
+    DTOCreateAccountTransactionsResponse,
 )
 from src.Capplication.gateway.db import IDocumentDbGateway, ITransactionDbGateway
 from src.Capplication.gateway.content_extractor import IStatementParser
@@ -14,8 +10,8 @@ from src.Capplication.gateway.content_extractor import IStatementParser
 logger = logging.getLogger(__name__)
 
 
-class CreateTransactionsUseCase:
-    """Given an account, parse all its unprocessed documents and load their transactions"""
+class CreateAccountTransactionsUseCase:
+    """Given an account, parse all its unprocessed documents and load their transactions."""
 
     def __init__(
         self,
@@ -28,8 +24,8 @@ class CreateTransactionsUseCase:
         self.parsers = parsers
 
     def execute(
-        self, request: DTOCreateTransactionsRequest
-    ) -> DTOCreateTransactionsResponse:
+        self, request: DTOCreateAccountTransactionsRequest
+    ) -> DTOCreateAccountTransactionsResponse:
         account_id = request.account_id
         total_loaded = 0
         total_skipped = 0
@@ -74,7 +70,7 @@ class CreateTransactionsUseCase:
                 self.document_gateway.mark_as_processed(document.id)
                 documents_processed += 1
 
-            return DTOCreateTransactionsResponse(
+            return DTOCreateAccountTransactionsResponse(
                 success=True,
                 loaded_count=total_loaded,
                 skipped_count=total_skipped,
@@ -88,7 +84,7 @@ class CreateTransactionsUseCase:
             logger.error(
                 f"Error loading transactions for account {account_id}: {str(e)}"
             )
-            return DTOCreateTransactionsResponse(
+            return DTOCreateAccountTransactionsResponse(
                 success=False,
                 loaded_count=total_loaded,
                 skipped_count=total_skipped,

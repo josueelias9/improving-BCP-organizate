@@ -1,12 +1,12 @@
 from datetime import date
-from typing import Dict, List, Optional
+from typing import List, Optional, Dict
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class DTOAccount(BaseModel):
     id: str
-    links: list
+    links: List[Dict[str, str]] = []
 
 
 class DTOHistory(BaseModel):
@@ -14,6 +14,20 @@ class DTOHistory(BaseModel):
     account_id: Optional[str] = None
     balance: float
     registration_date: Optional[date] = None
+
+
+class DTOCreateAccountTransactionsRequest(BaseModel):
+    account_id: str
+
+
+class DTOCreateAccountTransactionsResponse(BaseModel):
+    success: bool
+    loaded_count: int
+    skipped_count: int
+    errors: List[str]
+    total_records: int
+    documents_processed: int
+    account_id: str
 
 
 class DTOGetAccountsResponse(BaseModel):

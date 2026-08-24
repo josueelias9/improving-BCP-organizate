@@ -10,12 +10,9 @@ import logging
 
 from api.deps import SessionDep
 
-from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
-from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
-from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
+from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
-from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Capplication.DTO.transaction_dto import (
     DTOUpdateTransactionsRequest,
     DTOUpdateTransactionsResponse,
@@ -26,8 +23,6 @@ from src.Capplication.DTO.transaction_dto import (
     DTOReadTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
-    DTOCreateTransactionsRequest,
-    DTOCreateTransactionsResponse,
 )
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
@@ -44,10 +39,6 @@ from src.Capplication.use_cases.transaction.read_transactions import (
 from src.Capplication.use_cases.transaction.import_transactions import (
     ImportTransactionsUseCase,
 )
-from src.Capplication.use_cases.transaction.create_transactions import (
-    CreateTransactionsUseCase,
-)
-from src.Aframework.gateway.file_extractor import FileExtractorGateway
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 logger = logging.getLogger(__name__)
@@ -132,39 +123,6 @@ def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: Sess
         return use_case.execute(dto_request)
     except Exception as e:
         logger.error(f"Unexpected error in batch update: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.post(
-    "/bulk",
-    response_model=DTOCreateTransactionsResponse,
-)
-def create_transactions(dto_request: DTOCreateTransactionsRequest, session: SessionDep):
-    """
-    Given an account ID, find all its unprocessed documents and extract their transactions.
-    """
-    try:
-        parsers = {
-            "bcp_credit": BCPCreditParser(),
-            "bcp_debit": BCPDebitParser(),
-            "yape": YapeParser(),
-        }
-
-        document_gateway = DocumentDbGateway(session)
-        transaction_gateway = TransactionDbGateway(session)
-
-        use_case = CreateTransactionsUseCase(
-            document_gateway, transaction_gateway, parsers
-        )
-
-        return use_case.execute(dto_request)
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
-        # Unexpected errors
-        logger.error(f"Unexpected error loading transactions: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
