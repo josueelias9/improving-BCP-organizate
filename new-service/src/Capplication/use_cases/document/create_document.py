@@ -27,6 +27,7 @@ from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
 logger = logging.getLogger(__name__)
 
 
+# TODO: separate the management of histories in another use case and endpoints
 class CreateDocumentUseCase:
     """Use case for processing PDF and creating document"""
 
@@ -76,9 +77,10 @@ class CreateDocumentUseCase:
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
             # Get document type entity from database
-            doc_type = self.document_type_gateway.get_by_name(document_format)
+            # TODO: Change to "document_format..."
+            doc_format = self.document_type_gateway.get_by_name(document_format)
 
-            if not doc_type:
+            if not doc_format:
                 raise ValueError(
                     f"Document type '{document_format}' not found in database"
                 )
@@ -87,13 +89,13 @@ class CreateDocumentUseCase:
             file_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
             full_text = self.parser_gateway.read_file(file_binary)
 
-            initial_day = self.parser_gateway.get_initial_day(full_text)
-
+            filename = Path(pdf_filepath).name
             document = DocumentEntity(
                 account_id=self.parser_gateway.get_account(full_text),
                 processed=False,
                 plain_text=full_text,
-                document_format_name=doc_type.name,
+                document_format_name=doc_format.name,
+                names=[filename],
             )
 
             # Get user entity
@@ -105,7 +107,7 @@ class CreateDocumentUseCase:
 
             # Set user_id and document_type_id on the entity
             document.user_id = user.id
-            document.document_type_id = doc_type.id
+            document.document_type_id = doc_format.id
 
             # Ensure Account exists (get or create)
             if document.account_id:
@@ -114,7 +116,7 @@ class CreateDocumentUseCase:
             # Create document via gateway
             result_document, created = self.document_gateway.get_or_create(document)
 
-            # TODO: It means that if the document already exists, no history will be recorded? This is a bug
+            # TODO: It means that if the document already exists, no history will be recorded? This is a bug (update: why?)
             if not created:
                 logger.info(f"Document already exists with ID: {result_document.id}")
                 return DTOCreateDocumentResponse(
@@ -128,6 +130,8 @@ class CreateDocumentUseCase:
             logger.info(f"Created new document with ID: {result_document.id}")
 
             # Record balance snapshot only once per new document
+            initial_day = self.parser_gateway.get_initial_day(full_text)
+
             if document.account_id:
                 balance = self.parser_gateway.get_balance(full_text)
                 if balance is not None:

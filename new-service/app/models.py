@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime, date
 from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel, Column, Text
+from sqlalchemy import JSON
 from src.Denterprise.entities import TransactionType, Currency
 
 # ============================================================================= base models
@@ -124,6 +125,7 @@ class Document(DocumentBase, table=True):
     user_id: uuid.UUID = Field(foreign_key="users.id")
     document_type_id: uuid.UUID = Field(foreign_key="document_types.id")
     account_id: Optional[str] = Field(default=None, foreign_key="accounts.id")
+    names: List[str] = Field(default_factory=list, sa_column=Column(JSON))
 
     # Relationships
     user: User = Relationship(back_populates="documents")

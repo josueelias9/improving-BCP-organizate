@@ -111,6 +111,11 @@ class DocumentEntity:
     plain_text: Optional[str] = None
     document_format_name: Optional[str] = None
     account_id: Optional[str] = None
+    names: List[str] = None
+
+    def __post_init__(self):
+        if self.names is None:
+            self.names = []
 
     def generate_id(self):
         self.id = hashlib.sha256(self.plain_text.encode()).hexdigest()

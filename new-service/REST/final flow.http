@@ -18,7 +18,6 @@ GET http://{{host}}/accounts HTTP/1.1
 
 ###
 
-# @name createTransactions
 POST http://{{host}}/accounts/{{readAccounts.response.body.$.accounts[2].id}}/transactions HTTP/1.1
 
 ###

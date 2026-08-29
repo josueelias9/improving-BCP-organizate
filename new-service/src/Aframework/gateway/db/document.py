@@ -5,7 +5,6 @@ Maps between SQLModel Document and domain Document entity
 
 import logging
 from sqlmodel import Session, select
-from typing import Optional
 
 from models import Document as DocumentModel
 from src.Denterprise.entities import DocumentEntity
@@ -34,6 +33,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             user_id=db_document.user_id,
             document_format_name=db_document.document_format.name,
             account_id=db_document.account_id,
+            names=list(db_document.names or []),
         )
 
     def mark_as_processed(self, document_id: str) -> None:
@@ -52,6 +52,15 @@ class DocumentDbGateway(IDocumentDbGateway):
         db_document = self.session.get(DocumentModel, document.id)
 
         if db_document:
+            existing_names = list(db_document.names or [])
+            incoming_names = list(document.names or [])
+            for name in incoming_names:
+                if name and name not in existing_names:
+                    existing_names.append(name)
+            if existing_names != list(db_document.names or []):
+                db_document.names = existing_names
+                self.session.add(db_document)
+                self.session.commit()
             return self._map_to_entity(db_document), False
 
         db_document = DocumentModel(
@@ -61,6 +70,7 @@ class DocumentDbGateway(IDocumentDbGateway):
             user_id=document.user_id,
             document_type_id=document.document_type_id,
             plain_text=document.plain_text,
+            names=list(document.names or []),
         )
 
         self.session.add(db_document)
@@ -104,4 +114,5 @@ class DocumentDbGateway(IDocumentDbGateway):
             plain_text=db_document.plain_text,
             user_id=db_document.user_id,
             document_format_name=db_document.document_format.name,
+            names=list(db_document.names or []),
         )

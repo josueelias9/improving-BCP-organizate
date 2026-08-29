@@ -39,7 +39,7 @@ class DTOReadAccountsResponse(BaseModel):
 
 class DTOHistory(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: Optional[uuid.UUID] = None
     account_id: Optional[str] = None
     balance: float

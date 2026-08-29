@@ -1,65 +1,3 @@
-### case 1
-
-when you start the project, you are not going to have nothing, so populate with the files and then export
-
-```mermaid
-
-stateDiagram
-s0 : Create Document
-s1 : Export Transactions
-s3 : Create Transactions
-s5 : Update Transaction
-
-        [*] --> s0
-        s0 --> s3: id
-        s3 --> s5
-        s5 --> s5
-        s5 --> s1
-
-```
-
-### case 2
-
-if the project is restarted, and you already have the .csv files, you can use them to update the transaction table. You will have to update all the files that you need to work, then import all the csv files
-
-> TODO: this can be done automatically, just reading all csv files from a directory
-
-```mermaid
-
-stateDiagram
-s0 : Create Document
-s4 : Import Transactions
-s1 : Get Documents
-
-        [*] --> s0
-        s0 --> s0
-        s0 --> s1
-        s1 --> s4
-        s4 --> s4
-
-```
-
-### case 3
-
-to update the transactions, you will necesarily must know the category names to select the one that fits that specific transaction. Then take that category id and update the transaction
-
-```mermaid
-
-stateDiagram
-s3 : Create Transactions
-s0 : Get Transactions
-s4 : Get Categories
-s2 : Update Transaction
-
-        [*] --> s3
-        [*] --> s4
-        s0 --> s2
-        s3 --> s0
-        s4 --> s2
-        s2 --> s2
-
-```
-
 ### final flow
 this project changed a bit the approach. Before it was supposed to analyze only transactions. Now it is important to analyze account (a place that container money)
 
@@ -75,20 +13,22 @@ this project changed a bit the approach. Before it was supposed to analyze only 
 stateDiagram
 cds : POST /users/id/documents
 ct : POST /accounts/id/transactions
-it : Import Transactions
-gd : Get Documents
+it : POST /memories/id/transactions
+gd : GET /accounts
+ch : POST accounts/id/histories
 gd2 : GET /accounts
-et : Export Transactions
+et : POST /memories
 state if_state <<choice>>
 
 state Streamlit(localhost:8501) {
         state join_state <<join>>
         state fork_state <<fork>>
-        ut : Update Transaction
-        gt : Get Transactions
-        gc : Get Categories
+        ut : UPDATE /transactions
+        gt : GET /accounts/id/transactions
+        gc : GET /categories
 }
         [*] --> cds
+        gd2 --> ch
         cds --> gd2
         gd2 --> ct
         ct --> ct

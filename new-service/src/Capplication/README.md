@@ -21,9 +21,9 @@ sequenceDiagram
     DocumentUseCase->>+DocumentGateway: save document
     DocumentGateway->>DocumentGateway: generate unique identifier
     alt document already exist
-    DocumentGateway->>DocumentUseCase: return None
+    DocumentGateway->>DocumentUseCase: DocumentEntity, false
     else new document
-    DocumentGateway->>-DocumentUseCase: DocumentEntity
+    DocumentGateway->>-DocumentUseCase: DocumentEntity, true
 
     end
 
