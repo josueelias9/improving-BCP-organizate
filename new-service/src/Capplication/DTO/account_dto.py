@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Optional, Dict
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # ============================================================
 
@@ -38,6 +38,8 @@ class DTOReadAccountsResponse(BaseModel):
 
 
 class DTOHistory(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: Optional[uuid.UUID] = None
     account_id: Optional[str] = None
     balance: float

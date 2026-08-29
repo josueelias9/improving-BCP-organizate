@@ -7,7 +7,6 @@ import logging
 import csv
 import io
 from typing import List
-from datetime import datetime
 
 from src.Capplication.DTO.transaction_dto import (
     DTOExportTransactionsRequest,

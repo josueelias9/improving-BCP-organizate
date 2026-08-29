@@ -30,7 +30,9 @@ class CategoryBase(SQLModel):
 
 
 class DocumentBase(SQLModel):
-    processed: bool = Field(default=False)
+    processed: bool = Field(
+        default=False
+    )  # TODO: refers only to transactions, but it is not clear if it should be used for other purposes
     plain_text: Optional[str] = Field(default=None, sa_column=Column(Text))
 
 

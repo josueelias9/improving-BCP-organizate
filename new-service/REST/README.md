@@ -73,11 +73,11 @@ this project changed a bit the approach. Before it was supposed to analyze only 
 ```mermaid
 
 stateDiagram
-cds : Create Documents
-ct : Create Transactions
+cds : POST /users/id/documents
+ct : POST /accounts/id/transactions
 it : Import Transactions
 gd : Get Documents
-gd2 : Get Documents
+gd2 : GET /accounts
 et : Export Transactions
 state if_state <<choice>>
 

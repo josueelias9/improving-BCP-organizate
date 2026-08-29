@@ -8,8 +8,6 @@ from pathlib import Path
 
 from src.Denterprise.entities import (
     DocumentEntity,
-    UserEntity,
-    AccountEntity,
     HistoryEntity,
 )
 from src.Capplication.DTO.document_dto import (
@@ -116,6 +114,7 @@ class CreateDocumentUseCase:
             # Create document via gateway
             result_document, created = self.document_gateway.get_or_create(document)
 
+            # TODO: It means that if the document already exists, no history will be recorded? This is a bug
             if not created:
                 logger.info(f"Document already exists with ID: {result_document.id}")
                 return DTOCreateDocumentResponse(

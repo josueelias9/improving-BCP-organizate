@@ -1,16 +1,17 @@
 """
 Bulk Create Documents Use Case - Application Layer
-Iterates over document type folders and creates all documents found
+Iterates over document type folders and creates all documents found for a user.
 """
 
+import os
 import logging
 from pathlib import Path
 
-from src.Capplication.DTO.document_dto import (
+from src.Capplication.DTO.document_dto import DTOCreateDocumentRequest
+from src.Capplication.DTO.user_dto import (
     DTOBulkCreateDocumentsRequest,
     DTOBulkCreateDocumentsResponse,
     DTOBulkCreateDocumentItemResult,
-    DTOCreateDocumentRequest,
 )
 from src.Capplication.gateway.db import (
     IDocumentDbGateway,
@@ -38,6 +39,7 @@ class BulkCreateDocumentsUseCase:
         parsers: dict[str, IStatementParser],
         account_gateway: IAccountDbGateway,
         history_gateway: IHistoryDbGateway,
+        user_id: str,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
@@ -46,6 +48,7 @@ class BulkCreateDocumentsUseCase:
         self.parsers = parsers
         self.account_gateway = account_gateway
         self.history_gateway = history_gateway
+        self.user_id = user_id
 
     def execute(
         self, request: DTOBulkCreateDocumentsRequest
@@ -89,6 +92,13 @@ class BulkCreateDocumentsUseCase:
             already_existed=already_existed,
             failed=failed,
             results=results,
+            links=[
+                {
+                    "rel": "accounts",
+                    "href": f"{os.getenv('BACKEND_URL')}/accounts",
+                    "method": "GET",
+                }
+            ],
         )
 
     def _process_single(

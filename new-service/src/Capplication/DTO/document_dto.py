@@ -71,38 +71,3 @@ class DTOGetDocumentsResponse(BaseModel):
     total_returned: int
     skip: int
     limit: int
-
-
-# ===========================================================
-
-
-class DTOBulkCreateDocumentsRequest(BaseModel):
-    base_directory: str = "/downloads/documents"
-    user_email: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "base_directory": "/downloads/documents",
-                "user_email": "admin@bcpextractor.com",
-            }
-        }
-    }
-
-
-class DTOBulkCreateDocumentItemResult(BaseModel):
-    pdf_filepath: str
-    document_format: str
-    success: bool
-    document_id: Optional[str] = None
-    already_exists: Optional[bool] = None
-    transactions_count: Optional[int] = None
-    error: Optional[str] = None
-
-
-class DTOBulkCreateDocumentsResponse(BaseModel):
-    total: int
-    created: int
-    already_existed: int
-    failed: int
-    results: List[DTOBulkCreateDocumentItemResult]
