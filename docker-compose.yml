@@ -14,6 +14,7 @@ services:
       - POSTGRES_PORT
       - POSTGRES_SERVER
       - PDF_PASSWORD
+      - BACKEND_URL
     depends_on:
       new-service-init:
         condition: service_completed_successfully
