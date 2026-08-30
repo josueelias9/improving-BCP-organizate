@@ -17,7 +17,6 @@ from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.db.account import AccountDbGateway
-from src.Aframework.gateway.db.history import HistoryDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
@@ -100,7 +99,6 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
             file_extractor_gateway=FileExtractorGateway(),
             parser_gateway=parser_gateway,
             account_gateway=AccountDbGateway(session),
-            history_gateway=HistoryDbGateway(session),
         )
 
         # Use case returns DTO for controller response

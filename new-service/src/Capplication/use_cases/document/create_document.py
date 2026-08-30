@@ -8,7 +8,6 @@ from pathlib import Path
 
 from src.Denterprise.entities import (
     DocumentEntity,
-    HistoryEntity,
 )
 from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
@@ -18,7 +17,6 @@ from src.Capplication.gateway.db import (
     IDocumentDbGateway,
     IUserDbGateway,
     IAccountDbGateway,
-    IHistoryDbGateway,
 )
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
@@ -27,7 +25,6 @@ from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
 logger = logging.getLogger(__name__)
 
 
-# TODO: separate the management of histories in another use case and endpoints
 class CreateDocumentUseCase:
     """Use case for processing PDF and creating document"""
 
@@ -39,7 +36,6 @@ class CreateDocumentUseCase:
         file_extractor_gateway: IFileExtractorGateway,
         parser_gateway: IStatementParser,
         account_gateway: IAccountDbGateway,
-        history_gateway: IHistoryDbGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
@@ -47,7 +43,6 @@ class CreateDocumentUseCase:
         self.file_extractor_gateway = file_extractor_gateway
         self.parser_gateway = parser_gateway
         self.account_gateway = account_gateway
-        self.history_gateway = history_gateway
 
     def execute(self, request: DTOCreateDocumentRequest) -> DTOCreateDocumentResponse:
         """

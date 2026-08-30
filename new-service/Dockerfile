@@ -12,7 +12,6 @@ WORKDIR /josues_app
 
 COPY . .
 
-# TODO: Use poetry for consistency among projects and to avoid dependency hell with the poetry.lock file
 RUN pip install poetry
 
 RUN poetry install --without dev
