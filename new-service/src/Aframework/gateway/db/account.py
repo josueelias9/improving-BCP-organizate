@@ -19,6 +19,13 @@ class AccountDbGateway(IAccountDbGateway):
     def __init__(self, session: Session):
         self.session = session
 
+    def get_by_id(self, account_id: str) -> AccountEntity | None:
+        """Return an account by ID if it exists."""
+        db_account = self.session.get(AccountModel, account_id)
+        if not db_account:
+            return None
+        return AccountEntity(id=db_account.id)
+
     def get_or_create(self, account_id: str) -> tuple[AccountEntity, bool]:
         """Return existing account or create a new one"""
         db_account = self.session.get(AccountModel, account_id)

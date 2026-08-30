@@ -28,6 +28,11 @@ class ReadAccountsUseCase:
                     {
                         "rel": "histories",
                         "href": f"{base_url}/accounts/{e.id}/histories",
+                        "action": "POST",
+                    },
+                    {
+                        "rel": "histories",
+                        "href": f"{base_url}/accounts/{e.id}/histories",
                         "action": "GET",
                     },
                 ],

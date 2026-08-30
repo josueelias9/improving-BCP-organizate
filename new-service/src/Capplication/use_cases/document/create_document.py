@@ -116,7 +116,6 @@ class CreateDocumentUseCase:
             # Create document via gateway
             result_document, created = self.document_gateway.get_or_create(document)
 
-            # TODO: It means that if the document already exists, no history will be recorded? This is a bug (update: why?)
             if not created:
                 logger.info(f"Document already exists with ID: {result_document.id}")
                 return DTOCreateDocumentResponse(
@@ -128,20 +127,6 @@ class CreateDocumentUseCase:
                 )
 
             logger.info(f"Created new document with ID: {result_document.id}")
-
-            # Record balance snapshot only once per new document
-            initial_day = self.parser_gateway.get_initial_day(full_text)
-
-            if document.account_id:
-                balance = self.parser_gateway.get_balance(full_text)
-                if balance is not None:
-                    self.history_gateway.create(
-                        HistoryEntity(
-                            account_id=document.account_id,
-                            balance=balance,
-                            registration_date=initial_day,
-                        )
-                    )
 
             return DTOCreateDocumentResponse(
                 success=True,

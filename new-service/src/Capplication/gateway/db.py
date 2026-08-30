@@ -223,6 +223,11 @@ class IAccountDbGateway(ABC):
     """Interface for account persistence operations"""
 
     @abstractmethod
+    def get_by_id(self, account_id: str) -> Optional[AccountEntity]:
+        """Return an account by its ID, or None if it does not exist."""
+        pass
+
+    @abstractmethod
     def get_or_create(self, account_id: str) -> Tuple[AccountEntity, bool]:
         """
         Return existing account or create a new one.

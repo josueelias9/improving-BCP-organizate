@@ -19,6 +19,23 @@ class DTOCreateAccountTransactionsResponse(BaseModel):
     documents_processed: int
     account_id: str
 
+# ============================================================
+
+class DTOCreateAccountHistoryRequest(BaseModel):
+    pass
+
+
+class DTOCreateAccountHistoryResponse(BaseModel):
+    id: Optional[uuid.UUID] = None
+    account_id: str
+    balance: float
+    registration_date: Optional[date] = None
+
+
+class DTOCreateAccountHistoriesResponse(BaseModel):
+    histories: List[DTOCreateAccountHistoryResponse]
+    total_count: int
+
 
 # ============================================================
 

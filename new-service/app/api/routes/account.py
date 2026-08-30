@@ -18,11 +18,15 @@ from src.Capplication.use_cases.account.read_account_histories import (
 from src.Capplication.use_cases.account.create_account_transactions import (
     CreateAccountTransactionsUseCase,
 )
+from src.Capplication.use_cases.account.create_account_history import (
+    CreateAccountHistoryUseCase,
+)
 from src.Capplication.DTO.account_dto import (
     DTOReadAccountHistoriesResponse,
     DTOReadAccountsResponse,
     DTOCreateAccountTransactionsRequest,
     DTOCreateAccountTransactionsResponse,
+    DTOCreateAccountHistoriesResponse,
 )
 from src.Capplication.DTO.transaction_dto import DTOReadTransactionsResponse
 from src.Denterprise.entities import TransactionType
@@ -92,6 +96,38 @@ def read_account_transactions(
         raise HTTPException(
             status_code=500,
             detail=f"Error retrieving transactions for account {account_id}: {str(e)}",
+        )
+
+
+@router.post(
+    "/{account_id}/histories",
+    response_model=DTOCreateAccountHistoriesResponse,
+)
+def create_account_history(
+    account_id: str,
+    session: SessionDep,
+) -> DTOCreateAccountHistoriesResponse:
+    try:
+        parsers = {
+            "bcp_credit": BCPCreditParser(),
+            "bcp_debit": BCPDebitParser(),
+            "yape": YapeParser(),
+        }
+
+        use_case = CreateAccountHistoryUseCase(
+            account_gateway=AccountDbGateway(session),
+            history_gateway=HistoryDbGateway(session),
+            document_gateway=DocumentDbGateway(session),
+            parsers=parsers,
+        )
+        return use_case.execute(account_id=account_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating history for account {account_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error creating history for account {account_id}: {str(e)}",
         )
 
 
