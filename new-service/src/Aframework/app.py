@@ -6,21 +6,17 @@ import matplotlib.pyplot as plt
 BASE_URL = "http://localhost:8000"
 
 
-# Fetch all documents
-docs_response = requests.get(f"{BASE_URL}/documents/", params={"limit": 1000})
-docs_response.raise_for_status()
-documents = docs_response.json().get("documents", [])
+# Top section: show all accounts first
+accounts_response = requests.get(f"{BASE_URL}/accounts/")
+accounts_response.raise_for_status()
+accounts = accounts_response.json().get("accounts", [])
+account_options = {account["id"]: account["id"] for account in accounts}
+selected_account_id = st.selectbox("Account", options=list(account_options.keys()))
 
-
-doc_options = {doc["id"]: doc.get("account_id") for doc in documents}
-selected_label = st.selectbox("Document", options=list(doc_options.keys()))
-selected_account_id = doc_options.get(selected_label)
-
-# Fetch transactions filtered by the account of the selected document
-params = {"account_id": selected_account_id} if selected_account_id else {}
-response = requests.get(f"{BASE_URL}/transactions", params=params)
+# Bottom section: fetch transactions for the selected account
+response = requests.get(f"{BASE_URL}/accounts/{selected_account_id}/transactions")
 response.raise_for_status()
-transactions = response.json()["transactions"]
+transactions = response.json().get("transactions", [])
 
 # Fetch categories for the edit form
 categories_response = requests.get(f"{BASE_URL}/categories/")
@@ -115,13 +111,4 @@ with tab_batch:
         st.info("Select one or more rows to batch-update their category.")
 
 
-st.bar_chart(
-    df[df["transaction_type"] == "expense"]
-    .groupby("category_name", as_index=False)["amount"]
-    .sum(),
-    x="category_name",
-    y="amount",
-    stack=False,
-)
 
-st.bar_chart(df, x="transaction_type", y="amount", stack=False)

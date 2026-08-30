@@ -5,21 +5,25 @@ entity definitions:
 - DOCUMENT: the representation of a file
 - ACCOUNT: a place where money goes in and out
 - HISTORY: a registry of the amount of time of an account in a specific time
-- MEMORY: a document that stores all the information added to the transactions
+- MEMORY: a document that stores all the information related to the transaction and account tables
 
 ```mermaid
 erDiagram
 
     MEMORY {
+        uuid id PK
         string path
+        string model "this is the model that will reference the document"
     }
 
     USER {
+        uuid id PK
         _ name
         _ is_active
     }
 
     TRANSACTION {
+        uidd id PK
         _ description
         _ amount
         _ transaction_type
@@ -31,23 +35,25 @@ erDiagram
     }
 
     HISTORY {
+        uuid id PK
         time registration_date "when it was registered"
         float balance "net amount"
     }
 
     CATEGORY {
+        uuid id PK
         _ name
         _ description
         _ subcategory
     }
 
     DOCUMENT_FORMAT {
+        uuid id PK
         _ name
     }
 
-
     ACCOUNT {        
-        _ id PK "extracted from document's plain text. If no one is present, use the doc format"
+        string id PK "extracted from document's plain text. If no one is present, use the doc format"
     }
 
     DOCUMENT {
