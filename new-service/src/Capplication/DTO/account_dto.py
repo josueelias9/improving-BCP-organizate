@@ -19,7 +19,9 @@ class DTOCreateAccountTransactionsResponse(BaseModel):
     documents_processed: int
     account_id: str
 
+
 # ============================================================
+
 
 class DTOCreateAccountHistoryRequest(BaseModel):
     pass

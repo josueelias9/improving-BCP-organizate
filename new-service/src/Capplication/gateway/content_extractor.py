@@ -46,6 +46,7 @@ class IStatementParser(ABC):
     def get_initial_day(self, full_text: str) -> Optional[date]:
         pass
 
+    # TODO: validate if this is important for the snapshot history, or if it can be removed. It is not used in the current implementation.
     @abstractmethod
     def get_final_day(self, full_text: str) -> Optional[date]:
         pass

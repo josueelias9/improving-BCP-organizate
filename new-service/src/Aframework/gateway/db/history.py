@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 from models import History as HistoryModel
 from src.Denterprise.entities import HistoryEntity
 from src.Capplication.gateway.db import IHistoryDbGateway
+from datetime import date
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,16 @@ class HistoryDbGateway(IHistoryDbGateway):
 
     def __init__(self, session: Session):
         self.session = session
+
+    def exists(self, account_id: str, balance: float, registration_date: date) -> bool:
+        """Check whether an identical history already exists for the account."""
+        statement = (
+            select(HistoryModel.id)
+            .where(HistoryModel.account_id == account_id)
+            .where(HistoryModel.balance == balance)
+            .where(HistoryModel.registration_date == registration_date)
+        )
+        return self.session.exec(statement).first() is not None
 
     def create(self, history: HistoryEntity) -> HistoryEntity:
         """Create a new history record (balance snapshot)"""

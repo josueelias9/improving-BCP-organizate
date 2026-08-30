@@ -1,5 +1,5 @@
 @host = localhost:8000
-
+@selectedAccountId = {{readAccounts.response.body.$.accounts[1].id}}
 ###
 
 # TODO: filx the code inside this endpoint. It is using the email and not the id
@@ -18,18 +18,22 @@ GET http://{{host}}/accounts HTTP/1.1
 
 ###
 
-POST http://{{host}}/accounts/{{readAccounts.response.body.$.accounts[2].id}}/transactions HTTP/1.1
+POST http://{{host}}/accounts/{{selectedAccountId}}/transactions HTTP/1.1
+
+###
+
+POST http://{{host}}/accounts/{{selectedAccountId}}/histories HTTP/1.1
 
 ###
 
 # @name importTransactions
-POST http://{{host}}/transactions/import?account_id={{readAccounts.response.body.$.accounts[2].id}} HTTP/1.1
+POST http://{{host}}/transactions/import?account_id={{selectedAccountId}} HTTP/1.1
 content-type: application/json
 
 ###
 
 # @name exportTransactions
-GET http://{{host}}/transactions/export?account_id={{readAccounts.response.body.$.accounts[1].id}} HTTP/1.1
+GET http://{{host}}/transactions/export?account_id={{selectedAccountId}} HTTP/1.1
 
 ### temporal
 

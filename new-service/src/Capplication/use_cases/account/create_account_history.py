@@ -25,9 +25,13 @@ class CreateAccountHistoryUseCase:
         self.parsers = parsers
 
     def execute(self, account_id: str) -> DTOCreateAccountHistoriesResponse:
+        # The account must already exist. We do not create it here because the
+        # account lifecycle is a separate concern from the balance snapshot flow.
         if self.account_gateway.get_by_id(account_id) is None:
             raise ValueError(f"Account '{account_id}' does not exist")
 
+        # We only want to generate histories from the documents that belong to
+        # this account. If there are no documents, there is nothing to derive.
         documents = self.document_gateway.get_by_account_id(account_id)
 
         if not documents:
@@ -35,6 +39,9 @@ class CreateAccountHistoryUseCase:
 
         histories: list[DTOCreateAccountHistoryResponse] = []
 
+        # For each document, extract the balance and its registration date from
+        # the file content. A history is understood as a snapshot of the account
+        # at a specific date and amount.
         for document in documents:
             if not document.plain_text:
                 continue
@@ -49,6 +56,12 @@ class CreateAccountHistoryUseCase:
 
             registration_date = parser.get_initial_day(document.plain_text)
             if registration_date is None:
+                continue
+
+            # This validation belongs to the infrastructure layer so duplicate
+            # entries are detected at the persistence boundary using the same
+            # identifier tuple: account + balance + date.
+            if self.history_gateway.exists(account_id, balance, registration_date):
                 continue
 
             history = HistoryEntity(
@@ -66,6 +79,9 @@ class CreateAccountHistoryUseCase:
                 )
             )
 
+        # If no valid snapshot could be created, the operation is considered
+        # unsuccessful and the caller receives a clear business error.
+        # TODO: when all the histories are duplicates, should we return an empty list or raise an error? The current behavior is to raise an error. FIX
         if not histories:
             raise ValueError(
                 f"No history could be generated from the documents of account '{account_id}'"

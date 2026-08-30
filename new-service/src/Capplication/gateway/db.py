@@ -16,6 +16,8 @@ from src.Denterprise.entities import (
     HistoryEntity,
 )
 
+from datetime import date
+
 
 class IDocumentDbGateway(ABC):
     """Interface for document persistence operations"""
@@ -245,6 +247,11 @@ class IAccountDbGateway(ABC):
 
 class IHistoryDbGateway(ABC):
     """Interface for history persistence operations"""
+
+    @abstractmethod
+    def exists(self, account_id: str, balance: float, registration_date: date) -> bool:
+        """Return True when the same history already exists for that account."""
+        pass
 
     @abstractmethod
     def create(self, history: HistoryEntity) -> HistoryEntity:
