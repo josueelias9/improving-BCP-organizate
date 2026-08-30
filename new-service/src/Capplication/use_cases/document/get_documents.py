@@ -7,7 +7,7 @@ Accepts DTOs at the boundary and works with entities internally.
 
 import logging
 
-from src.Capplication.gateway.db import IDocumentDbGateway, IDocumentTypeDbGateway
+from src.Capplication.gateway.db import IDocumentDbGateway, IDocumentFormatDbGateway
 from src.Capplication.DTO.document_dto import (
     DTOGetDocumentsResponse,
     DTOGetDocumentsRequest,
@@ -27,17 +27,17 @@ class GetDocumentsUseCase:
     def __init__(
         self,
         document_gateway: IDocumentDbGateway,
-        document_type_gateway: IDocumentTypeDbGateway,
+        document_format_gateway: IDocumentFormatDbGateway,
     ):
         """
         Initialize use case with required gateways
 
         Args:
             document_gateway: Gateway for document persistence operations
-            document_type_gateway: Gateway for document type operations
+            document_format_gateway: Gateway for document type operations
         """
         self.document_gateway = document_gateway
-        self.document_type_gateway = document_type_gateway
+        self.document_format_gateway = document_format_gateway
 
     def execute(self, request: DTOGetDocumentsRequest) -> DTOGetDocumentsResponse:
         """

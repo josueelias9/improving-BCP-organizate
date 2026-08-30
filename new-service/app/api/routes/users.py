@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException
 from api.deps import SessionDep
 from src.Aframework.gateway.db.account import AccountDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import DocumentFormatDbGateway
 from src.Aframework.gateway.db.history import HistoryDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
@@ -47,7 +47,7 @@ async def create_user_documents(
         use_case = BulkCreateDocumentsUseCase(
             document_gateway=DocumentDbGateway(session),
             user_gateway=UserDbGateway(session),
-            document_type_gateway=DocumentTypeDbGateway(session),
+            document_format_gateway=DocumentFormatDbGateway(session),
             file_extractor_gateway=FileExtractorGateway(),
             parsers=parsers,
             account_gateway=AccountDbGateway(session),

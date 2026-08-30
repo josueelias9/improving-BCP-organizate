@@ -20,7 +20,7 @@ from src.Capplication.gateway.db import (
 )
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
-from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import IDocumentFormatDbGateway
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +32,14 @@ class CreateDocumentUseCase:
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        document_type_gateway: IDocumentTypeDbGateway,
+        document_format_gateway: IDocumentFormatDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
         parser_gateway: IStatementParser,
         account_gateway: IAccountDbGateway,
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
-        self.document_type_gateway = document_type_gateway
+        self.document_format_gateway = document_format_gateway
         self.file_extractor_gateway = file_extractor_gateway
         self.parser_gateway = parser_gateway
         self.account_gateway = account_gateway
@@ -72,8 +72,7 @@ class CreateDocumentUseCase:
                 raise FileNotFoundError(f"File '{pdf_filepath}' not found")
 
             # Get document type entity from database
-            # TODO: Change to "document_format..."
-            doc_format = self.document_type_gateway.get_by_name(document_format)
+            doc_format = self.document_format_gateway.get_by_name(document_format)
 
             if not doc_format:
                 raise ValueError(

@@ -14,7 +14,7 @@ from src.Capplication.DTO.document_dto import (
     DTOCreateDocumentResponse,
 )
 from src.Aframework.gateway.db.document import DocumentDbGateway
-from src.Aframework.gateway.db.document_format import DocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import DocumentFormatDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.db.account import AccountDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
@@ -49,8 +49,8 @@ async def get_documents(
     try:
         # Create use case
         document_gateway = DocumentDbGateway(session)
-        document_type_gateway = DocumentTypeDbGateway(session)
-        use_case = GetDocumentsUseCase(document_gateway, document_type_gateway)
+        document_format_gateway = DocumentFormatDbGateway(session)
+        use_case = GetDocumentsUseCase(document_gateway, document_format_gateway)
 
         # Create request DTO
         dto_request = DTOGetDocumentsRequest(skip=skip, limit=limit)
@@ -95,7 +95,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
         use_case = CreateDocumentUseCase(
             document_gateway=DocumentDbGateway(session),
             user_gateway=UserDbGateway(session),
-            document_type_gateway=DocumentTypeDbGateway(session),
+            document_format_gateway=DocumentFormatDbGateway(session),
             file_extractor_gateway=FileExtractorGateway(),
             parser_gateway=parser_gateway,
             account_gateway=AccountDbGateway(session),

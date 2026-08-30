@@ -21,7 +21,7 @@ from src.Capplication.gateway.db import (
 )
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
-from src.Aframework.gateway.db.document_format import IDocumentTypeDbGateway
+from src.Aframework.gateway.db.document_format import IDocumentFormatDbGateway
 from src.Capplication.use_cases.document.create_document import CreateDocumentUseCase
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class BulkCreateDocumentsUseCase:
         self,
         document_gateway: IDocumentDbGateway,
         user_gateway: IUserDbGateway,
-        document_type_gateway: IDocumentTypeDbGateway,
+        document_format_gateway: IDocumentFormatDbGateway,
         file_extractor_gateway: IFileExtractorGateway,
         parsers: dict[str, IStatementParser],
         account_gateway: IAccountDbGateway,
@@ -43,7 +43,7 @@ class BulkCreateDocumentsUseCase:
     ):
         self.document_gateway = document_gateway
         self.user_gateway = user_gateway
-        self.document_type_gateway = document_type_gateway
+        self.document_format_gateway = document_format_gateway
         self.file_extractor_gateway = file_extractor_gateway
         self.parsers = parsers
         self.account_gateway = account_gateway
@@ -112,7 +112,7 @@ class BulkCreateDocumentsUseCase:
             use_case = CreateDocumentUseCase(
                 document_gateway=self.document_gateway,
                 user_gateway=self.user_gateway,
-                document_type_gateway=self.document_type_gateway,
+                document_format_gateway=self.document_format_gateway,
                 file_extractor_gateway=self.file_extractor_gateway,
                 parser_gateway=parser,
                 account_gateway=self.account_gateway,

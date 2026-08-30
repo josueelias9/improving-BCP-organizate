@@ -210,7 +210,7 @@ class ITransactionDbGateway(ABC):
         pass
 
 
-class IDocumentTypeDbGateway(ABC):
+class IDocumentFormatDbGateway(ABC):
 
     @abstractmethod
     def get_by_name(self, name: str) -> DocumentTypeEntity | None:
