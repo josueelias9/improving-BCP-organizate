@@ -42,6 +42,22 @@ class DTOCreateAccountHistoriesResponse(BaseModel):
 # ============================================================
 
 
+class DTOCreateAllAccountHistoriesItemResult(BaseModel):
+    account_id: str
+    success: bool
+    histories: List[DTOCreateAccountHistoryResponse] = []
+    error: Optional[str] = None
+
+
+class DTOCreateAllAccountHistoriesResponse(BaseModel):
+    total_accounts: int
+    total_histories: int
+    results: List[DTOCreateAllAccountHistoriesItemResult]
+
+
+# ============================================================
+
+
 # TODO: maybe we can have a single DTO
 class DTOAccount(BaseModel):
     id: str

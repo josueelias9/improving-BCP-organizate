@@ -1,8 +1,9 @@
 @host = localhost:8000
-@selectedAccountId = {{readAccounts.response.body.$.accounts[1].id}}
+@selectedAccountId = {{readAccounts.response.body.$.accounts[4].id}}
+
 ###
 
-# TODO: filx the code inside this endpoint. It is using the email and not the id
+# TODO: fix the code inside this endpoint. It is using the email and not the id
 POST http://{{host}}/users/00000000-0000-0000-0000-000000000001/documents/ HTTP/1.1
 content-type: application/json
 
@@ -45,3 +46,8 @@ content-type: application/json
 
 DELETE http://{{host}}/documents/{{readDocuments.response.body.$.documents[1].id}} HTTP/1.1
 content-type: application/json
+
+
+### -----------------------------------------------
+
+POST http://{{host}}/histories
