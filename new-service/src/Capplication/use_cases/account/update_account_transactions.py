@@ -5,16 +5,16 @@ Handles the business logic for updating multiple transactions simultaneously
 
 import logging
 
-from src.Capplication.DTO.transaction_dto import (
-    DTOUpdateTransactionsResponse,
-    DTOUpdateTransactionsRequest,
+from src.Capplication.DTO.account_dto import (
+    DTOUpdateAccountTransactionsResponse,
+    DTOUpdateAccountTransactionsRequest,
 )
 from src.Capplication.gateway.db import ITransactionDbGateway, ICategoryDbGateway
 
 logger = logging.getLogger(__name__)
 
 
-class UpdateTransactionsUseCase:
+class UpdateAccountTransactionsUseCase:
     """Use case for updating multiple transactions simultaneously"""
 
     def __init__(
@@ -26,8 +26,8 @@ class UpdateTransactionsUseCase:
         self.category_gateway = category_gateway
 
     def execute(
-        self, batch_update: DTOUpdateTransactionsRequest
-    ) -> DTOUpdateTransactionsResponse:
+        self, batch_update: DTOUpdateAccountTransactionsRequest
+    ) -> DTOUpdateAccountTransactionsResponse:
         """
         Update multiple transactions simultaneously
 
@@ -103,7 +103,7 @@ class UpdateTransactionsUseCase:
             f"Batch update completed: {updated}/{total} successful, {failed} failed"
         )
 
-        return DTOUpdateTransactionsResponse(
+        return DTOUpdateAccountTransactionsResponse(
             total=total,
             updated=updated,
             failed=failed,

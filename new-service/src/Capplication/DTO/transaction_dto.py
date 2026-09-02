@@ -8,7 +8,7 @@ Internal domain logic uses entities from Denterprise layer.
 
 import uuid
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 
 
@@ -67,53 +67,3 @@ class DTOUpdateTransactionResponse(BaseModel):
     message: str
 
 
-# ===========================================================
-
-
-class DTOBatchUpdateRequest(BaseModel):
-    """Single transaction update item - DTO for batch category update"""
-
-    transaction_id: uuid.UUID
-    category_name: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                "category_name": "Food & Dining",
-            }
-        }
-    }
-
-
-class DTOUpdateTransactionsResponse(BaseModel):
-    """Result DTO for batch update operation - returned from use case to controller"""
-
-    total: int
-    updated: int
-    failed: int
-    errors: List[Dict[str, Any]]
-    message: Optional[str] = None
-
-
-class DTOUpdateTransactionsRequest(BaseModel):
-    """Wrapper DTO for batch update list request - input from controller"""
-
-    updates: List[DTOBatchUpdateRequest]
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "updates": [
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-                        "category_name": "Food & Dining",
-                    },
-                    {
-                        "transaction_id": "123e4567-e89b-12d3-a456-426614174001",
-                        "category_name": "Utilities",
-                    },
-                ]
-            }
-        }
-    }

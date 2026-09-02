@@ -97,7 +97,8 @@ with tab_batch:
                     for i in selected_batch_rows
                 ]
                 batch_response = requests.put(
-                    f"{BASE_URL}/transactions/batch", json={"updates": updates}
+                    f"{BASE_URL}/accounts/{selected_account_id}/transactions",
+                    json={"updates": updates},
                 )
                 if batch_response.ok:
                     result = batch_response.json()

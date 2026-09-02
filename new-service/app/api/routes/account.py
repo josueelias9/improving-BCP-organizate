@@ -21,13 +21,19 @@ from src.Capplication.use_cases.account.create_account_transactions import (
 from src.Capplication.use_cases.account.create_account_history import (
     CreateAccountHistoryUseCase,
 )
+from src.Capplication.use_cases.account.update_account_transactions import (
+    UpdateAccountTransactionsUseCase,
+)
 from src.Capplication.DTO.account_dto import (
     DTOReadAccountHistoriesResponse,
     DTOReadAccountsResponse,
     DTOCreateAccountTransactionsRequest,
     DTOCreateAccountTransactionsResponse,
     DTOCreateAccountHistoriesResponse,
+    DTOUpdateAccountTransactionsRequest,
+    DTOUpdateAccountTransactionsResponse,
 )
+from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Capplication.DTO.transaction_dto import DTOReadTransactionsResponse
 from src.Denterprise.entities import TransactionType
 
@@ -97,6 +103,22 @@ def read_account_transactions(
             status_code=500,
             detail=f"Error retrieving transactions for account {account_id}: {str(e)}",
         )
+
+
+@router.put("/{account_id}/transactions", response_model=DTOUpdateAccountTransactionsResponse)
+def update_account_transactions(
+    account_id: str,
+    dto_request: DTOUpdateAccountTransactionsRequest,
+    session: SessionDep,
+) -> DTOUpdateAccountTransactionsResponse:
+    try:
+        transaction_gateway = TransactionDbGateway(session)
+        category_gateway = CategoryDbGateway(session)
+        use_case = UpdateAccountTransactionsUseCase(transaction_gateway, category_gateway)
+        return use_case.execute(dto_request)
+    except Exception as e:
+        logger.error(f"Unexpected error in batch update for account {account_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.post(

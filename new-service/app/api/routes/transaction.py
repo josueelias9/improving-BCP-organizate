@@ -12,17 +12,12 @@ from api.deps import SessionDep
 from src.Aframework.gateway.db.transaction import TransactionDbGateway
 from src.Aframework.gateway.db.category import CategoryDbGateway
 from src.Capplication.DTO.transaction_dto import (
-    DTOUpdateTransactionsRequest,
-    DTOUpdateTransactionsResponse,
     DTOReadTransactionsResponse,
     DTOUpdateTransactionRequest,
     DTOUpdateTransactionResponse,
 )
 from src.Capplication.use_cases.transaction.update_transaction import (
     UpdateTransactionUseCase,
-)
-from src.Capplication.use_cases.transaction.update_transactions import (
-    UpdateTransactionsUseCase,
 )
 from src.Capplication.use_cases.transaction.read_transactions import (
     ReadTransactionsUseCase,
@@ -50,18 +45,6 @@ def read_transactions(
             status_code=500, detail=f"Error retrieving transactions: {str(e)}"
         )
 
-
-
-@router.put("/batch", response_model=DTOUpdateTransactionsResponse)
-def update_transactions(dto_request: DTOUpdateTransactionsRequest, session: SessionDep):
-    try:
-        transaction_gateway = TransactionDbGateway(session)
-        category_gateway = CategoryDbGateway(session)
-        use_case = UpdateTransactionsUseCase(transaction_gateway, category_gateway)
-        return use_case.execute(dto_request)
-    except Exception as e:
-        logger.error(f"Unexpected error in batch update: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @router.put("/{transaction_id}", response_model=DTOUpdateTransactionResponse)
