@@ -8,7 +8,7 @@ import csv
 from pathlib import Path
 from typing import List
 
-from src.Capplication.DTO.transaction_dto import (
+from src.Capplication.DTO.memory_dto import (
     DTOImportTransactionsResponse,
     DTOImportTransactionsRequest,
 )

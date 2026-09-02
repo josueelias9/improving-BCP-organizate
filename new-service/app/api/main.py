@@ -13,6 +13,7 @@ from api.routes import (
     account,
     users,
     history,
+    memory,
 )
 
 api_router = APIRouter()
@@ -26,3 +27,4 @@ api_router.include_router(document_format.router)
 api_router.include_router(account.router)
 api_router.include_router(users.router)
 api_router.include_router(history.router)
+api_router.include_router(memory.router)
