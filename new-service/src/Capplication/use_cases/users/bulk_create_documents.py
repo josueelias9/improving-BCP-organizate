@@ -17,7 +17,6 @@ from src.Capplication.gateway.db import (
     IDocumentDbGateway,
     IUserDbGateway,
     IAccountDbGateway,
-    IHistoryDbGateway,
 )
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Capplication.gateway.file_extractor import IFileExtractorGateway
@@ -38,7 +37,6 @@ class BulkCreateDocumentsUseCase:
         file_extractor_gateway: IFileExtractorGateway,
         parsers: dict[str, IStatementParser],
         account_gateway: IAccountDbGateway,
-        history_gateway: IHistoryDbGateway,
         user_id: str,
     ):
         self.document_gateway = document_gateway
@@ -47,7 +45,6 @@ class BulkCreateDocumentsUseCase:
         self.file_extractor_gateway = file_extractor_gateway
         self.parsers = parsers
         self.account_gateway = account_gateway
-        self.history_gateway = history_gateway
         self.user_id = user_id
 
     def execute(
@@ -116,7 +113,6 @@ class BulkCreateDocumentsUseCase:
                 file_extractor_gateway=self.file_extractor_gateway,
                 parser_gateway=parser,
                 account_gateway=self.account_gateway,
-                history_gateway=self.history_gateway,
             )
             response = use_case.execute(
                 DTOCreateDocumentRequest(

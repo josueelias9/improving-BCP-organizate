@@ -109,6 +109,3 @@ with tab_batch:
                     st.error(f"Error: {batch_response.text}")
     else:
         st.info("Select one or more rows to batch-update their category.")
-
-
-

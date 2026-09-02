@@ -19,8 +19,8 @@ class DTOCategory(BaseModel):
     parent_id: str | None = None
 
 
-class DTOGetCategoriesResponse(BaseModel):
-    """Response DTO for get all categories operation - returned from use case to controller"""
+class DTOReadCategoriesResponse(BaseModel):
+    """Response DTO for read all categories operation - returned from use case to controller"""
 
     categories: List[DTOCategory]
     total_count: int

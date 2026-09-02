@@ -4,7 +4,6 @@ Handles user-scoped operations, including bulk document import.
 """
 
 import logging
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 
@@ -12,7 +11,6 @@ from api.deps import SessionDep
 from src.Aframework.gateway.db.account import AccountDbGateway
 from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.db.document_format import DocumentFormatDbGateway
-from src.Aframework.gateway.db.history import HistoryDbGateway
 from src.Aframework.gateway.db.user import UserDbGateway
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
@@ -51,7 +49,6 @@ async def create_user_documents(
             file_extractor_gateway=FileExtractorGateway(),
             parsers=parsers,
             account_gateway=AccountDbGateway(session),
-            history_gateway=HistoryDbGateway(session),
             user_id=user_id,
         )
         return use_case.execute(dto_request)

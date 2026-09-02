@@ -9,12 +9,12 @@ import logging
 from typing import List
 
 from src.Capplication.gateway.db import ICategoryDbGateway
-from src.Capplication.DTO.category_dto import DTOGetCategoriesResponse, DTOCategory
+from src.Capplication.DTO.category_dto import DTOReadCategoriesResponse, DTOCategory
 
 logger = logging.getLogger(__name__)
 
 
-class GetCategoriesUseCase:
+class ReadCategoriesUseCase:
     """
     Use Case: Retrieve all categories
 
@@ -30,12 +30,12 @@ class GetCategoriesUseCase:
         """
         self.category_gateway = category_gateway
 
-    def execute(self) -> DTOGetCategoriesResponse:
+    def execute(self) -> DTOReadCategoriesResponse:
         """
         Execute the use case to get all categories
 
         Returns:
-            DTOGetCategoriesResponse with list of category dicts
+            DTOReadCategoriesResponse with list of category dicts
         """
         # Get all categories as entities from gateway
         category_entities = self.category_gateway.get_all()
@@ -59,6 +59,6 @@ class GetCategoriesUseCase:
         logger.info(f"Retrieved {len(categories)} categories")
 
         # Return DTO response
-        return DTOGetCategoriesResponse(
+        return DTOReadCategoriesResponse(
             categories=categories, total_count=len(categories)
         )
