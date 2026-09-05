@@ -16,7 +16,10 @@ from typing import List, Optional, Dict, Any
 
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Denterprise.entities import TransactionEntity
-from src.Aframework.gateway.content_extractor.pdf_utils import extract_pdf_text
+from src.Aframework.gateway.content_extractor.utils import (
+    extract_pdf_text,
+    read_binary_file,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +52,8 @@ class BCPCreditParser(IStatementParser):
     def file_extension(self) -> str:
         return ".pdf"
 
-    def read_file(self, file_content: bytes) -> str:
-        return extract_pdf_text(file_content)
+    def read_file(self, filepath: str) -> str:
+        return extract_pdf_text(read_binary_file(filepath))
 
     def get_account(self, full_text: str) -> Optional[str]:
         pass

@@ -18,6 +18,7 @@ import openpyxl
 
 from src.Capplication.gateway.content_extractor import IStatementParser
 from src.Denterprise.entities import TransactionEntity
+from src.Aframework.gateway.content_extractor.utils import read_binary_file
 
 logger = logging.getLogger(__name__)
 
@@ -55,9 +56,9 @@ class YapeParser(IStatementParser):
     def file_extension(self) -> str:
         return ".xlsx"
 
-    def read_file(self, file_content: bytes) -> str:
-        """Read XLSX bytes and return a JSON string of transaction rows."""
-        wb = openpyxl.load_workbook(io.BytesIO(file_content))
+    def read_file(self, filepath: str) -> str:
+        """Read XLSX file and return a JSON string of transaction rows."""
+        wb = openpyxl.load_workbook(io.BytesIO(read_binary_file(filepath)))
         ws = wb["Movimientos"]
 
         rows = []

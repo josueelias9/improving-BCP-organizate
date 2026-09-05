@@ -113,12 +113,15 @@ SOPS_AGE_KEY_FILE=../key.txt ./scripts/enc.sh decrypt
 
 flowchart LR
 
+filepath --> read_file
 
-parser --> file_extension
-parser --> read_file
-parser --> get_transactions
-parser --> get_initial_day
-parser --> get_balance
-parser --> get_account
+subgraph Parser
+file_extension
+read_file
+get_transactions
+get_initial_day
+get_balance
+get_account
+end
 
 ```

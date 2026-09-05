@@ -1,4 +1,4 @@
-"""Shared PDF text extraction utility for BCP parsers."""
+"""Shared file utilities for content extractors."""
 
 import logging
 import os
@@ -6,6 +6,17 @@ import os
 import fitz
 
 logger = logging.getLogger(__name__)
+
+
+def read_binary_file(filepath: str) -> bytes:
+    """Read a file in binary mode and return its content as bytes."""
+    try:
+        with open(filepath, "rb") as file:
+            return file.read()
+    except FileNotFoundError:
+        raise
+    except OSError as error:
+        raise IOError(f"Failed to read file: {error}") from error
 
 
 def extract_pdf_text(file_content: bytes) -> str:

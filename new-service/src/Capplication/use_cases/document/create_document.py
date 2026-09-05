@@ -80,8 +80,7 @@ class CreateDocumentUseCase:
                 )
 
             # Read and extract text using the parser (format-specific)
-            file_binary = self.file_extractor_gateway.read_binary_file(pdf_filepath)
-            full_text = self.parser_gateway.read_file(file_binary)
+            full_text = self.parser_gateway.read_file(pdf_filepath)
 
             filename = Path(pdf_filepath).name
             document = DocumentEntity(

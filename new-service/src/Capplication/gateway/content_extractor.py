@@ -19,11 +19,11 @@ class IStatementParser(ABC):
         pass
 
     @abstractmethod
-    def read_file(self, file_content: bytes) -> str:
-        """Convert raw file bytes to a plain-text or serialised-text representation.
+    def read_file(self, filepath: str) -> str:
+        """Read a file and convert it to a plain-text or serialised-text representation.
 
         Args:
-            file_content: Raw bytes of the source file (PDF, XLSX, …)
+            filepath: Path to the source file (PDF, XLSX, ...)
 
         Returns:
             Text representation suitable for the other parser methods

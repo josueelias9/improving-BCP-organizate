@@ -4,7 +4,6 @@ Defines contracts for file system operations
 """
 
 from abc import ABC, abstractmethod
-from pathlib import Path
 from typing import List
 
 
@@ -39,24 +38,6 @@ class IFileExtractorGateway(ABC):
 
         Returns:
             True if file exists, False otherwise
-        """
-        pass
-
-    @abstractmethod
-    def read_binary_file(self, filepath: str) -> bytes:
-        """
-        Read a file in binary mode and return its content as bytes.
-        The file is always closed before returning.
-
-        Args:
-            filepath: Path to the file to read
-
-        Returns:
-            File content as bytes
-
-        Raises:
-            FileNotFoundError: If file does not exist
-            IOError: If file cannot be read
         """
         pass
 
