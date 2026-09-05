@@ -27,3 +27,14 @@ new-service/
 [ ] Documents table do not need date
 [ ] currency account (analize)
 [ ] use the microsoft convention for API design
+
+
+
+
+
+----
+
+
+[ ] remove unnecesary functions from the parser
+[ ] delete the binary function from the FileExtractor
+[ ] set the design for the components

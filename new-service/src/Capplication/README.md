@@ -11,12 +11,15 @@ sequenceDiagram
     box rgb(248, 131, 131) application layer
     participant DocumentUseCase
     end
+
+    DocumentUseCase->>+FileExtractor: check if file exists
+    FileExtractor-->>-DocumentUseCase: 
     
     DocumentUseCase->>+FileExtractor: location of any source of data
     FileExtractor-->>-DocumentUseCase: get the binary
 
     DocumentUseCase->>+Parser: extract content
-    Parser-->>-DocumentUseCase: get data, unique_identifier, registration_date
+    Parser-->>-DocumentUseCase: full_text and account_id
 
     DocumentUseCase->>+DocumentGateway: save document
     DocumentGateway->>DocumentGateway: generate unique identifier

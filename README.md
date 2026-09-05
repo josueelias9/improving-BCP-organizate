@@ -107,3 +107,19 @@ docker compose up new-service-init --build
 ./scripts/enc.sh encrypt
 SOPS_AGE_KEY_FILE=../key.txt ./scripts/enc.sh decrypt
 ```
+
+
+```mermaid
+
+flowchart LR
+
+
+parser --> file_extension
+parser --> read_file
+parser --> get_transactions
+parser --> get_initial_day
+parser --> get_final_day/remove
+parser --> get_balance
+parser --> get_account
+
+```

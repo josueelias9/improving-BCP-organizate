@@ -54,7 +54,7 @@ class TransactionBase(SQLModel):
 
 
 class DocumentFormat(DocumentFormatBase, table=True):
-    __tablename__ = "document_types"
+    __tablename__ = "document_formats"
 
     id: uuid.UUID = Field(
         default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
@@ -123,7 +123,7 @@ class Document(DocumentBase, table=True):
 
     id: str = Field(primary_key=True, index=True, nullable=False, max_length=64)
     user_id: uuid.UUID = Field(foreign_key="users.id")
-    document_type_id: uuid.UUID = Field(foreign_key="document_types.id")
+    document_type_id: uuid.UUID = Field(foreign_key="document_formats.id")
     account_id: Optional[str] = Field(default=None, foreign_key="accounts.id")
     names: List[str] = Field(default_factory=list, sa_column=Column(JSON))
 

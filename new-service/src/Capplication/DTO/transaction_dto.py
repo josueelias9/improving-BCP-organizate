@@ -11,8 +11,6 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 
-
-
 # ===========================================================
 
 
@@ -65,5 +63,3 @@ class DTOUpdateTransactionResponse(BaseModel):
     transaction_id: str
     updated: bool
     message: str
-
-

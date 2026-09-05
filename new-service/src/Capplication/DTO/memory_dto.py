@@ -1,6 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel
 
+
 class DTOExportTransactionsRequest(BaseModel):
     """Filter criteria DTO for transaction export - request from controller to use case"""
 
