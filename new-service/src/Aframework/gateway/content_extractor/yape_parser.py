@@ -89,13 +89,6 @@ class YapeParser(IStatementParser):
         valid = [d for d in datetimes if d]
         return min(valid).date() if valid else None
 
-    def get_final_day(self, full_text: str) -> Optional[date]:
-        datetimes = [
-            _parse_datetime(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")
-        ]
-        valid = [d for d in datetimes if d]
-        return max(valid).date() if valid else None
-
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         rows = json.loads(full_text)
         entities = []

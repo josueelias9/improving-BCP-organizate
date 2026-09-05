@@ -65,9 +65,6 @@ class BCPDebitParser(IStatementParser):
     def get_initial_day(self, full_text: str) -> Optional[date]:
         return self._extract_period(full_text)[0]
 
-    def get_final_day(self, full_text: str) -> Optional[date]:
-        return self._extract_period(full_text)[1]
-
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         """Parse BCP debit PDF text and return transaction entities."""
         account_code, currency = self._extract_account_code(full_text)

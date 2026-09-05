@@ -78,21 +78,6 @@ class BCPCreditParser(IStatementParser):
             return start_date
         return None
 
-    def get_final_day(self, full_text: str) -> Optional[date]:
-        # Extract date range
-        date_range_match = re.search(
-            r"Del\s+(\d{2})/(\d{2})/(\d{4})\s+al\s+(\d{2})/(\d{2})/(\d{4})",
-            full_text,
-        )
-        if date_range_match:
-            day2, month2, year2 = (
-                int(date_range_match.group(4)),
-                int(date_range_match.group(5)),
-                int(date_range_match.group(6)),
-            )
-            return date(year2, month2, day2)
-        return None
-
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
         """Parse BCP credit card PDF text and return transaction entities."""
         try:

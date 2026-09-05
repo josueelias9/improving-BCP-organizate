@@ -105,7 +105,9 @@ def read_account_transactions(
         )
 
 
-@router.put("/{account_id}/transactions", response_model=DTOUpdateAccountTransactionsResponse)
+@router.put(
+    "/{account_id}/transactions", response_model=DTOUpdateAccountTransactionsResponse
+)
 def update_account_transactions(
     account_id: str,
     dto_request: DTOUpdateAccountTransactionsRequest,
@@ -114,10 +116,14 @@ def update_account_transactions(
     try:
         transaction_gateway = TransactionDbGateway(session)
         category_gateway = CategoryDbGateway(session)
-        use_case = UpdateAccountTransactionsUseCase(transaction_gateway, category_gateway)
+        use_case = UpdateAccountTransactionsUseCase(
+            transaction_gateway, category_gateway
+        )
         return use_case.execute(dto_request)
     except Exception as e:
-        logger.error(f"Unexpected error in batch update for account {account_id}: {str(e)}")
+        logger.error(
+            f"Unexpected error in batch update for account {account_id}: {str(e)}"
+        )
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 

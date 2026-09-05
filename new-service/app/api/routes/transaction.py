@@ -46,7 +46,6 @@ def read_transactions(
         )
 
 
-
 @router.put("/{transaction_id}", response_model=DTOUpdateTransactionResponse)
 def update_transaction(
     transaction_id: uuid.UUID,
