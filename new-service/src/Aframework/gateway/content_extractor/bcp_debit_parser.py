@@ -62,8 +62,37 @@ class BCPDebitParser(IStatementParser):
         return account
 
     def get_balance(self, full_text: str) -> Optional[float]:
-        """Extract previous balance from BCP PDF text"""
-        return self._extract_saldo_anterior(full_text)
+        """
+        Extract previous balance from BCP PDF text
+
+        Format: SALDO ANTERIOR followed by amount at fixed position (column 58-68)
+        Example: ------------SALDO ANTERIOR---------------------------------    NNNNNNN.NN
+        """
+        try:
+            lines = full_text.split("\n")
+
+            for line in lines:
+                # Search for line containing "SALDO ANTERIOR"
+                if "SALDO ANTERIOR" in line:
+                    # Extract amount from position 58 onwards
+                    saldo_str = line[58:].strip()
+
+                    if saldo_str:
+                        try:
+                            saldo = float(saldo_str.replace(",", ""))
+                            logger.info(f"Previous balance found: {saldo}")
+                            return saldo
+                        except ValueError:
+                            logger.warning(
+                                f"Could not convert previous balance to number: {saldo_str}"
+                            )
+
+            logger.warning("No line with SALDO ANTERIOR found")
+            return None
+
+        except Exception as e:
+            logger.error(f"Error extracting previous balance: {str(e)}")
+            return None
 
     def get_initial_day(self, full_text: str) -> Optional[date]:
         return self._extract_period(full_text)[0]
@@ -280,40 +309,6 @@ class BCPDebitParser(IStatementParser):
 
         except Exception as e:
             logger.error(f"Error extracting account code: {str(e)}")
-            return None
-
-    @staticmethod
-    def _extract_saldo_anterior(text: str) -> Optional[float]:
-        """
-        Extract previous balance from BCP PDF text
-
-        Format: SALDO ANTERIOR followed by amount at fixed position (column 58-68)
-        Example: ------------SALDO ANTERIOR---------------------------------    NNNNNNN.NN
-        """
-        try:
-            lines = text.split("\n")
-
-            for line in lines:
-                # Search for line containing "SALDO ANTERIOR"
-                if "SALDO ANTERIOR" in line:
-                    # Extract amount from position 58 onwards
-                    saldo_str = line[58:].strip()
-
-                    if saldo_str:
-                        try:
-                            saldo = float(saldo_str.replace(",", ""))
-                            logger.info(f"Previous balance found: {saldo}")
-                            return saldo
-                        except ValueError:
-                            logger.warning(
-                                f"Could not convert previous balance to number: {saldo_str}"
-                            )
-
-            logger.warning("No line with SALDO ANTERIOR found")
-            return None
-
-        except Exception as e:
-            logger.error(f"Error extracting previous balance: {str(e)}")
             return None
 
     @staticmethod

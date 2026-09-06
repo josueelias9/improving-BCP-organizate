@@ -8,8 +8,8 @@ This is an INPUT ADAPTER that:
 - Belongs in the Interface Adapters layer, NOT the domain layer
 """
 
+import csv
 import io
-import json
 import logging
 from datetime import date, datetime
 from typing import List, Optional
@@ -57,25 +57,27 @@ class YapeParser(IStatementParser):
         return ".xlsx"
 
     def read_file(self, filepath: str) -> str:
-        """Read XLSX file and return a JSON string of transaction rows."""
+        """Read XLSX file and return the raw "Movimientos" rows as CSV text."""
         wb = openpyxl.load_workbook(io.BytesIO(read_binary_file(filepath)))
         ws = wb["Movimientos"]
 
-        rows = []
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow(["tipo", "origen", "destino", "monto", "mensaje", "fecha"])
         for row in ws.iter_rows(min_row=6, values_only=True):
             if not row[_COL_TIPO]:
                 continue
-            rows.append(
-                {
-                    "tipo": row[_COL_TIPO],
-                    "origen": row[_COL_ORIGEN],
-                    "destino": row[_COL_DESTINO],
-                    "monto": row[_COL_MONTO],
-                    "mensaje": row[_COL_MENSAJE],
-                    "fecha": row[_COL_FECHA],
-                }
+            writer.writerow(
+                [
+                    row[_COL_TIPO],
+                    row[_COL_ORIGEN],
+                    row[_COL_DESTINO],
+                    row[_COL_MONTO],
+                    row[_COL_MENSAJE],
+                    row[_COL_FECHA],
+                ]
             )
-        return json.dumps(rows, ensure_ascii=False)
+        return buffer.getvalue()
 
     def get_account(self, full_text: str) -> Optional[str]:
         return "yape"
@@ -85,13 +87,15 @@ class YapeParser(IStatementParser):
 
     def get_initial_day(self, full_text: str) -> Optional[date]:
         datetimes = [
-            _parse_datetime(r["fecha"]) for r in json.loads(full_text) if r.get("fecha")
+            _parse_datetime(r["fecha"])
+            for r in csv.DictReader(io.StringIO(full_text))
+            if r.get("fecha")
         ]
         valid = [d for d in datetimes if d]
         return min(valid).date() if valid else None
 
     def get_transactions(self, full_text: str) -> List[TransactionEntity]:
-        rows = json.loads(full_text)
+        rows = list(csv.DictReader(io.StringIO(full_text)))
         entities = []
         for idx, row in enumerate(rows):
             tipo = row.get("tipo", "")
