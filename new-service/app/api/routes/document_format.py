@@ -8,19 +8,19 @@ from sqlmodel import Session
 import logging
 from api.deps import get_db_session
 from src.Aframework.gateway.db.document_format import DocumentFormatDbGateway
-from src.Capplication.use_cases.document_format.get_all_document_formats import (
-    GetAllDocumentFormatsUseCase,
+from src.Capplication.use_cases.document_format.read_document_formats import (
+    ReadDocumentFormatsUseCase,
 )
-from src.Capplication.DTO.document_format_dto import DTOGetAllDocumentFormatsResponse
+from src.Capplication.DTO.document_format_dto import DTOReadDocumentFormatsResponse
 
 router = APIRouter(prefix="/document-formats", tags=["document formats"])
 logger = logging.getLogger(__name__)
 
 
-@router.get("/", response_model=DTOGetAllDocumentFormatsResponse)
+@router.get("/", response_model=DTOReadDocumentFormatsResponse)
 def read_document_formats(
     session: Session = Depends(get_db_session),
-) -> DTOGetAllDocumentFormatsResponse:
+) -> DTOReadDocumentFormatsResponse:
     """
     Get all document types
 
@@ -31,7 +31,7 @@ def read_document_formats(
         document_format_gateway = DocumentFormatDbGateway(session)
 
         # Inject gateway into use case
-        use_case = GetAllDocumentFormatsUseCase(document_format_gateway)
+        use_case = ReadDocumentFormatsUseCase(document_format_gateway)
 
         return use_case.execute()
 

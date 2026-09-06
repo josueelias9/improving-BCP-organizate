@@ -15,10 +15,10 @@ from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCredit
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.content_extractor.scotiabank_parser import ScotiabankParser
-from src.Capplication.use_cases.account.create_histories import (
+from Capplication.use_cases.history.create_histories import (
     CreateHistoriesUseCase,
 )
-from src.Capplication.DTO.account_dto import DTOCreateAllAccountHistoriesResponse
+from src.Capplication.DTO.history_dto import DTOCreateAllAccountHistoriesResponse
 
 router = APIRouter(prefix="/histories", tags=["histories"])
 logger = logging.getLogger(__name__)

@@ -1,7 +1,6 @@
-# TODO: move to its own history file
 import logging
 
-from src.Capplication.DTO.account_dto import (
+from src.Capplication.DTO.history_dto import (
     DTOCreateAllAccountHistoriesItemResult,
     DTOCreateAllAccountHistoriesResponse,
 )

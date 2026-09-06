@@ -10,8 +10,7 @@ from typing import List, Dict, Any
 from pydantic import BaseModel
 
 
-# TODO rename to DTOGetDocumentFormatsResponse
-class DTOGetAllDocumentFormatsResponse(BaseModel):
+class DTOReadDocumentFormatsResponse(BaseModel):
     """Response DTO for get all document types operation - returned from use case to controller"""
 
     document_types: List[Dict[str, Any]]

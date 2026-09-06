@@ -26,8 +26,7 @@ from src.Capplication.use_cases.document.create_document import CreateDocumentUs
 logger = logging.getLogger(__name__)
 
 
-# TODO: Rename to CreateUserDocumentsUseCase
-class BulkCreateDocumentsUseCase:
+class CreateUserDocumentsUseCase:
     """Scans subfolders of base_directory; each subfolder name is treated as document_format."""
 
     def __init__(

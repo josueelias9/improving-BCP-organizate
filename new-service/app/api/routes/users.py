@@ -17,8 +17,10 @@ from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCredit
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
 from src.Aframework.gateway.content_extractor.scotiabank_parser import ScotiabankParser
-from src.Capplication.use_cases.users.bulk_create_documents import (
-    BulkCreateDocumentsUseCase,
+from src.Capplication.use_cases.users.create_user_documents import (
+    CreateUserDocumentsUseCase,
+)
+from src.Capplication.DTO.user_dto import (
     DTOBulkCreateDocumentsRequest,
     DTOBulkCreateDocumentsResponse,
 )
@@ -44,7 +46,7 @@ async def create_user_documents(
             "yape": YapeParser(),
             "Scotiabank": ScotiabankParser(),
         }
-        use_case = BulkCreateDocumentsUseCase(
+        use_case = CreateUserDocumentsUseCase(
             document_gateway=DocumentDbGateway(session),
             user_gateway=UserDbGateway(session),
             document_format_gateway=DocumentFormatDbGateway(session),
