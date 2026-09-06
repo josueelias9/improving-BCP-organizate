@@ -15,12 +15,22 @@ services:
       - POSTGRES_SERVER
       - PDF_PASSWORD
       - BACKEND_URL
+      - TESSERACT_SERVICE_URL
     depends_on:
       new-service-init:
         condition: service_completed_successfully
+      tesseract:
+        condition: service_started
     volumes:
       - ./files:/shared_files
       - /mnt/c/Users/josue/Downloads:/downloads
+      # We need to document the way each document is extracted. This is important
+
+  tesseract:
+    container_name: tesseract-container
+    image: hertzg/tesseract-server:latest
+    ports:
+      - "8884:8884"
 
   new-service-init:
     build: ./new-service

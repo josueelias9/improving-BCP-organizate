@@ -20,6 +20,7 @@ from src.Aframework.gateway.db.account import AccountDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
+from src.Aframework.gateway.content_extractor.scotiabank_parser import ScotiabankParser
 from src.Aframework.gateway.file_extractor import FileExtractorGateway
 
 logger = logging.getLogger(__name__)
@@ -83,6 +84,7 @@ async def create_document(dto_request: DTOCreateDocumentRequest, session: Sessio
             "bcp_credit": BCPCreditParser(),
             "bcp_debit": BCPDebitParser(),
             "yape": YapeParser(),
+            "Scotiabank": ScotiabankParser(),
         }
         parser_gateway = parser_map.get(document_format_name)
         if parser_gateway is None:

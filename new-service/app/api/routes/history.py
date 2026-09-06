@@ -14,6 +14,7 @@ from src.Aframework.gateway.db.document import DocumentDbGateway
 from src.Aframework.gateway.content_extractor.bcp_credit_parser import BCPCreditParser
 from src.Aframework.gateway.content_extractor.bcp_debit_parser import BCPDebitParser
 from src.Aframework.gateway.content_extractor.yape_parser import YapeParser
+from src.Aframework.gateway.content_extractor.scotiabank_parser import ScotiabankParser
 from src.Capplication.use_cases.account.create_histories import (
     CreateHistoriesUseCase,
 )
@@ -32,6 +33,7 @@ def create_histories(
             "bcp_credit": BCPCreditParser(),
             "bcp_debit": BCPDebitParser(),
             "yape": YapeParser(),
+            "Scotiabank": ScotiabankParser(),
         }
 
         use_case = CreateHistoriesUseCase(

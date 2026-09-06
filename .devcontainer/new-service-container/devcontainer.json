@@ -27,5 +27,5 @@
     "ghcr.io/jungaretti/features/ripgrep:1": {},
     "ghcr.io/devcontainers/features/git:1": {}
   },
-  "runServices": ["new-service","pgadmin","jupyter"]
+  "runServices": ["new-service","pgadmin","jupyter","tesseract"]
 }
